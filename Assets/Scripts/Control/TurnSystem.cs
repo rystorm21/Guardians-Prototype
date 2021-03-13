@@ -7,7 +7,7 @@ using TMPro;
 
 public class TurnSystem : MonoBehaviour
 {
-    public GameState currentState;
+    public GameState _currentState;
 
     public List<PlayerObject> _playerGroup;
     public List<PlayerObject> _enemyGroup;
@@ -15,33 +15,36 @@ public class TurnSystem : MonoBehaviour
 
     public TextMeshProUGUI _turnText;
     public TextMeshProUGUI _selectedPlayerText;
+    public TextMeshProUGUI _gameStateText;
+    public TextMeshProUGUI _attackTargetText;
+    public GameObject _attackConfirmationMenu;
 
     private GameObject _mainCamera;
     private Vector3 _cameraOffset = new Vector3(0, 7, 7);
 
-    bool _playerTurn = true;
     bool _turnOver;
     bool _cameraOverrideFlag = false;
     bool _autoActive;
-    int _activePlayer;
+    int _activePlayerIndex;
 
     // Start is called before the first frame update
     void Start()
     {
-        currentState = GameState.PlayerMove;
+        _currentState = GameState.PlayerMove;
         _mainCamera = GameObject.Find("Main Camera");
+        _attackConfirmationMenu = GameObject.Find("AttackUI");
+        _attackTargetText = GameObject.Find("TMP.AttackTarget").GetComponent<TextMeshProUGUI>();
+        _attackConfirmationMenu.SetActive(false);
         ResetTurns(_playerGroup);
     }
 
     private void OnEnable()
     {
-        EventManager.onButtonClick += SelectLocation;
         EventManager.midMouseButtonHold += CameraOverride;
     }
 
     private void OnDisable()
     {
-        EventManager.onButtonClick -= SelectLocation;
         EventManager.midMouseButtonHold -= CameraOverride;
     }
 
@@ -53,26 +56,24 @@ public class TurnSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        switch(currentState)
+        switch(GameState)
         {
             case (GameState.PlayerMove):
-                if (_playerTurn)
-                {
-                    UpdateTurns(_playerGroup, _playerTurn);
-                }
-                else
-                {
-                    UpdateTurns(_enemyGroup, _playerTurn);
-                }
-
+                _gameStateText.text = "Game State: PlayerMove";
+                UpdateTurns(_playerGroup);
                 break;
             case (GameState.PlayerAttack):
+                _gameStateText.text = "Game State: Attack";
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
-                    currentState = GameState.PlayerMove;
-                    Debug.Log("PlayerMove State");
+                    GameState = GameState.PlayerMove;
+                    _attackConfirmationMenu.SetActive(false);
                 }
                 break;
+            case (GameState.EnemyTurn):
+                _gameStateText.text = "Game State: Enemy Turn";
+                UpdateTurns(_enemyGroup);
+            break;
         }
     }
 
@@ -82,24 +83,24 @@ public class TurnSystem : MonoBehaviour
         foreach (PlayerObject character in currentGroup) {
             character.isTurn = false;
             character.moveComplete = false;
-            character.ActionPoints = 4;
+            character.ActionPoints = 2;
         }
         currentGroup[0].isTurn = true;            
     }
 
-    void UpdateTurns(List<PlayerObject> currentGroup, bool isPlayerTurn) 
+    void UpdateTurns(List<PlayerObject> currentGroup) 
     {
-        _turnText.gameObject.SetActive(!_playerTurn);                 // display "enemy turn" only if it's the enemy's turn
+        _turnText.gameObject.SetActive(GameState == GameState.EnemyTurn);                 // display "enemy turn" only if it's the enemy's turn
         Transform currentPlayerTransform;
 
-        switch(isPlayerTurn) 
+        switch(GameState) 
         {
-            case true:
+            case GameState.PlayerMove:
                 // instructions for player movement here.
                 _turnOver = true;                                       // set a flag for all turns over to true. If still true at end of loop, player's turn is over
                 _autoActive = true;                                     // flag for auto-setting the next player move. prevents player getting 'stuck' at selected if player tabs
-                _activePlayer = FindActivePlayer(currentGroup);         // finds the active player & determines if the turn is over (all moves completed)
-                currentPlayerTransform = _playerGroup[_activePlayer].playerGameObject.transform;    // stores the active player's Transform
+                _activePlayerIndex = FindActivePlayer(currentGroup);    // finds the active player & determines if the turn is over (all moves completed)
+                currentPlayerTransform = _playerGroup[_activePlayerIndex].playerGameObject.transform;    // stores the active player's Transform
 
                 // These next 3 lines could probably be ported over to the PlayerController.
                 // - This code is more with the player object and not managing anything turn-based.
@@ -109,7 +110,7 @@ public class TurnSystem : MonoBehaviour
 
                 if (_autoActive)                                         // however, if there's no active player and the turn isn't over:
                 {   
-                    _activePlayer = AutoPlayerSelect(currentGroup);      // .. auto select an available player
+                    _activePlayerIndex = AutoPlayerSelect(currentGroup);      // .. auto select an available player
                 }
 
                 if (Input.GetKeyDown(KeyCode.Tab))                       // switch the active player when keycode tab is pressed
@@ -118,13 +119,14 @@ public class TurnSystem : MonoBehaviour
                 }
 
                 if (_turnOver) {                                         // if all moves have been used, then switch control back to enemy
-                    _playerTurn = !_playerTurn;                          //   player turn is over
+                    GameState = GameState.EnemyTurn;
                     ResetTurns(_enemyGroup);                             //   switch control back to the enemy
                 }
                 break;
 
             // Enemies can move sequentially for all i care ;)
-            case false:
+            case GameState.EnemyTurn:
+                GameState = GameState.EnemyTurn;
                 _cameraOverrideFlag = false;
                 for (int i = 0; i < currentGroup.Count; i++)
                 {
@@ -138,7 +140,7 @@ public class TurnSystem : MonoBehaviour
                     }
                     else if (i == (currentGroup.Count - 1) && currentGroup[i].moveComplete)
                     {
-                        _playerTurn = !_playerTurn;
+                        GameState = GameState.PlayerMove;
                         ResetTurns(_playerGroup);
                     }
                 }
@@ -167,7 +169,7 @@ public class TurnSystem : MonoBehaviour
 
     public void EndTurn() 
     {
-        if (_playerTurn && currentState == GameState.PlayerMove) 
+        if (GameState == GameState.PlayerMove) 
         {
             // Ask to confirm end turn
 
@@ -182,15 +184,16 @@ public class TurnSystem : MonoBehaviour
 
     private void CalculateDistance()
     {
-        float moveDistance = Vector3.Distance(_playerGroup[_activePlayer].playerGameObject.transform.position, CursorController.cursorPosition);
-        float playerMoveLeft = _playerGroup[_activePlayer].MoveDist;
-        float actions = _playerGroup[_activePlayer].ActionPoints / 2;
+        Vector3 playerPosition = _playerGroup[_activePlayerIndex].playerGameObject.transform.position;
+        float moveDistance = Vector3.Distance(playerPosition, CursorController.cursorPosition);
+        float playerMoveRate = _playerGroup[_activePlayerIndex].MoveDist;
+        float actions = _playerGroup[_activePlayerIndex].ActionPoints;
 
-        if (moveDistance > (playerMoveLeft * actions))
+        if (moveDistance > (playerMoveRate * actions))
         {
             CursorController.cursorColor = Color.red;
         }
-        else if (moveDistance > playerMoveLeft || actions == 1)
+        else if (moveDistance > playerMoveRate || actions == 1)
         {
             CursorController.cursorColor = Color.yellow;
         }
@@ -200,141 +203,16 @@ public class TurnSystem : MonoBehaviour
         }
     }
 
-    private void SelectLocation()
-    {
-        switch(currentState)
-        {
-            case (GameState.PlayerMove):
-                bool occupiedPlayer = false;
-                bool occupiedEnemy = false;
-
-                if (_playerTurn)
-                {
-                    occupiedPlayer = SpaceIsOccupied(_playerGroup);
-                    occupiedEnemy = SpaceIsOccupied(_enemyGroup);
-                    if (occupiedEnemy) currentState = (GameState.PlayerAttack);
-                    if (occupiedPlayer == true || occupiedEnemy == true)
-                    {
-                        Debug.Log("Space is occupied");
-                    }
-                    else
-                    {   if (CursorController.cursorColor != Color.red)
-                        {
-                            _playerGroup[_activePlayer].playerGameObject.GetComponent<NavMeshAgent>().SetDestination(CursorController.cursorPosition);
-                            _playerGroup[_activePlayer].ActionPoints--;
-                            if (CursorController.cursorColor == Color.yellow) _playerGroup[_activePlayer].ActionPoints--; // decrease action points by 2 if player dashes
-
-                            if (_playerGroup[_activePlayer].ActionPoints == 0)
-                            {
-                                Debug.Log("action points spent");
-                                _playerGroup[_activePlayer].isTurn = false;
-                                _playerGroup[_activePlayer].moveComplete = true;
-                            }
-                        } else
-                        {
-                            Debug.Log("Out of movement range");
-                        }
-                    }
-                }
-                break;
-
-            case (GameState.PlayerAttack):
-                AttackEnemy();
-                break;
-
-        }
-    }
-
-    public void AttackEnemy()
-    {
-        currentState = GameState.PlayerAttack;
-        Transform player = _playerGroup[_activePlayer].playerGameObject.transform;
-        int targetedEnemyIndex = 0;
-        bool enemyClicked = false;
-
-        for (int i = 0; i < _enemyGroup.Count; i++)
-        {
-            if (SnapMovement.Snap(_enemyGroup[i].playerGameObject.transform.position) == CursorController.cursorPosition)
-            {
-                targetedEnemyIndex = i;
-                enemyClicked = true;
-                break;
-            }
-        }
-
-        Transform enemy = _enemyGroup[targetedEnemyIndex].playerGameObject.transform;
-        string enemyName = _enemyGroup[targetedEnemyIndex].playerGameObject.name;
-
-        if (enemyClicked) // if enemy was clicked, check if it's in range
-        {
-            if (_playerGroup[_activePlayer].AttackRange > Vector3.Distance(player.position, enemy.position))
-            {
-                Debug.Log("Target " + enemyName + " in range!");
-                player.LookAt(enemy);
-            }
-            else
-            {
-                Debug.Log("Target " + enemyName + " is out of range.");
-            }
-        }
-
-        if (!enemyClicked) // if the attack button was pressed instead, find the closest enemy if in range
-        {
-            float closestEnemyDistance = _playerGroup[_activePlayer].AttackRange;
-            int closestEnemyIndex = 0;
-            bool enemyInRangeFound = false;
-
-            // find if there's an enemy in range
-            for (int i = 0; i < _enemyGroup.Count; i++)
-            {
-                if (Vector3.Distance(player.position, _enemyGroup[i].playerGameObject.transform.position) <= closestEnemyDistance)
-                {
-                    closestEnemyIndex = i;
-                    closestEnemyDistance = Vector3.Distance(player.position, _enemyGroup[i].playerGameObject.transform.position);
-                    enemyInRangeFound = true;
-                    Debug.Log(closestEnemyDistance);
-                }
-            }
-
-            // target closest enemy, or tell player no enemies in range.
-            if (enemyInRangeFound)
-            {
-                Debug.Log("Target: " + _enemyGroup[closestEnemyIndex].playerGameObject.name + " in range!");
-                player.LookAt(_enemyGroup[closestEnemyIndex].playerGameObject.transform);
-            }
-            else
-            {
-                Debug.Log("No enemies in range");
-                currentState = GameState.PlayerMove;
-            }
-        }
-    }
-
-    bool SpaceIsOccupied(List<PlayerObject> players)
-    {
-        bool isOccupied = false;
-        foreach (var player in players)
-        {
-            if (CursorController.cursorPosition == SnapMovement.Snap(player.playerGameObject.transform.position))
-            {
-                isOccupied = true;
-            }
-        }
-        return isOccupied;
-    }
-
-
-
     void TabNextPlayer(List<PlayerObject> currentGroup) 
     {
         int movesLeft = 0;
-        int lastPlayer = _activePlayer;
+        int lastPlayer = _activePlayerIndex;
         _cameraOverrideFlag = false;
 
-        currentGroup[_activePlayer].isTurn = false;          // remove current player turn
-        if (_activePlayer != (currentGroup.Count - 1) && !currentGroup[_activePlayer + 1].moveComplete)
+        currentGroup[_activePlayerIndex].isTurn = false;          // remove current player turn
+        if (_activePlayerIndex != (currentGroup.Count - 1) && !currentGroup[_activePlayerIndex + 1].moveComplete)
         {
-            currentGroup[_activePlayer + 1].isTurn = true;   // if not at the end of the list and next player's move isn't complete, set turn to next player
+            currentGroup[_activePlayerIndex + 1].isTurn = true;   // if not at the end of the list and next player's move isn't complete, set turn to next player
         }
         else
         {
@@ -360,6 +238,19 @@ public class TurnSystem : MonoBehaviour
                         break;
                     }
                 }
+            }
+        }
+    }
+
+    // Change control to clicked player, if it has moves remaining
+    public void SwitchControl(PlayerObject selectedPlayer)
+    {
+        for (int i=0; i < _playerGroup.Count; i++) 
+        {
+            if (_playerGroup[i] == selectedPlayer) 
+            {
+                _playerGroup[ActivePlayerIndex].isTurn = false;
+                _playerGroup[i].isTurn = true;
             }
         }
     }
@@ -390,5 +281,37 @@ public class TurnSystem : MonoBehaviour
     void DisplayName(string nameToDisplay)
     {
         _selectedPlayerText.text = nameToDisplay;
+    }
+
+    public void CancelAttack()
+    {
+        _attackConfirmationMenu.SetActive(false);
+        _currentState = GameState.PlayerMove;
+    }
+
+    public GameState GameState 
+    {
+        get{ return _currentState; }
+        set{ _currentState = value; }
+    }
+
+    public List<PlayerObject> PlayerGroup
+    {
+        get { return _playerGroup; }
+    }
+
+    public List<PlayerObject> EnemyGroup
+    {
+        get { return _enemyGroup; }
+    }
+
+    public int ActivePlayerIndex
+    {
+        get { return _activePlayerIndex; }
+    }
+
+    public PlayerObject ActivePlayer
+    {
+        get {return _playerGroup[_activePlayerIndex]; }
     }
 }

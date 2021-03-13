@@ -10,7 +10,7 @@ public class EventManager : MonoBehaviour
     public static event OnButtonClick onButtonClick;
     public static event MidMouseButtonHold midMouseButtonHold;
 
-    private void OnGUI()
+    private void Update()
     {
         // Only register if it's not over a button / UI object
         if (!EventSystem.current.IsPointerOverGameObject())
