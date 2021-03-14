@@ -9,7 +9,7 @@ public class PlayerObject
     public bool isTurn = false;
     public bool moveComplete = false;
     private int actionPoints;
-    private int moveDist = 8;
+    private int moveDist = 6;
     private int attackRange = 6;
 
     public int ActionPoints

@@ -12,6 +12,8 @@ public class TurnSystem : MonoBehaviour
     public List<PlayerObject> _playerGroup;
     public List<PlayerObject> _enemyGroup;
     public GameObject playerController;
+    public GameObject _moveTile;
+    public GameObject _moveTileSprint;
 
     public TextMeshProUGUI _turnText;
     public TextMeshProUGUI _selectedPlayerText;
@@ -22,10 +24,13 @@ public class TurnSystem : MonoBehaviour
     private GameObject _mainCamera;
     private Vector3 _cameraOffset = new Vector3(0, 7, 7);
 
+    bool _waiting;
     bool _turnOver;
     bool _cameraOverrideFlag = false;
     bool _autoActive;
+    bool sprintModeActive;
     int _activePlayerIndex;
+    int _lastPlayerIndex;
 
     // Start is called before the first frame update
     void Start()
@@ -85,7 +90,8 @@ public class TurnSystem : MonoBehaviour
             character.moveComplete = false;
             character.ActionPoints = 2;
         }
-        currentGroup[0].isTurn = true;            
+        currentGroup[0].isTurn = true;
+        if (_currentState == GameState.EnemyTurn) { EraseGrid(); }            
     }
 
     void UpdateTurns(List<PlayerObject> currentGroup) 
@@ -107,6 +113,7 @@ public class TurnSystem : MonoBehaviour
                 DisplayName(currentPlayerTransform.GetChild(0).name);
                 CalculateDistance();
                 FollowCamera(currentPlayerTransform.position);
+                MoveGrid(_playerGroup[ActivePlayerIndex].playerGameObject.transform.position);
 
                 if (_autoActive)                                         // however, if there's no active player and the turn isn't over:
                 {   
@@ -121,6 +128,15 @@ public class TurnSystem : MonoBehaviour
                 if (_turnOver) {                                         // if all moves have been used, then switch control back to enemy
                     GameState = GameState.EnemyTurn;
                     ResetTurns(_enemyGroup);                             //   switch control back to the enemy
+                }
+
+                // allowable move grid functionality, so no duplicates
+                if (_lastPlayerIndex == _activePlayerIndex) {
+                    Waiting = true;
+                }
+                else { 
+                    Waiting = false; 
+                    _lastPlayerIndex = _activePlayerIndex;
                 }
                 break;
 
@@ -182,24 +198,89 @@ public class TurnSystem : MonoBehaviour
         }
     }
 
+    // Displays a grid of 'allowable moves', depending on user's action points and movement rate
+    public void MoveGrid(Vector3 drawPosition)
+    {
+        PlayerObject currentPlayer = _playerGroup[_activePlayerIndex];
+        float moveRadius;
+
+        if (!Waiting && (_currentState == GameState.PlayerMove)) 
+        {
+            moveRadius = _playerGroup[_activePlayerIndex].MoveDist;
+            EraseGrid();
+            DrawGrid(drawPosition, moveRadius, false, currentPlayer.ActionPoints);
+            Waiting = true;
+            sprintModeActive = false;
+        }
+        if (Waiting && !sprintModeActive) 
+        {
+            moveRadius = _playerGroup[_activePlayerIndex].MoveDist;
+            if (Vector3.Distance(CursorController.cursorPosition, drawPosition) > moveRadius && currentPlayer.ActionPoints > 1)
+            {
+                DrawGrid(drawPosition, moveRadius, true, currentPlayer.ActionPoints);
+                sprintModeActive = true;
+            }
+        }   
+    }
+
+    void EraseGrid()
+    {
+        GameObject[] oldGrid = GameObject.FindGameObjectsWithTag("PlayerHighlight");
+        if (oldGrid != null) 
+        {
+            foreach (GameObject oldHighlight in oldGrid)
+            {
+                Destroy(oldHighlight);
+            }
+        }
+    }
+
+    void DrawGrid (Vector3 playerPosition, float moveRadius, bool sprinting, int actionPoints)
+    {
+        float basePlayerMove = _playerGroup[_activePlayerIndex].MoveDist;
+
+        if (sprinting) { EraseGrid(); moveRadius *= actionPoints; }
+        for (int z = -(int)moveRadius + 1; z < moveRadius; z++)
+        {
+            for (int x = -(int)moveRadius + 1; x < moveRadius; x++)
+            {
+                Vector3 location = playerPosition + (Vector3.right * x) + (Vector3.forward * z);
+                float distance = Vector3.Distance(playerPosition, location);
+                if (distance < moveRadius)
+                {
+                    if (distance < basePlayerMove) {
+                        Instantiate(_moveTile, playerPosition + (Vector3.right * x) + (Vector3.forward * z), Quaternion.identity);
+                    }
+                    else {
+                        Instantiate(_moveTileSprint, playerPosition + (Vector3.right * x) + (Vector3.forward * z), Quaternion.identity);
+                    }
+                }
+            }
+        }
+    }
+
     private void CalculateDistance()
     {
         Vector3 playerPosition = _playerGroup[_activePlayerIndex].playerGameObject.transform.position;
         float moveDistance = Vector3.Distance(playerPosition, CursorController.cursorPosition);
         float playerMoveRate = _playerGroup[_activePlayerIndex].MoveDist;
         float actions = _playerGroup[_activePlayerIndex].ActionPoints;
+        float turnCost = Mathf.Ceil(moveDistance / playerMoveRate);
 
-        if (moveDistance > (playerMoveRate * actions))
+        if (turnCost > actions)
         {
             CursorController.cursorColor = Color.red;
+            CursorController.moveCostText = "";
         }
-        else if (moveDistance > playerMoveRate || actions == 1)
+        else if (turnCost > 1)
         {
             CursorController.cursorColor = Color.yellow;
+            CursorController.moveCostText = turnCost.ToString();
         }
         else
         {
             CursorController.cursorColor = Color.blue;
+            CursorController.moveCostText = turnCost.ToString();
         }
     }
 
@@ -312,6 +393,12 @@ public class TurnSystem : MonoBehaviour
 
     public PlayerObject ActivePlayer
     {
-        get {return _playerGroup[_activePlayerIndex]; }
+        get { return _playerGroup[_activePlayerIndex]; }
+    }
+
+    public bool Waiting 
+    {
+        get { return _waiting; }
+        set { _waiting = value; }
     }
 }

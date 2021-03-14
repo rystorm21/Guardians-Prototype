@@ -2,17 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class CursorController : MonoBehaviour
 {
-    public GameObject moveCursor;
+    private TextMeshPro moveCostTMP;
+    private GameObject moveCursor;
     public LayerMask whatCanBeClickedOn;
     public static Vector3 cursorPosition;
     public static Color cursorColor;
+    public static string moveCostText;
 
     // Start is called before the first frame update
     void Start()
     {
+        moveCostTMP = GameObject.Find("MoveCostText").GetComponent<TextMeshPro>();
         moveCursor = GameObject.Find("Cursor");
         cursorColor = Color.blue;
     }
@@ -33,6 +37,7 @@ public class CursorController : MonoBehaviour
             cursorPosition = SnapMovement.Snap(hitInfo.point);
             moveCursor.transform.position = cursorPosition;
             moveCursor.GetComponent<Renderer>().material.color = cursorColor;
+            moveCostTMP.text = moveCostText;
         }
     }
 }

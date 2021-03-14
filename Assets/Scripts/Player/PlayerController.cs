@@ -55,7 +55,6 @@ public class PlayerController : MonoBehaviour
                     occupiedPlayer = SpaceIsOccupied(_playerGroup, true);
                     occupiedEnemy = SpaceIsOccupied(_enemyGroup, false);
                     int activePlayer = _turnSystem.ActivePlayerIndex;
-                    // Debug.Log(activePlayer); this is triggering properly with player 1
 
                     if (occupiedEnemy != null){ AttackEnemy();} 
                     if (occupiedPlayer != null || occupiedEnemy != null)
@@ -97,10 +96,11 @@ public class PlayerController : MonoBehaviour
     {
         PlayerObject player = _playerGroup[activePlayer];
         player.playerGameObject.GetComponent<NavMeshAgent>().SetDestination(CursorController.cursorPosition);
-        player.ActionPoints--;
+        _turnSystem.Waiting = false;
+        _turnSystem.MoveGrid(CursorController.cursorPosition);
 
-        if (CursorController.cursorColor == Color.yellow) player.ActionPoints = 0; // yellow cursor = final move or dash distance that uses all remaining moves
-
+        if (CursorController.cursorColor == Color.yellow) player.ActionPoints -= int.Parse(CursorController.moveCostText); // yellow cursor = more than 1 action cost
+        else { player.ActionPoints--; }
         if (player.ActionPoints <= 0)
         {
             Debug.Log("action points spent");
