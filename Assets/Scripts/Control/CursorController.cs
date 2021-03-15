@@ -8,6 +8,8 @@ public class CursorController : MonoBehaviour
 {
     private TextMeshPro moveCostTMP;
     private GameObject moveCursor;
+    private TurnSystem _turnSystem;
+
     public LayerMask whatCanBeClickedOn;
     public static Vector3 cursorPosition;
     public static Color cursorColor;
@@ -16,6 +18,7 @@ public class CursorController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _turnSystem = GameObject.Find("Turn-basedSystem").GetComponent<TurnSystem>();
         moveCostTMP = GameObject.Find("MoveCostText").GetComponent<TextMeshPro>();
         moveCursor = GameObject.Find("Cursor");
         cursorColor = Color.blue;
@@ -25,6 +28,11 @@ public class CursorController : MonoBehaviour
     void Update()
     {
         MoveCursor();
+    }
+
+    void GetCoordinates() 
+    {
+
     }
 
     void MoveCursor()

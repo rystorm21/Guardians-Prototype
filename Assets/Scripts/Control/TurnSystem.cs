@@ -11,7 +11,6 @@ public class TurnSystem : MonoBehaviour
 
     public List<PlayerObject> _playerGroup;
     public List<PlayerObject> _enemyGroup;
-    public GameObject playerController;
     public GameObject _moveTile;
     public GameObject _moveTileSprint;
 
@@ -24,11 +23,12 @@ public class TurnSystem : MonoBehaviour
     private GameObject _mainCamera;
     private Vector3 _cameraOffset = new Vector3(0, 7, 7);
 
+    bool _playerMoveStart;
     bool _waiting;
     bool _turnOver;
     bool _cameraOverrideFlag = false;
     bool _autoActive;
-    bool sprintModeActive;
+    bool _sprintModeActive;
     int _activePlayerIndex;
     int _lastPlayerIndex;
 
@@ -41,6 +41,8 @@ public class TurnSystem : MonoBehaviour
         _attackTargetText = GameObject.Find("TMP.AttackTarget").GetComponent<TextMeshProUGUI>();
         _attackConfirmationMenu.SetActive(false);
         ResetTurns(_playerGroup);
+
+        _playerMoveStart = false;
     }
 
     private void OnEnable()
@@ -108,8 +110,6 @@ public class TurnSystem : MonoBehaviour
                 _activePlayerIndex = FindActivePlayer(currentGroup);    // finds the active player & determines if the turn is over (all moves completed)
                 currentPlayerTransform = _playerGroup[_activePlayerIndex].playerGameObject.transform;    // stores the active player's Transform
 
-                // These next 3 lines could probably be ported over to the PlayerController.
-                // - This code is more with the player object and not managing anything turn-based.
                 DisplayName(currentPlayerTransform.GetChild(0).name);
                 CalculateDistance();
                 FollowCamera(currentPlayerTransform.position);
@@ -137,6 +137,17 @@ public class TurnSystem : MonoBehaviour
                 else { 
                     Waiting = false; 
                     _lastPlayerIndex = _activePlayerIndex;
+                }
+
+                // redraw the grid if a player that started moving ended their move
+                if (PlayerController.IsMoving)
+                {
+                    _playerMoveStart = true;
+                }
+                if (!PlayerController.IsMoving && _playerMoveStart == true)
+                {
+                    _playerMoveStart = false;
+                    Waiting = false;
                 }
                 break;
 
@@ -197,32 +208,32 @@ public class TurnSystem : MonoBehaviour
             }   
         }
     }
-
+    #region Show Allowable Move Grid
     // Displays a grid of 'allowable moves', depending on user's action points and movement rate
     public void MoveGrid(Vector3 drawPosition)
     {
         PlayerObject currentPlayer = _playerGroup[_activePlayerIndex];
         float moveRadius;
-
         if (!Waiting && (_currentState == GameState.PlayerMove)) 
         {
             moveRadius = _playerGroup[_activePlayerIndex].MoveDist;
             EraseGrid();
             DrawGrid(drawPosition, moveRadius, false, currentPlayer.ActionPoints);
             Waiting = true;
-            sprintModeActive = false;
+            _sprintModeActive = false;
         }
-        if (Waiting && !sprintModeActive) 
+        if (Waiting && !_sprintModeActive) 
         {
             moveRadius = _playerGroup[_activePlayerIndex].MoveDist;
             if (Vector3.Distance(CursorController.cursorPosition, drawPosition) > moveRadius && currentPlayer.ActionPoints > 1)
             {
                 DrawGrid(drawPosition, moveRadius, true, currentPlayer.ActionPoints);
-                sprintModeActive = true;
+                _sprintModeActive = true;
             }
         }   
     }
 
+    // Clear the grid after a move, or when players are switched
     void EraseGrid()
     {
         GameObject[] oldGrid = GameObject.FindGameObjectsWithTag("PlayerHighlight");
@@ -235,6 +246,7 @@ public class TurnSystem : MonoBehaviour
         }
     }
 
+    // Draw the movement grid
     void DrawGrid (Vector3 playerPosition, float moveRadius, bool sprinting, int actionPoints)
     {
         float basePlayerMove = _playerGroup[_activePlayerIndex].MoveDist;
@@ -258,6 +270,7 @@ public class TurnSystem : MonoBehaviour
             }
         }
     }
+    #endregion
 
     private void CalculateDistance()
     {

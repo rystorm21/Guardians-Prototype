@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 3854121624131729720}
   - component: {fileID: 4718206073376417895}
   - component: {fileID: 2712843475320145265}
+  - component: {fileID: -7023211583613209630}
+  - component: {fileID: 5429872272181845721}
   m_Layer: 0
   m_Name: MoveTile
   m_TagString: PlayerHighlight
@@ -79,3 +81,28 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &-7023211583613209630
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2702856272506685829}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5429872272181845721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2702856272506685829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0c0c73d40fc59040b5cdd6f716fd869, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

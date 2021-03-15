@@ -10,24 +10,45 @@ public class PlayerController : MonoBehaviour
     private List<PlayerObject> _playerGroup;
     private List<PlayerObject> _enemyGroup;
     private TurnSystem _turnSystem;
+    private NavMeshAgent _playerNavMesh;
     public PlayerObject _currentPlayer;
-    private bool isTurn;
+    private bool _isTurn;
+    private float[] _currentSpeed; // caching purposes
+    private Vector3[] _lastPosition;
+    private static bool _isMoving;
     GameState _currentState;
+    
+    public static bool IsMoving 
+    {
+        get { return _isMoving; }
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         _turnSystem = GameObject.Find("Turn-basedSystem").GetComponent<TurnSystem>();
+        _playerNavMesh = GetComponent<NavMeshAgent>();
         InitializePlayers();
+        _currentSpeed = new float[_playerGroup.Count];
+        _lastPosition = new Vector3[_playerGroup.Count];
     }
 
     void InitializePlayers()
     {
         _playerGroup = _turnSystem.PlayerGroup;
         _enemyGroup = _turnSystem.EnemyGroup;
+        // already instantiated all player objects here.
         foreach (PlayerObject player in _turnSystem._playerGroup)
         {
             if (player.playerGameObject.name == gameObject.name) _currentPlayer = player;
+        }
+        _isTurn = _currentPlayer.isTurn;
+    }
+
+    private void Update() {
+        if (_isTurn) 
+        {
+            _isMoving = CheckIfMoving();
         }
     }
 
@@ -48,38 +69,40 @@ public class PlayerController : MonoBehaviour
             case (GameState.PlayerMove):
                 PlayerObject occupiedPlayer = null;
                 PlayerObject occupiedEnemy = null;
-                isTurn = _currentPlayer.isTurn;
-
-                if (isTurn)
+                _isTurn = _currentPlayer.isTurn;
+                if (!IsMoving)
                 {
-                    occupiedPlayer = SpaceIsOccupied(_playerGroup, true);
-                    occupiedEnemy = SpaceIsOccupied(_enemyGroup, false);
-                    int activePlayer = _turnSystem.ActivePlayerIndex;
+                    if (_isTurn)
+                    {
+                        occupiedPlayer = SpaceIsOccupied(_playerGroup, true);
+                        occupiedEnemy = SpaceIsOccupied(_enemyGroup, false);
+                        int activePlayer = _turnSystem.ActivePlayerIndex;
 
-                    if (occupiedEnemy != null){ AttackEnemy();} 
-                    if (occupiedPlayer != null || occupiedEnemy != null)
-                    {
-                        if (occupiedPlayer != null) 
+                        if (occupiedEnemy != null){ AttackEnemy();} 
+                        if (occupiedPlayer != null || occupiedEnemy != null)
                         {
-                            if (occupiedPlayer.moveComplete == false) 
+                            if (occupiedPlayer != null) 
                             {
-                                // switch control to this player
-                                _turnSystem.SwitchControl(occupiedPlayer);
+                                if (occupiedPlayer.moveComplete == false) 
+                                {
+                                    // switch control to this player
+                                    _turnSystem.SwitchControl(occupiedPlayer);
+                                }
+                                else {
+                                    Debug.Log("Player's action points spent");
+                                }
                             }
-                            else {
-                                Debug.Log("Player's action points spent");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (CursorController.cursorColor != Color.red)
-                        {
-                            MovePlayer(activePlayer);
                         }
                         else
                         {
-                            Debug.Log("Out of movement range");
+                            if (CursorController.cursorColor != Color.red)
+                            {
+                                MovePlayer(activePlayer);
+                            }
+                            else
+                            {
+                                Debug.Log("Out of movement range");
+                            }
                         }
                     }
                 }
@@ -217,5 +240,20 @@ public class PlayerController : MonoBehaviour
             }
         }
         return null;
+    }
+
+    public bool CheckIfMoving()
+    {
+        int players = _turnSystem._playerGroup.Count;
+
+        for (int i = 0; i < players; i++) {
+            // check every player's speed, if a single player's speed is above zero, then a player is moving, return true.
+            _currentSpeed[i] = (_turnSystem._playerGroup[i].playerGameObject.transform.position - _lastPosition[i]).magnitude;
+            _lastPosition[i] = _turnSystem.PlayerGroup[i].playerGameObject.transform.position;
+            if (_currentSpeed[i] > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }
