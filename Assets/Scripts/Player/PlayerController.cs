@@ -11,16 +11,33 @@ public class PlayerController : MonoBehaviour
     private List<PlayerObject> _enemyGroup;
     private TurnSystem _turnSystem;
     private NavMeshAgent _playerNavMesh;
-    public PlayerObject _currentPlayer;
+    private PlayerObject _targetedEnemy;
     private bool _isTurn;
     private float[] _currentSpeed; // caching purposes
+    private int _activePlayer;
     private Vector3[] _lastPosition;
     private static bool _isMoving;
+    private static bool _noDraw;
     GameState _currentState;
+    public PlayerObject _currentPlayer;
+
+    //VFX
+    public GameObject firePoint;
+    public GameObject projectile;
     
+    public PlayerObject TargetedEnemy
+    {
+        get { return _targetedEnemy; }
+    }
+
     public static bool IsMoving 
     {
         get { return _isMoving; }
+    }
+
+    public static bool NoDraw
+    {
+        get { return _noDraw; }
     }
 
     // Start is called before the first frame update
@@ -31,6 +48,7 @@ public class PlayerController : MonoBehaviour
         InitializePlayers();
         _currentSpeed = new float[_playerGroup.Count];
         _lastPosition = new Vector3[_playerGroup.Count];
+        _noDraw = false;
     }
 
     void InitializePlayers()
@@ -97,7 +115,7 @@ public class PlayerController : MonoBehaviour
                         {
                             if (CursorController.cursorColor != Color.red)
                             {
-                                MovePlayer(activePlayer);
+                                MovePlayer();
                             }
                             else
                             {
@@ -115,9 +133,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void MovePlayer(int activePlayer)
+    void MovePlayer()
     {
-        PlayerObject player = _playerGroup[activePlayer];
+        _activePlayer = _turnSystem.ActivePlayerIndex; // need this for the IEnumerator
+        PlayerObject player = _playerGroup[_activePlayer];
         player.playerGameObject.GetComponent<NavMeshAgent>().SetDestination(CursorController.cursorPosition);
         _turnSystem.Waiting = false;
         _turnSystem.MoveGrid(CursorController.cursorPosition);
@@ -126,15 +145,27 @@ public class PlayerController : MonoBehaviour
         else { player.ActionPoints--; }
         if (player.ActionPoints <= 0)
         {
-            Debug.Log("action points spent");
-            player.isTurn = false;
-            player.moveComplete = true;
+            StartCoroutine("LastActionPoints");
         }
+    }
+
+    IEnumerator LastActionPoints()
+    {
+        Debug.Log("action points spent");
+        _noDraw = true;
+        PlayerObject player = _playerGroup[_activePlayer];
+        Transform childTransform = player.playerGameObject.transform.GetChild(0).transform;
+        
+        yield return new WaitForSeconds(2);
+        player.isTurn = false;
+        player.moveComplete = true;
+        if (childTransform.localPosition.x != 0) { childTransform.localPosition = new Vector3(0,0,0); } // Andromeda keeps going off center, do this to fix it4
+        _noDraw = false;
     }
 
     public void AttackEnemy()
     {
-        if (_turnSystem.GameState != GameState.EnemyTurn) 
+        if (_turnSystem.GameState != GameState.EnemyTurn && _turnSystem.ActivePlayer.ActionPoints > 0) 
         {
             _turnSystem.GameState = GameState.PlayerAttack;
             int activePlayer = _turnSystem.ActivePlayerIndex;
@@ -225,9 +256,23 @@ public class PlayerController : MonoBehaviour
 
     void ConfirmAttack(PlayerObject playerObject, PlayerObject enemyObject) 
     {
+        _targetedEnemy = enemyObject;
         _turnSystem._attackConfirmationMenu.SetActive(true);
         _turnSystem._attackTargetText.text = "Attacking Target: " + enemyObject.playerGameObject.name;
         playerObject.playerGameObject.transform.LookAt(enemyObject.playerGameObject.transform);
+    }
+
+    public void DoAttack() 
+    {
+        _activePlayer = _turnSystem.ActivePlayerIndex;
+        _turnSystem.ActivePlayer.ActionPoints--;
+        StartCoroutine("SpawnAttack");
+
+        if (_turnSystem.ActivePlayer.ActionPoints == 0) 
+        {
+            StartCoroutine("LastActionPoints");
+            ReturnToMoveState();
+        }
     }
 
     public PlayerObject SpaceIsOccupied(List<PlayerObject> players, bool playerClicked)
@@ -242,6 +287,7 @@ public class PlayerController : MonoBehaviour
         return null;
     }
 
+    // checks to see if any player is moving. If any player is moving, break out of the loop and return true
     public bool CheckIfMoving()
     {
         int players = _turnSystem._playerGroup.Count;
@@ -255,5 +301,19 @@ public class PlayerController : MonoBehaviour
             }
         }
         return false;
+    }
+
+    IEnumerator SpawnAttack() 
+    {
+        _turnSystem.ActivePlayer.playerGameObject.GetComponentInChildren<Animator>().SetTrigger("attack");
+        yield return new WaitForSeconds(0.75f);
+        string playerName = _turnSystem.ActivePlayer.playerGameObject.transform.GetChild(0).name;
+        Vector3 offset  = new Vector3(0,.5f,0);
+        firePoint = _turnSystem.ActivePlayer.playerGameObject.transform.Find(playerName + "/metarig/IKHand.R").gameObject;
+        
+        if (firePoint != null)
+        {
+            Instantiate(projectile, firePoint.transform.position + offset, Quaternion.identity);
+        }
     }
 }

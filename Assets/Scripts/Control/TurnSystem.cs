@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 using TMPro;
 
 public class TurnSystem : MonoBehaviour
@@ -19,9 +20,11 @@ public class TurnSystem : MonoBehaviour
     public TextMeshProUGUI _gameStateText;
     public TextMeshProUGUI _attackTargetText;
     public GameObject _attackConfirmationMenu;
+    public Sprite[] _characterPortraits;
 
     private GameObject _mainCamera;
     private Vector3 _cameraOffset = new Vector3(0, 7, 7);
+    private Image _charPortrait;
 
     bool _playerMoveStart;
     bool _waiting;
@@ -32,17 +35,36 @@ public class TurnSystem : MonoBehaviour
     int _activePlayerIndex;
     int _lastPlayerIndex;
 
-    // Start is called before the first frame update
-    void Start()
+    public GameState GameState
     {
-        _currentState = GameState.PlayerMove;
-        _mainCamera = GameObject.Find("Main Camera");
-        _attackConfirmationMenu = GameObject.Find("AttackUI");
-        _attackTargetText = GameObject.Find("TMP.AttackTarget").GetComponent<TextMeshProUGUI>();
-        _attackConfirmationMenu.SetActive(false);
-        ResetTurns(_playerGroup);
+        get { return _currentState; }
+        set { _currentState = value; }
+    }
 
-        _playerMoveStart = false;
+    public List<PlayerObject> PlayerGroup
+    {
+        get { return _playerGroup; }
+    }
+
+    public List<PlayerObject> EnemyGroup
+    {
+        get { return _enemyGroup; }
+    }
+
+    public int ActivePlayerIndex
+    {
+        get { return _activePlayerIndex; }
+    }
+
+    public PlayerObject ActivePlayer
+    {
+        get { return _playerGroup[_activePlayerIndex]; }
+    }
+
+    public bool Waiting
+    {
+        get { return _waiting; }
+        set { _waiting = value; }
     }
 
     private void OnEnable()
@@ -55,11 +77,20 @@ public class TurnSystem : MonoBehaviour
         EventManager.midMouseButtonHold -= CameraOverride;
     }
 
-    void CameraOverride()
-    {
-        _cameraOverrideFlag = true;
-    }
 
+    // Start is called before the first frame update
+    void Start()
+    {
+        _currentState = GameState.PlayerMove;
+        _mainCamera = GameObject.Find("Main Camera");
+        _attackConfirmationMenu = GameObject.Find("AttackUI");
+        _attackTargetText = GameObject.Find("TMP.AttackTarget").GetComponent<TextMeshProUGUI>();
+        _attackConfirmationMenu.SetActive(false);
+        _charPortrait = GameObject.Find("CharacterPortrait").GetComponent<Image>();
+        ResetTurns(_playerGroup);
+
+        _playerMoveStart = false;
+    }
     // Update is called once per frame
     void Update()
     {   
@@ -91,8 +122,11 @@ public class TurnSystem : MonoBehaviour
             character.isTurn = false;
             character.moveComplete = false;
             character.ActionPoints = 2;
+            character.playerGameObject.GetComponent<NavMeshAgent>().enabled = false;
+            _playerMoveStart = false;
         }
         currentGroup[0].isTurn = true;
+        currentGroup[0].playerGameObject.GetComponent<NavMeshAgent>().enabled = true;
         if (_currentState == GameState.EnemyTurn) { EraseGrid(); }            
     }
 
@@ -107,23 +141,32 @@ public class TurnSystem : MonoBehaviour
                 // instructions for player movement here.
                 _turnOver = true;                                       // set a flag for all turns over to true. If still true at end of loop, player's turn is over
                 _autoActive = true;                                     // flag for auto-setting the next player move. prevents player getting 'stuck' at selected if player tabs
+                int lastplayer = _activePlayerIndex;
+
+                if (PlayerController.IsMoving)
+                {
+                    _playerMoveStart = PlayerController.IsMoving;
+                }
+    
                 _activePlayerIndex = FindActivePlayer(currentGroup);    // finds the active player & determines if the turn is over (all moves completed)
                 currentPlayerTransform = _playerGroup[_activePlayerIndex].playerGameObject.transform;    // stores the active player's Transform
 
-                DisplayName(currentPlayerTransform.GetChild(0).name);
+                DisplayInfo(currentPlayerTransform.GetChild(0).name, ActivePlayerIndex);
                 CalculateDistance();
                 FollowCamera(currentPlayerTransform.position);
-                MoveGrid(_playerGroup[ActivePlayerIndex].playerGameObject.transform.position);
+                if (!PlayerController.NoDraw) { MoveGrid(_playerGroup[ActivePlayerIndex].playerGameObject.transform.position); }
 
                 if (_autoActive)                                         // however, if there's no active player and the turn isn't over:
                 {   
-                    _activePlayerIndex = AutoPlayerSelect(currentGroup);      // .. auto select an available player
+                   _activePlayerIndex = AutoPlayerSelect(currentGroup);      // .. auto select an available player
                 }
 
-                if (Input.GetKeyDown(KeyCode.Tab))                       // switch the active player when keycode tab is pressed
+                if (Input.GetKeyDown(KeyCode.Tab) && !PlayerController.IsMoving)                       // switch the active player when keycode tab is pressed
                 {
                     TabNextPlayer(currentGroup);
                 }
+
+                if (lastplayer != _activePlayerIndex) { SetNavMeshAgent(_playerGroup);}
 
                 if (_turnOver) {                                         // if all moves have been used, then switch control back to enemy
                     GameState = GameState.EnemyTurn;
@@ -139,11 +182,8 @@ public class TurnSystem : MonoBehaviour
                     _lastPlayerIndex = _activePlayerIndex;
                 }
 
+                if (PlayerController.IsMoving) { EraseGrid(); }
                 // redraw the grid if a player that started moving ended their move
-                if (PlayerController.IsMoving)
-                {
-                    _playerMoveStart = true;
-                }
                 if (!PlayerController.IsMoving && _playerMoveStart == true)
                 {
                     _playerMoveStart = false;
@@ -172,6 +212,15 @@ public class TurnSystem : MonoBehaviour
                     }
                 }
                 break;
+        }
+    }
+
+    void SetNavMeshAgent(List<PlayerObject> currentGroup)
+    {
+        for (int i = 0; i < currentGroup.Count; i++)
+        {
+            if (currentGroup[i].isTurn) { currentGroup[i].playerGameObject.GetComponent<NavMeshAgent>().enabled = true;}
+            else { currentGroup[i].playerGameObject.GetComponent<NavMeshAgent>().enabled = false; }
         }
     }
 
@@ -277,8 +326,8 @@ public class TurnSystem : MonoBehaviour
         Vector3 playerPosition = _playerGroup[_activePlayerIndex].playerGameObject.transform.position;
         float moveDistance = Vector3.Distance(playerPosition, CursorController.cursorPosition);
         float playerMoveRate = _playerGroup[_activePlayerIndex].MoveDist;
-        float actions = _playerGroup[_activePlayerIndex].ActionPoints;
         float turnCost = Mathf.Ceil(moveDistance / playerMoveRate);
+        float actions = _playerGroup[_activePlayerIndex].ActionPoints;
 
         if (turnCost > actions)
         {
@@ -372,9 +421,10 @@ public class TurnSystem : MonoBehaviour
         }
     }
 
-    void DisplayName(string nameToDisplay)
+    void DisplayInfo(string nameToDisplay, int activePlayer)
     {
         _selectedPlayerText.text = nameToDisplay;
+        _charPortrait.sprite = _characterPortraits[activePlayer];
     }
 
     public void CancelAttack()
@@ -383,35 +433,8 @@ public class TurnSystem : MonoBehaviour
         _currentState = GameState.PlayerMove;
     }
 
-    public GameState GameState 
+    void CameraOverride()
     {
-        get{ return _currentState; }
-        set{ _currentState = value; }
-    }
-
-    public List<PlayerObject> PlayerGroup
-    {
-        get { return _playerGroup; }
-    }
-
-    public List<PlayerObject> EnemyGroup
-    {
-        get { return _enemyGroup; }
-    }
-
-    public int ActivePlayerIndex
-    {
-        get { return _activePlayerIndex; }
-    }
-
-    public PlayerObject ActivePlayer
-    {
-        get { return _playerGroup[_activePlayerIndex]; }
-    }
-
-    public bool Waiting 
-    {
-        get { return _waiting; }
-        set { _waiting = value; }
+        _cameraOverrideFlag = true;
     }
 }
