@@ -12,6 +12,13 @@ namespace EV
         public float xzScale = 1.5f;
         [SerializeField]
         public float yScale = 2;
+        [SerializeField]
+        float rayDownDist = 1.3f;
+        [SerializeField]
+        float rayDownOrigin = .7f;
+        [SerializeField]
+        float collisionOffset;
+
         public Vector3 extends = new Vector3(.8f, .8f, .8f);
 
         Vector3 _minPos;
@@ -127,13 +134,32 @@ namespace EV
 
                         node.worldPosition = tp;
 
+                        RaycastHit hit;
+                        Vector3 origin = node.worldPosition;
+                        origin.y += rayDownOrigin;
+
+                        Debug.DrawRay(origin, Vector3.down * rayDownDist, Color.red, 1);
+                        if (Physics.Raycast(origin, Vector3.down, out hit, rayDownDist))
+                        {
+                            GridObject gridObject = hit.transform.GetComponentInParent<GridObject>();
+                            if (gridObject != null)
+                            {
+                                if (gridObject.isWalkable)
+                                {
+                                    node.isWalkable = true;
+                                }
+                            }
+                            node.worldPosition = hit.point;
+                        }
+
+                        Vector3 collisionPosition = tp; // = tp + Vector3.up * .5f;
+                        collisionPosition.y += collisionOffset;
+
                         // finds everything that collides with position of a node
-                        Collider[] overlapNode = Physics.OverlapBox(tp, extends / 2, Quaternion.identity);
+                        Collider[] overlapNode = Physics.OverlapBox(collisionPosition, extends, Quaternion.identity);
 
                         if (overlapNode.Length > 0)
                         {
-                            bool isWalkable = false;
-
                             for (int i = 0; i < overlapNode.Length; i++) 
                             {
                                 GridObject obj = overlapNode[i].transform.GetComponentInChildren<GridObject>();
@@ -141,39 +167,31 @@ namespace EV
                                 {
                                     if (obj.isWalkable && node.obstacle == null) 
                                     { 
-                                        isWalkable = true;
                                     }
                                     else 
                                     { 
-                                        isWalkable = false; 
+                                        node.isWalkable = false; 
                                         node.obstacle = obj;
                                     }
                                 }
                             }
-                            node.isWalkable = isWalkable;
                         }
 
-                        if (node.isWalkable)
+                        if (node.isWalkable) 
                         {
-                            RaycastHit hit;
-                            Vector3 origin = node.worldPosition;
-                            origin.y += yScale - .1f;
-
-                            if (Physics.Raycast(origin, Vector3.down, out hit, yScale - .1f))
-                            {
-                                node.worldPosition = hit.point;
-                            }
-
                             GameObject go = Instantiate(tileViz, node.worldPosition + Vector3.one * .1f, Quaternion.identity) as GameObject;
                             node.tileViz = go;
                             go.transform.parent = tileContainer.transform;
                             go.SetActive(true);
                         }
-
-                        if (node.obstacle != null) 
-                        { 
-                            _nodeViz.Add(node.worldPosition);
+                        else 
+                        {
+                            if (node.obstacle == null)
+                            {
+                                node.isAir = true;
+                            }
                         }
+                        _nodeViz.Add(collisionPosition);
                         grid[x, y, z] = node;
                     }
                 }

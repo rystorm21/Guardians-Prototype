@@ -10,8 +10,9 @@ namespace EV
         public int y;
         public int z;
 
-        public Vector3 worldPosition;
+        public bool isAir;
         public bool isWalkable;
+        public Vector3 worldPosition;
         public GridObject obstacle;
         public GameObject tileViz;
         public GridCharacter character;

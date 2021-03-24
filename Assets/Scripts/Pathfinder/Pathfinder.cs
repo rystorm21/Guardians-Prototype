@@ -153,7 +153,19 @@ namespace EV
             {
                 if (currentNode.isWalkable)
                 {
-                    retVal = currentNode;
+                    Node aboveNode = GetNode(currentNode.x, currentNode.y + 1, currentNode.z);
+
+                    if (aboveNode == null || aboveNode.isAir || character.isCrouched)
+                    {
+                        retVal = currentNode;
+                    }
+                    else
+                    {
+                        if (character.isCrouched)
+                        {
+                            retVal = currentNode;
+                        }
+                    }
                 }
             }
             return retVal;

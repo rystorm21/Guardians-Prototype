@@ -16,6 +16,7 @@ namespace EV
         Quaternion targetRotation;
         Quaternion startRotation;
         int index;
+        bool firstInit;
 
         public override void Execute(StateManager states, SessionManager sessionManager, Turn turn)
         {
@@ -37,15 +38,20 @@ namespace EV
                 time = time_;  
 
                 float distance = Vector3.Distance(startNode.worldPosition, targetNode.worldPosition);
-                speed = character.moveSpeed / distance;
+                speed = character.GetSpeed() / distance;
 
                 Vector3 direction = targetNode.worldPosition - startNode.worldPosition;
                 targetRotation = Quaternion.LookRotation(direction);
                 startRotation = character.transform.rotation;
+                if (!firstInit)
+                {
+                    character.PlayMovementAnimation();
+                    firstInit = true;
+                }
             }
 
             time += states.delta * speed;
-            rotationT += states.delta * character.moveSpeed * 2;
+            rotationT += states.delta * character.rotateSpeed;
 
             if (rotationT > 1)
                 rotationT = 1;
@@ -66,6 +72,8 @@ namespace EV
                     index = 0;
 
                     states.SetStartingState();
+                    character.PlayIdleAnimation();
+                    firstInit = false;
                 }
             }
 
