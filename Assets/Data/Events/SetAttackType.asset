@@ -9,12 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f17a02cf8234f564695c1a2513d23385, type: 3}
-  m_Name: Andromeda
+  m_Script: {fileID: 11500000, guid: dd5d985c973a87d47bde6f4345f7debe, type: 3}
+  m_Name: SetAttackType
   m_EditorClassIdentifier: 
-  characterName: Andromeda
-  portrait: {fileID: 21300000, guid: 5ec3ee83907b7bf4584d553d1a09f75a, type: 3}
-  agility: 8
-  rangeAttackRange: 30
-  rangeEffectiveRange: 20
-  meleeAttackRange: 2

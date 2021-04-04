@@ -17,7 +17,7 @@ namespace EV
         public float crouchSpeed = 1.0f;
         public float runSpeed = 5f;
         public float rotateSpeed = 5f;
-        public bool isCrouched;
+        public bool isBraced;
         public bool isRunning;
 
         [HideInInspector]
@@ -30,7 +30,7 @@ namespace EV
         public float GetSpeed()
         {
             float r = walkSpeed;
-            if (isCrouched)
+            if (isBraced)
             {
                 r = crouchSpeed;
             }
@@ -56,6 +56,7 @@ namespace EV
         public void OnStartTurn()
         {
             _actionPoints = character.StartingAP;
+            SetRun();
         }
 
         // initialize Character: 1- register this character with the PlayerHolder. 2- Set the player highlighter to false. 3- get the animator component from the child 4- Disable root motion
@@ -68,10 +69,11 @@ namespace EV
         }
 
         #region Stance Handling
-        public void SetCrouch()
+        public void SetBrace()
         {
             ResetStance();
-            isCrouched = true;
+            isBraced = true;
+            PlayAnimation("Idle Crouch"); // change this to a more 'defensive' posture
         }
 
         public void SetRun()
@@ -82,18 +84,13 @@ namespace EV
         public void ResetStance()
         {
             isRunning = false;
-            isCrouched = false;
+            isBraced = false;
         }
         #endregion
 
         #region Animations
         public void PlayMovementAnimation()
         {
-            /*
-            if (isCrouched)
-            {
-                animator.CrossFade("Crouch Movement", 0.2f);
-            } Not using this in my game */
             if (isRunning)
             {
                 PlayAnimation("Run");
@@ -106,7 +103,7 @@ namespace EV
 
         public void PlayIdleAnimation()
         {
-            if (isCrouched) 
+            if (isBraced) 
             {
                 PlayAnimation("Idle Crouch");
             }

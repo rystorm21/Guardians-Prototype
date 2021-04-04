@@ -155,13 +155,13 @@ namespace EV
                 {
                     Node aboveNode = GetNode(currentNode.x, currentNode.y + 1, currentNode.z);
 
-                    if (aboveNode == null || aboveNode.isAir || character.isCrouched)
+                    if (aboveNode == null || aboveNode.isAir || character.isBraced)
                     {
                         retVal = currentNode;
                     }
                     else
                     {
-                        if (character.isCrouched)
+                        if (character.isBraced)
                         {
                             retVal = currentNode;
                         }

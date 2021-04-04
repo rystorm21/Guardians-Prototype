@@ -31,6 +31,15 @@ namespace EV
         {
             int apCost = 4;
             int currentPlayerAP = turn.player.stateManager.currentCharacter.ActionPoints;
+            int weaponType = sessionManager.attackType.value;
+            int weaponRange;
+            if (weaponType == 0) {
+                weaponRange = sessionManager.currentCharacter.character.meleeAttackRange;
+            } else {
+                weaponRange = sessionManager.currentCharacter.character.rangedAttackRange;
+            }
+            
+            turn.player.stateManager.currentCharacter.transform.LookAt(hit.transform);
 
             if (currentPlayerAP >= apCost)
             {

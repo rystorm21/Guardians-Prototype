@@ -15,3 +15,6 @@ MonoBehaviour:
   characterName: Rai
   portrait: {fileID: 21300000, guid: afb14023e35effd4c9a9c9ffc717fc61, type: 3}
   agility: 10
+  rangeAttackRange: 20
+  rangeEffectiveRange: 10
+  meleeAttackRange: 1

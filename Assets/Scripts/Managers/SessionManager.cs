@@ -10,10 +10,9 @@ namespace EV
         public Turn[] turns;
 
         public GridManager gridManager;
-        private GridCharacter currentCharacter;
+        public GridCharacter currentCharacter;
         
         public bool isInit;
-
         public float delta;
 
         public VariablesHolder gameVariables;
@@ -384,6 +383,11 @@ namespace EV
 
         bool isAttack;
 
+        public void Melee()
+        {
+            Debug.Log("Melee button pressed");
+        }
+
         public void EndTurn()
         {
             // deHighlight the current player when the turn ends
@@ -398,6 +402,44 @@ namespace EV
         #endregion
 
         #region Events
+        public SO.IntVariable stanceInt;
+        public SO.IntVariable attackType;
+
+        public void SetWeaponForCurrentPlayer()
+        {
+            switch(attackType.value)
+            {
+                case 0:
+                    Debug.Log("Ranged Weapon Selected");
+                    break;
+                case 1:
+                    Debug.Log("Melee Weapon Selected");
+                    break;
+            }
+        }
+
+        public void SetStanceForCurrentPlayer()
+        {
+            switch(stanceInt.value)
+            {
+                case 0:
+                    turns[TurnIndex].player.stateManager.currentCharacter.ResetStance();
+                    break;
+                
+                case 1:
+                if (currentCharacter.ActionPoints >= 2)
+                {
+                        turns[TurnIndex].player.stateManager.currentCharacter.SetBrace();
+                        currentCharacter.ActionPoints = 0;
+                        ClearReachableTiles();
+                        HighlightAroundCharacter(currentCharacter);
+                }
+                else {
+                    Debug.Log("Not enough AP to brace");
+                }
+                break;
+            }
+        }
         #endregion
 
         #region  Game Actions Management

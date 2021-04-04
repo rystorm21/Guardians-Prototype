@@ -519,6 +519,8 @@ GameObject:
   m_Component:
   - component: {fileID: 318546764}
   - component: {fileID: 318546765}
+  - component: {fileID: 318546766}
+  - component: {fileID: 318546767}
   m_Layer: 0
   m_Name: Events
   m_TagString: Untagged
@@ -559,6 +561,62 @@ MonoBehaviour:
       - m_Target: {fileID: 1222226768}
         m_TargetAssemblyTypeName: EV.SessionManager, Assembly-CSharp
         m_MethodName: EndTurn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &318546766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318546763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01a055b694402bd469a86915f1319e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: ace8311f99cb43449916da1d2bf6688c, type: 2}
+  response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1222226768}
+        m_TargetAssemblyTypeName: EV.SessionManager, Assembly-CSharp
+        m_MethodName: SetStanceForCurrentPlayer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &318546767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318546763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01a055b694402bd469a86915f1319e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: 9bd1a36a207bd75449578eb6d625e97a, type: 2}
+  response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1222226768}
+        m_TargetAssemblyTypeName: EV.SessionManager, Assembly-CSharp
+        m_MethodName: SetWeaponForCurrentPlayer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3043,6 +3101,8 @@ MonoBehaviour:
   defaultTileMaterial: {fileID: 2100000, guid: b9f9ca0e706a7c74b840ed2f7ade5dcc, type: 2}
   reachableTileMaterial: {fileID: 2100000, guid: b7d8a9a5adb92fc488576d039e5e0a60,
     type: 2}
+  stanceInt: {fileID: 11400000, guid: 091b5d2e876ae3f41a57fab626ba7247, type: 2}
+  attackType: {fileID: 11400000, guid: 1bffca97343186c4d8ec85ae2b06b509, type: 2}
 --- !u!114 &1222226769
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3674,12 +3734,11 @@ MonoBehaviour:
   character: {fileID: 11400000, guid: 3e5f502669005904f8a4b46aee1e29e2, type: 2}
   highlighter: {fileID: 488026863}
   isSelected: 0
-  actionPoints: 0
   walkSpeed: 1.5
   crouchSpeed: 1
   runSpeed: 5
   rotateSpeed: 5
-  isCrouched: 0
+  isBraced: 0
   isRunning: 0
   animator: {fileID: 0}
 --- !u!136 &1505273363
@@ -4653,12 +4712,11 @@ MonoBehaviour:
   character: {fileID: 11400000, guid: d303a05d588eead44a600381d94487ea, type: 2}
   highlighter: {fileID: 1067711093}
   isSelected: 0
-  actionPoints: 0
   walkSpeed: 1.5
   crouchSpeed: 1
   runSpeed: 5
   rotateSpeed: 5
-  isCrouched: 0
+  isBraced: 0
   isRunning: 0
   animator: {fileID: 0}
 --- !u!65 &2011432549
@@ -4739,12 +4797,11 @@ MonoBehaviour:
   character: {fileID: 11400000, guid: 52a0ac65809d9b14a944fc4caa499a49, type: 2}
   highlighter: {fileID: 285858713}
   isSelected: 0
-  actionPoints: 0
   walkSpeed: 1.5
   crouchSpeed: 1
   runSpeed: 5
   rotateSpeed: 5
-  isCrouched: 0
+  isBraced: 0
   isRunning: 0
   animator: {fileID: 0}
 --- !u!65 &2088203525

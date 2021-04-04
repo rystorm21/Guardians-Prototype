@@ -11,6 +11,10 @@ namespace EV.Characters
         public Sprite portrait;
         
         public int agility = 10;
+        public int rangedAttackRange;
+        public int rangeEffectiveRange;
+        public int meleeAttackRange;
+        
         public int StartingAP 
         {
             get { return agility; }
