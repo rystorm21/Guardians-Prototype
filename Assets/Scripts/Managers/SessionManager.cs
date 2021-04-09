@@ -383,11 +383,6 @@ namespace EV
 
         bool isAttack;
 
-        public void Melee()
-        {
-            Debug.Log("Melee button pressed");
-        }
-
         public void EndTurn()
         {
             // deHighlight the current player when the turn ends
@@ -411,9 +406,11 @@ namespace EV
             {
                 case 0:
                     Debug.Log("Ranged Weapon Selected");
+                    currentCharacter.character.weaponSelected = 0;
                     break;
                 case 1:
                     Debug.Log("Melee Weapon Selected");
+                    currentCharacter.character.weaponSelected = 1;
                     break;
             }
         }

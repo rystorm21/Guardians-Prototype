@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: Lana
   portrait: {fileID: 21300000, guid: 7c3a0d6c88850074da9c153a3b94ad14, type: 3}
+  projectile: {fileID: 7855271653542481463, guid: 829c6d7fb073be04cbe41ce65e0e56ae,
+    type: 3}
   agility: 8
-  rangeAttackRange: 20
+  rangedAttackRange: 20
   rangeEffectiveRange: 10
   meleeAttackRange: 1
+  weaponSelected: 1

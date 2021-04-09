@@ -6,6 +6,9 @@ namespace EV
 {
     public class AttackAction : GameAction
     {
+        public static Vector3 lastRangedTarget; // for the last target shot
+        bool projectileShot;
+
         public override bool IsActionValid(SessionManager sessionManager, Turn turn)
         {
             if (turn.player.stateManager.currentCharacter == null)
@@ -25,29 +28,65 @@ namespace EV
                     sessionManager.SetAction("MoveAction");
                 }
             }
+
+            if (projectileShot) {
+                Debug.Log("Projectile Shot");
+                projectileShot = false;
+            }
+        }
+
+        private void PlayAttackAnimation(int attackType, Turn turn, Transform projectileTarget) 
+        {
+            GridCharacter currentCharacter = turn.player.stateManager.currentCharacter;
+            Vector3 shootOrigin = GameObject.Find(currentCharacter.character.name + "/metarig/IKHand.R").transform.position;
+            Animator animator = currentCharacter.animator;
+
+            switch (attackType)
+            {
+                case 1:
+                    // play melee attack animation
+                    break;
+
+                default:
+                    lastRangedTarget = projectileTarget.position;
+                    animator.CrossFade("AttackRanged", 0.1f);
+                    GameObject.Instantiate(currentCharacter.character.projectile, shootOrigin, Quaternion.identity);
+                    projectileShot = true;
+                    break;
+            }
         }
 
         public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
         {
             int apCost = 4;
             int currentPlayerAP = turn.player.stateManager.currentCharacter.ActionPoints;
-            int weaponType = sessionManager.attackType.value;
+            int weaponType = sessionManager.currentCharacter.character.weaponSelected;
             int weaponRange;
-            if (weaponType == 0) {
-                weaponRange = sessionManager.currentCharacter.character.meleeAttackRange;
-            } else {
-                weaponRange = sessionManager.currentCharacter.character.rangedAttackRange;
-            }
             
-            turn.player.stateManager.currentCharacter.transform.LookAt(hit.transform);
+            if (weaponType == 0) {
+                weaponRange = sessionManager.currentCharacter.character.rangedAttackRange;
+            } else {
+                weaponRange = sessionManager.currentCharacter.character.meleeAttackRange;
+                apCost--;
+            }
 
             if (currentPlayerAP >= apCost)
             {
                 IHittable iHit = hit.transform.GetComponentInParent<IHittable>();
                 if (iHit != null)
                 {
-                    iHit.OnHit(turn.player.stateManager.currentCharacter);
-                    currentPlayerAP -= apCost;
+                    int attackDistance = Mathf.FloorToInt(Vector3.Distance(turn.player.stateManager.currentCharacter.transform.position, node.worldPosition));
+                    if (weaponRange >= attackDistance) 
+                    {
+                        turn.player.stateManager.currentCharacter.transform.LookAt(hit.transform);
+                        iHit.OnHit(turn.player.stateManager.currentCharacter);
+                        currentPlayerAP -= apCost;
+                        PlayAttackAnimation(weaponType, turn, hit.transform);
+                    }
+                    else 
+                    {
+                        Debug.Log("Target out of range!");
+                    }
                 }
             }
             else

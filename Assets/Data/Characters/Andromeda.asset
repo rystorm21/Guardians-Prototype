@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: Andromeda
   portrait: {fileID: 21300000, guid: 5ec3ee83907b7bf4584d553d1a09f75a, type: 3}
+  projectile: {fileID: 7855271653542481463, guid: 6795904cab67b4f4d92accd2a66b3ca8,
+    type: 3}
   agility: 8
-  rangeAttackRange: 30
+  rangedAttackRange: 30
   rangeEffectiveRange: 20
   meleeAttackRange: 2
+  weaponSelected: 1
