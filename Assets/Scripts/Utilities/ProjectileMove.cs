@@ -12,21 +12,28 @@ namespace EV
         Vector3 target;
         Vector3 yOffset = new Vector3(0, 1f, 0);
 
-        // Start is called before the first frame update
         void Start()
         {
-            Debug.Log(AttackAction.lastRangedTarget);
             target = AttackAction.lastRangedTarget;
         }
 
-        // Update is called once per frame
         void Update()
         {
-            transform.LookAt(target);
+            if (Vector3.Distance(this.gameObject.transform.position, target) > 1f) // have to stop the rotation before it reaches the target or it'll reset to 90 degrees
+                transform.LookAt(target);
+            
             transform.position = Vector3.MoveTowards(gameObject.transform.position, target + yOffset, speed * Time.deltaTime);
-            Debug.Log(transform.position);
+            
             if (transform.position == target + yOffset)
-                Destroy(this.gameObject);
+                StartCoroutine("DestroyThis");
+        }
+
+        // A little delay for coolness ;)
+        IEnumerator DestroyThis() 
+        {
+            yield return new WaitForSeconds(.5f);
+            Destroy(this.gameObject);
+            AttackAction.attackInProgress = false;
         }
     }
 }

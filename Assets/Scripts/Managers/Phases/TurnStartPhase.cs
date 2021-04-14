@@ -18,7 +18,6 @@ namespace EV
             {
                 // initializes the characters stats / AP for all characters
                 character.OnStartTurn();
-                // Updates player AP on mouse display
 
                 if (character.owner.isLocalPlayer)
                 {
@@ -28,6 +27,14 @@ namespace EV
                     }
                 }
                 character.currentNode.isWalkable = false;
+            }
+
+            if (turn.player.stateManager.currentCharacter == null)
+            {
+                GridCharacter defaultPlayer = turn.player.characters[0];
+                turn.player.stateManager.currentCharacter = defaultPlayer;
+                sessionManager.HighlightAroundCharacter(defaultPlayer);
+                sessionManager.currentCharacter.isSelected = true;
             }
         }
     }

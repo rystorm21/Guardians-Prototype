@@ -13,7 +13,6 @@ namespace EV
             {
                 return true;
             }
-                
             turn.player.stateManager.Tick(sessionManager, turn);
             return false;
         }

@@ -67,8 +67,7 @@ namespace EV
                     character.currentNode.isWalkable = false;       // make currently occupied square not walkable
                     if (character.ActionPoints == 0) 
                     {
-                        // implement functionality to check if AP is gone from all characters, and if so, end the turn.
-                        Debug.Log(character.name + " all AP Used");   
+                        sessionManager.APCheck();
                     }
                 }
             }

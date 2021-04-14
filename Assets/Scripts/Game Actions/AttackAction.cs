@@ -7,7 +7,7 @@ namespace EV
     public class AttackAction : GameAction
     {
         public static Vector3 lastRangedTarget; // for the last target shot
-        bool projectileShot;
+        public static bool attackInProgress;
 
         public override bool IsActionValid(SessionManager sessionManager, Turn turn)
         {
@@ -28,10 +28,10 @@ namespace EV
                     sessionManager.SetAction("MoveAction");
                 }
             }
-
-            if (projectileShot) {
-                Debug.Log("Projectile Shot");
-                projectileShot = false;
+            
+            if (sessionManager.currentCharacter.ActionPoints == 0)
+            {
+                sessionManager.APCheck();
             }
         }
 
@@ -51,24 +51,39 @@ namespace EV
                     lastRangedTarget = projectileTarget.position;
                     animator.CrossFade("AttackRanged", 0.1f);
                     GameObject.Instantiate(currentCharacter.character.projectile, shootOrigin, Quaternion.identity);
-                    projectileShot = true;
+                    attackInProgress = true;
                     break;
             }
         }
 
-        public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
+        int AttackCost(int weaponType)
         {
             int apCost = 4;
+            if (weaponType == 1)
+                apCost--;
+            return apCost;
+        }
+
+        int AttackRange(SessionManager sessionManager, int weaponType)
+        {
+            int weaponRange = 0;
+            if (weaponType == 0) 
+            {
+                weaponRange = sessionManager.currentCharacter.character.rangedAttackRange;
+            }
+            else 
+            {
+                weaponRange = sessionManager.currentCharacter.character.meleeAttackRange;
+            }
+            return weaponRange;
+        }
+
+        public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
+        {
             int currentPlayerAP = turn.player.stateManager.currentCharacter.ActionPoints;
             int weaponType = sessionManager.currentCharacter.character.weaponSelected;
-            int weaponRange;
-            
-            if (weaponType == 0) {
-                weaponRange = sessionManager.currentCharacter.character.rangedAttackRange;
-            } else {
-                weaponRange = sessionManager.currentCharacter.character.meleeAttackRange;
-                apCost--;
-            }
+            int apCost = AttackCost(weaponType);
+            int weaponRange = AttackRange(sessionManager, weaponType);
 
             if (currentPlayerAP >= apCost)
             {
@@ -76,7 +91,7 @@ namespace EV
                 if (iHit != null)
                 {
                     int attackDistance = Mathf.FloorToInt(Vector3.Distance(turn.player.stateManager.currentCharacter.transform.position, node.worldPosition));
-                    if (weaponRange >= attackDistance) 
+                    if (weaponRange >= attackDistance && !attackInProgress) 
                     {
                         turn.player.stateManager.currentCharacter.transform.LookAt(hit.transform);
                         iHit.OnHit(turn.player.stateManager.currentCharacter);
@@ -94,10 +109,6 @@ namespace EV
                 Debug.Log("Not enough action points!");
             }
 
-            if (currentPlayerAP == 0) {
-                Debug.Log("All AP used");
-            }
-
             turn.player.stateManager.currentCharacter.ActionPoints = currentPlayerAP;
         }
 
@@ -107,9 +118,12 @@ namespace EV
 
         void RaycastToTarget(GridCharacter character, RaycastHit mouseHit)
         {
-            Vector3 origin = character.transform.position + Vector3.up * 1.56f;
-            Vector3 direction = mouseHit.point - origin;
-            Debug.DrawRay(origin, direction, Color.red);
+            if (character != null) 
+            {
+                Vector3 origin = character.transform.position + Vector3.up * 1.56f;
+                Vector3 direction = mouseHit.point - origin;
+                Debug.DrawRay(origin, direction, Color.red);
+            }
         }
     }
 }

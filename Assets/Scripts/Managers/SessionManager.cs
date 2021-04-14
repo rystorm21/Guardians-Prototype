@@ -394,6 +394,19 @@ namespace EV
             }
             turns[_turnIndex].EndCurrentPhase();
         }
+
+        public void APCheck() 
+        {
+            int APPool = 0;
+            
+            foreach (var character in turns[TurnIndex].player.characters)
+            {
+                APPool += character.ActionPoints;
+            }
+            
+            if (APPool == 0)
+                EndTurn();
+        }
         #endregion
 
         #region Events
@@ -424,17 +437,22 @@ namespace EV
                     break;
                 
                 case 1:
-                if (currentCharacter.ActionPoints >= 2)
-                {
+                    if (currentCharacter.ActionPoints >= 2)
+                    {
                         turns[TurnIndex].player.stateManager.currentCharacter.SetBrace();
                         currentCharacter.ActionPoints = 0;
                         ClearReachableTiles();
                         HighlightAroundCharacter(currentCharacter);
-                }
-                else {
-                    Debug.Log("Not enough AP to brace");
-                }
-                break;
+                    }
+                    else {
+                        Debug.Log("Not enough AP to brace");
+                    }
+
+                    if (currentCharacter.ActionPoints == 0)
+                    {
+                        APCheck();
+                    }
+                    break;
             }
         }
         #endregion

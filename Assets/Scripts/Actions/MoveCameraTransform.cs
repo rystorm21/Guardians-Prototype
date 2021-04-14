@@ -13,13 +13,6 @@ namespace EV
 
         public MoveCameraTransform(VariablesHolder holder) 
         {
-            /*
-            cameraTransform = Resources.Load("CameraTransform") as TransformVariable;
-            horizontal = Resources.Load("HorInput") as FloatVariable;
-            vertical = Resources.Load("VertInput") as FloatVariable;
-            */
-
-            // Does what the above does :)
             varHolder = holder;
             cameraTransform = varHolder.cameraTransform;
             horizontal = varHolder.horizontalInput;
