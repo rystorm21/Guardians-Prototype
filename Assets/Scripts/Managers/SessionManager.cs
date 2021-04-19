@@ -385,14 +385,17 @@ namespace EV
 
         public void EndTurn()
         {
-            // deHighlight the current player when the turn ends
-            if (currentCharacter != null) 
+            if (!currentCharacter.isCurrentlyMoving)
             {
-                currentCharacter.OnDeHighlight(turns[TurnIndex].player, true);
-                ClearReachableTiles();
-                ClearPath(turns[TurnIndex].player.stateManager);
+                // deHighlight the current player when the turn ends
+                if (currentCharacter != null)
+                {
+                    currentCharacter.OnDeHighlight(turns[TurnIndex].player, true);
+                    ClearReachableTiles();
+                    ClearPath(turns[TurnIndex].player.stateManager);
+                }
+                turns[_turnIndex].EndCurrentPhase();
             }
-            turns[_turnIndex].EndCurrentPhase();
         }
 
         public void APCheck() 

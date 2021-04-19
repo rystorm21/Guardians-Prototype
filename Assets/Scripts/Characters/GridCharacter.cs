@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace EV 
 {
@@ -10,6 +11,7 @@ namespace EV
         public Characters.Character character; // Character is in the EV.Characters namespace
 
         public GameObject highlighter;
+        public Text accuracyText;
         public bool isSelected;
 
         private int _actionPoints;
@@ -19,6 +21,8 @@ namespace EV
         public float rotateSpeed = 5f;
         public bool isBraced;
         public bool isRunning;
+
+        public bool isCurrentlyMoving;
 
         [HideInInspector]
         public Node currentNode;
@@ -56,12 +60,14 @@ namespace EV
         public void OnStartTurn()
         {
             _actionPoints = character.StartingAP;
+            accuracyText.gameObject.SetActive(false);
             SetRun();
         }
 
         // initialize Character: 1- register this character with the PlayerHolder. 2- Set the player highlighter to false. 3- get the animator component from the child 4- Disable root motion
         public void OnInit()
         {
+            accuracyText = GameObject.Find("AccuracyText").GetComponent<Text>();
             owner.RegisterCharacter(this);
             highlighter.SetActive(false);
             animator = GetComponentInChildren<Animator>();
@@ -123,6 +129,7 @@ namespace EV
         public void OnSelect(PlayerHolder player)
         {
             highlighter.SetActive(true);
+            accuracyText.gameObject.SetActive(false);
             isRunning = true; // set default movement to running
             isSelected = true;
             player.stateManager.currentCharacter = this;

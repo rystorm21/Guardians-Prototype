@@ -8,12 +8,15 @@ namespace EV.Characters
     public class Character : ScriptableObject
     {
         public string characterName;
-        public Sprite portrait;
+        public Sprite characterPortrait;
         public GameObject projectile;
         
         public int agility = 10;
         public int rangedAttackRange;
         public int rangeEffectiveRange;
+        public int rangeAccuracy;
+        public int meleeAccuracy;
+        public int defense;
         public int meleeAttackRange;
         public int weaponSelected;
         

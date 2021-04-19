@@ -51,6 +51,7 @@ namespace EV
                 character.currentNode = targetNode;
                 character.currentNode.character = character;
                 character.ActionPoints -= moveCost; // decrement AP for every step, 2 if diagonal
+                character.isCurrentlyMoving = true;
 
                 index++;
 
@@ -65,6 +66,7 @@ namespace EV
                     firstInit = false;
                     sessionManager.HighlightAroundCharacter(character);
                     character.currentNode.isWalkable = false;       // make currently occupied square not walkable
+                    character.isCurrentlyMoving = false;
                     if (character.ActionPoints == 0) 
                     {
                         sessionManager.APCheck();

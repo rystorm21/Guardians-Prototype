@@ -31,11 +31,16 @@ namespace EV
 
             if (turn.player.stateManager.currentCharacter == null)
             {
-                GridCharacter defaultPlayer = turn.player.characters[0];
-                turn.player.stateManager.currentCharacter = defaultPlayer;
-                sessionManager.HighlightAroundCharacter(defaultPlayer);
-                sessionManager.currentCharacter.isSelected = true;
+                AutoSetPlayer(sessionManager, turn);
             }
+        }
+
+        private void AutoSetPlayer(SessionManager sessionManager, Turn turn) 
+        {
+            GridCharacter defaultPlayer = turn.player.characters[0];
+            turn.player.stateManager.currentCharacter = defaultPlayer;
+            sessionManager.HighlightAroundCharacter(defaultPlayer);
+            sessionManager.currentCharacter.isSelected = true;
         }
     }
 }

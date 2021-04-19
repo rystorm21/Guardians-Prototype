@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraMoveSpeed: 15
   updateAP: {fileID: 11400000, guid: ef69ce051a8a22442ade01927f06a2ee, type: 2}
+  updatePortrait: {fileID: 11400000, guid: c5fe77c1ae6a7a745a5aec51ef5f4a74, type: 2}
   actionPointsText: {fileID: 11400000, guid: 267a9d3c6677cd548936c2dbf82b75a4, type: 2}
+  characterPortrait: {fileID: 11400000, guid: f50597843c987714fb8f7c8cfdd0b0f2, type: 2}
   cameraTransform: {fileID: 11400000, guid: 2e138e9c6f2ad7d449258ff84b53a5e5, type: 2}
   horizontalInput: {fileID: 11400000, guid: 2e3429809ce613e4c887890d6856a9a4, type: 2}
   verticalInput: {fileID: 11400000, guid: 95e876390edd9c749b09e665172b6671, type: 2}

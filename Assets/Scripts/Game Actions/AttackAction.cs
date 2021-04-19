@@ -8,6 +8,7 @@ namespace EV
     {
         public static Vector3 lastRangedTarget; // for the last target shot
         public static bool attackInProgress;
+        private int attackAccuracy;
 
         public override bool IsActionValid(SessionManager sessionManager, Turn turn)
         {
@@ -27,12 +28,38 @@ namespace EV
                 {
                     sessionManager.SetAction("MoveAction");
                 }
+                else
+                {
+                    node.character.highlighter.SetActive(true); // highlight enemy info
+                    node.character.accuracyText.gameObject.SetActive(true); // chance to hit this character - accuracy
+                    attackAccuracy = GetAttackAccuracy(sessionManager, node);
+                    node.character.accuracyText.text = attackAccuracy.ToString() + "%";
+                }
             }
             
             if (sessionManager.currentCharacter.ActionPoints == 0)
             {
                 sessionManager.APCheck();
             }
+        }
+
+        private int GetAttackAccuracy(SessionManager sessionManager, Node node) 
+        {
+            Vector3 attacker = sessionManager.currentCharacter.transform.position;
+            Vector3 defender = node.character.transform.position;
+            int targetDistance = Mathf.RoundToInt(Vector3.Distance(attacker, defender));
+            int effectiveRange = sessionManager.currentCharacter.character.rangeEffectiveRange;
+            int accuracy = sessionManager.currentCharacter.character.rangeAccuracy - node.character.character.defense;
+            if (Vector3.Distance(attacker, defender) > effectiveRange)
+            {   
+                // penalty for exceeding effective range
+                accuracy -= (targetDistance - effectiveRange) * 5;
+            }
+            if (accuracy > 100)
+                accuracy = 100;
+            if (accuracy < 0)
+                accuracy = 0;
+            return accuracy;
         }
 
         private void PlayAttackAnimation(int attackType, Turn turn, Transform projectileTarget) 

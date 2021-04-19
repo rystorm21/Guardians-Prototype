@@ -11,6 +11,7 @@ public class OverheadUI : MonoBehaviour
     void Update()
     {
         namePos = Camera.main.WorldToScreenPoint(this.transform.position + (Vector3.up * .5f));
-        nameLabel.transform.position = namePos;
+        if (nameLabel)
+            nameLabel.transform.position = namePos;
     }
 }
