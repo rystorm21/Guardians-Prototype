@@ -19,8 +19,8 @@ MonoBehaviour:
   agility: 8
   rangedAttackRange: 20
   rangeEffectiveRange: 10
-  rangeAccuracy: 80
-  meleeAccuracy: 85
+  attackAccuracy: 70
   defense: 5
   meleeAttackRange: 1
   weaponSelected: 0
+  fightingStyle: 0

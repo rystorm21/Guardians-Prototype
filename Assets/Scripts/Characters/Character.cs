@@ -14,11 +14,12 @@ namespace EV.Characters
         public int agility = 10;
         public int rangedAttackRange;
         public int rangeEffectiveRange;
-        public int rangeAccuracy;
-        public int meleeAccuracy;
+        public int attackAccuracy;
         public int defense;
         public int meleeAttackRange;
         public int weaponSelected;
+
+        public int fightingStyle;
         
         public int StartingAP 
         {

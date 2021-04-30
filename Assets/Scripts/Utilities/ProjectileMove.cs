@@ -14,7 +14,15 @@ namespace EV
 
         void Start()
         {
-            target = AttackAction.lastRangedTarget;
+            if (AttackAction.attackHits)
+                target = AttackAction.lastRangedTargetLocation;
+            else
+            {
+                int missDirection = Random.Range(-1, 2);
+                if (missDirection == 0) 
+                    missDirection += 1; 
+                target = AttackAction.lastRangedTargetLocation + (Vector3.up * (Random.Range(2, 3) * missDirection)) + (Vector3.right * (Random.Range(2, 3) * missDirection));
+            }
         }
 
         void Update()
@@ -31,7 +39,11 @@ namespace EV
         // A little delay for coolness ;)
         IEnumerator DestroyThis() 
         {
-            yield return new WaitForSeconds(.5f);
+            if (AttackAction.attackHits)
+            {
+                AttackAction.lastTarget.PlayAnimation("Death");
+                yield return new WaitForSeconds(.5f);
+            }
             Destroy(this.gameObject);
             AttackAction.attackInProgress = false;
         }

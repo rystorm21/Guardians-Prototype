@@ -423,10 +423,12 @@ namespace EV
                 case 0:
                     Debug.Log("Ranged Weapon Selected");
                     currentCharacter.character.weaponSelected = 0;
+                    turns[TurnIndex].player.stateManager.currentCharacter.PlayIdleAnimation();
                     break;
                 case 1:
                     Debug.Log("Melee Weapon Selected");
                     currentCharacter.character.weaponSelected = 1;
+                    turns[TurnIndex].player.stateManager.currentCharacter.PlaySelectMeleeWeapon();
                     break;
             }
         }

@@ -6,8 +6,11 @@ namespace EV
 {
     public class AttackAction : GameAction
     {
-        public static Vector3 lastRangedTarget; // for the last target shot
+        public static Vector3 lastRangedTargetLocation; // for the last target shot
+        public static GridCharacter lastAttacker;
+        public static GridCharacter lastTarget;
         public static bool attackInProgress;
+        public static bool attackHits;
         private int attackAccuracy;
 
         public override bool IsActionValid(SessionManager sessionManager, Turn turn)
@@ -49,11 +52,18 @@ namespace EV
             Vector3 defender = node.character.transform.position;
             int targetDistance = Mathf.RoundToInt(Vector3.Distance(attacker, defender));
             int effectiveRange = sessionManager.currentCharacter.character.rangeEffectiveRange;
-            int accuracy = sessionManager.currentCharacter.character.rangeAccuracy - node.character.character.defense;
-            if (Vector3.Distance(attacker, defender) > effectiveRange)
+            int accuracy = sessionManager.currentCharacter.character.attackAccuracy - node.character.character.defense;
+            int closeRange = 5;
+
+            if (targetDistance > effectiveRange)
             {   
                 // penalty for exceeding effective range
                 accuracy -= (targetDistance - effectiveRange) * 5;
+            }
+            if (targetDistance < closeRange)
+            {
+                // accuracy bonus for close-range attack
+                accuracy += (closeRange - targetDistance) * 5;
             }
             if (accuracy > 100)
                 accuracy = 100;
@@ -72,10 +82,19 @@ namespace EV
             {
                 case 1:
                     // play melee attack animation
+                    if (turn.player.stateManager.currentCharacter.character.fightingStyle == 1)
+                    {
+                        animator.CrossFade("SniperMeleeAttack1", 0.1f);
+                    }
+                    else 
+                    {
+                        animator.CrossFade("MeleeAttack1", 0.1f);
+                    }
                     break;
 
                 default:
-                    lastRangedTarget = projectileTarget.position;
+                    lastRangedTargetLocation = projectileTarget.position;
+                    lastAttacker = currentCharacter;
                     animator.CrossFade("AttackRanged", 0.1f);
                     GameObject.Instantiate(currentCharacter.character.projectile, shootOrigin, Quaternion.identity);
                     attackInProgress = true;
@@ -105,6 +124,18 @@ namespace EV
             return weaponRange;
         }
 
+        int RollDDice(SessionManager sessionManager)
+        {
+            int diceRoll = Random.Range(1,101);
+            int result = attackAccuracy - diceRoll;
+            Debug.Log("Accuracy:" + attackAccuracy + " Roll:" + diceRoll); 
+            if (result >=0)
+                attackHits = true;
+            else
+                attackHits = false;
+            return result;
+        }
+
         public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
         {
             int currentPlayerAP = turn.player.stateManager.currentCharacter.ActionPoints;
@@ -115,6 +146,7 @@ namespace EV
             if (currentPlayerAP >= apCost)
             {
                 IHittable iHit = hit.transform.GetComponentInParent<IHittable>();
+                int diceRoll = RollDDice(sessionManager);
                 if (iHit != null)
                 {
                     int attackDistance = Mathf.FloorToInt(Vector3.Distance(turn.player.stateManager.currentCharacter.transform.position, node.worldPosition));
@@ -123,6 +155,7 @@ namespace EV
                         turn.player.stateManager.currentCharacter.transform.LookAt(hit.transform);
                         iHit.OnHit(turn.player.stateManager.currentCharacter);
                         currentPlayerAP -= apCost;
+                        lastTarget = node.character;
                         PlayAttackAnimation(weaponType, turn, hit.transform);
                     }
                     else 

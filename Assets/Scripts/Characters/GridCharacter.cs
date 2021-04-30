@@ -11,6 +11,10 @@ namespace EV
         public Characters.Character character; // Character is in the EV.Characters namespace
 
         public GameObject highlighter;
+        public GameObject bladeR;
+        public GameObject bladeL;
+        public GameObject braceShield;
+        public string teamName;
         public Text accuracyText;
         public bool isSelected;
 
@@ -62,23 +66,31 @@ namespace EV
             _actionPoints = character.StartingAP;
             accuracyText.gameObject.SetActive(false);
             SetRun();
+            PlayIdleAnimation();
         }
 
         // initialize Character: 1- register this character with the PlayerHolder. 2- Set the player highlighter to false. 3- get the animator component from the child 4- Disable root motion
         public void OnInit()
         {
             accuracyText = GameObject.Find("AccuracyText").GetComponent<Text>();
+            bladeL = GameObject.Find(character.characterName + "/Blade.L");
+            bladeR = GameObject.Find(character.characterName + "/Blade.R");
+            braceShield = GameObject.Find("Shield");
             owner.RegisterCharacter(this);
-            highlighter.SetActive(false);
             animator = GetComponentInChildren<Animator>();
             animator.applyRootMotion = false;
+            highlighter.SetActive(false);
+            braceShield.SetActive(false);
+            MeleeActivation(false);
+            character.weaponSelected = 0;
+            teamName = owner.name;
         }
 
         #region Stance Handling
         public void SetBrace()
         {
             ResetStance();
-            isBraced = true;
+            BraceActivation(true);
             PlayAnimation("Idle Crouch"); // change this to a more 'defensive' posture
         }
 
@@ -90,11 +102,32 @@ namespace EV
         public void ResetStance()
         {
             isRunning = false;
-            isBraced = false;
+            BraceActivation(false);
+        }
+
+        public void MeleeActivation(bool activate)
+        {
+            if (bladeL && bladeR)
+            {
+                bladeL.SetActive(activate);
+                bladeR.SetActive(activate);
+            }
+        }
+
+        public void BraceActivation(bool activate)
+        {
+            isBraced = activate;
+            braceShield.SetActive(activate);
         }
         #endregion
 
         #region Animations
+        public void PlaySelectMeleeWeapon()
+        {
+            if (!isBraced)
+                PlayAnimation("SelectMeleeWeapon");
+            MeleeActivation(true);
+        }
         public void PlayMovementAnimation()
         {
             if (isRunning)
@@ -109,19 +142,31 @@ namespace EV
 
         public void PlayIdleAnimation()
         {
-            if (isBraced) 
+            if (character.weaponSelected == 1)
+            {
+                PlayAnimation("MeleeIdle");
+                MeleeActivation(true);
+            }
+            else if (isBraced)
             {
                 PlayAnimation("Idle Crouch");
+                MeleeActivation(false);
+                BraceActivation(true);
+                return;
             }
             else
             {
                 PlayAnimation("Idle");
+                MeleeActivation(false);
             }
         }
 
         public void PlayAnimation(string targetAnim)
         {
-            animator.CrossFade(targetAnim, 0.1f);
+            if (targetAnim == "SelectMeleeWeapon" || targetAnim == "Death")
+                animator.Play(targetAnim);
+            else
+                animator.CrossFade(targetAnim, 0.1f);
         }
         #endregion
 
@@ -161,7 +206,7 @@ namespace EV
 
         public void OnHit(GridCharacter character)
         {
-            PlayAnimation("Death");
+            //PlayAnimation("Death"); // old implementation (worked fine unless all ap was used with this attack)
         }
         #endregion
     }
