@@ -1,12 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 namespace EV
 {
+    public enum GameState 
+    {
+        Noncombat, Combat, GameOver, Dialog
+    }
+    
     public class SessionManager : MonoBehaviour
     {
-        int _turnIndex;
+        public static GameState currentGameState;
+        public static bool combatVictory;
+        bool gameOverScreenLoaded;
 
+        int _turnIndex;
         public Turn[] turns;
 
         public GridManager gridManager;
@@ -42,6 +52,7 @@ namespace EV
             InitStateManagers();    // Initialize State Managers
             isInit = true;          // start the Update
             SetAction("MoveAction");
+            currentGameState = GameState.Combat;
         }
 
         // Create an array of GridCharacters (all objects with the "GridCharacter script), ie Player Characters")
@@ -351,37 +362,63 @@ namespace EV
         // Only runs after Initialization is complete
         // Run turns[0].execute(Sessionmanager)
         //    - if true, increment turnindex (shouldn't yet, we only have 1 turn 3/24/21)
+
+        bool isAttack;
+
         private void Update()
         {
-            if (!isInit)
-                return;
-
-            delta = Time.deltaTime;
-            if (turns[_turnIndex].Execute(this)) // in its current iteration, should just run turn[0] constantly 3/24/21
+            if (currentGameState == GameState.GameOver)
             {
-                _turnIndex++;
-                if (_turnIndex > turns.Length - 1)
-                {
-                    _turnIndex = 0;
-                }
+                if (!gameOverScreenLoaded)
+                    StartCoroutine("GameOverScreen");
             }
-
-            if (Input.GetMouseButtonDown(1))
+            else 
             {
-                if (!isAttack)
+                if (!isInit)
+                    return;
+
+                if (combatVictory)
                 {
-                    isAttack = true;
-                    SetAction("AttackAction");
+                    combatVictory = false;
+                    EndTurn();
                 }
-                else
+
+                delta = Time.deltaTime;
+
+                if (turns[_turnIndex].Execute(this))
                 {
-                    isAttack = false;
-                    SetAction("MoveAction");
+                    if (currentGameState == GameState.Combat) // Cycle through turns if current gamestate is Combat Mode
+                    {
+                        combatVictory = false;
+                        _turnIndex++;
+                        if (_turnIndex > turns.Length - 1)
+                        {
+                            _turnIndex = 0;
+                        }
+                    }
+                    else if (currentGameState == GameState.Noncombat) // Stay with player turn if gamestate is Noncombat
+                    {
+                        _turnIndex = 0;
+                        Debug.Log("Non-combat Mode");
+                    }
+
+                }
+
+                if (Input.GetMouseButtonDown(1))
+                {
+                    if (!isAttack)
+                    {
+                        isAttack = true;
+                        SetAction("AttackAction");
+                    }
+                    else
+                    {
+                        isAttack = false;
+                        SetAction("MoveAction");
+                    }
                 }
             }
         }
-
-        bool isAttack;
 
         public void EndTurn()
         {
@@ -408,7 +445,17 @@ namespace EV
             }
             
             if (APPool == 0)
+            {
                 EndTurn();
+            }
+        }
+
+        IEnumerator GameOverScreen()
+        {
+            gameOverScreenLoaded = true;
+            yield return new WaitForSeconds(2f);
+            Debug.Log("Game Over"); // game over dog
+            SceneManager.LoadScene("GameOverScreen", LoadSceneMode.Additive);
         }
         #endregion
 
@@ -456,6 +503,7 @@ namespace EV
                     if (currentCharacter.ActionPoints == 0)
                     {
                         APCheck();
+                        AttackAction.attackHits = false;
                     }
                     break;
             }

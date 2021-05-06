@@ -14,6 +14,9 @@ namespace EV
 
         public override void OnStartPhase(SessionManager sessionManager, Turn turn)
         {
+            // just to show which turn it is - debugging purposes
+            Debug.Log(turn.name); 
+
             foreach (GridCharacter character in turn.player.characters)
             {
                 // initializes the characters stats / AP for all characters

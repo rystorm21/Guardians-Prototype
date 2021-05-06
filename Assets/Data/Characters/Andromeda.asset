@@ -14,13 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: Andromeda
   characterPortrait: {fileID: 21300000, guid: 5ec3ee83907b7bf4584d553d1a09f75a, type: 3}
+  characterArchetype: 0
   projectile: {fileID: 7855271653542481463, guid: 6795904cab67b4f4d92accd2a66b3ca8,
     type: 3}
+  hitPoints: 40
   agility: 8
   rangedAttackRange: 30
   rangeEffectiveRange: 20
   attackAccuracy: 95
+  attackDamage: 6
   defense: 0
   meleeAttackRange: 2
   weaponSelected: 0
   fightingStyle: 1
+  currentStance: 1
+  braced: 0
+  KO: 0

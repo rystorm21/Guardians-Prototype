@@ -11,6 +11,7 @@ namespace EV
         public static GridCharacter lastTarget;
         public static bool attackInProgress;
         public static bool attackHits;
+        public static bool hitByMelee;
         private int attackAccuracy;
 
         public override bool IsActionValid(SessionManager sessionManager, Turn turn)
@@ -72,30 +73,40 @@ namespace EV
             return accuracy;
         }
 
+        private void SetAttackerDefender(GridCharacter currentCharacter, Turn turn, Transform projectileTarget)
+        {
+            lastRangedTargetLocation = projectileTarget.position;
+            lastAttacker = currentCharacter;
+        }
+
         private void PlayAttackAnimation(int attackType, Turn turn, Transform projectileTarget) 
         {
             GridCharacter currentCharacter = turn.player.stateManager.currentCharacter;
             Vector3 shootOrigin = GameObject.Find(currentCharacter.character.name + "/metarig/IKHand.R").transform.position;
-            Animator animator = currentCharacter.animator;
+            SetAttackerDefender(currentCharacter, turn, projectileTarget);
 
+            AttackAction.attackInProgress = true;
             switch (attackType)
             {
                 case 1:
                     // play melee attack animation
                     if (turn.player.stateManager.currentCharacter.character.fightingStyle == 1)
                     {
-                        animator.CrossFade("SniperMeleeAttack1", 0.1f);
+                        currentCharacter.PlayAnimation("SniperMeleeAttack1");
                     }
                     else 
                     {
-                        animator.CrossFade("MeleeAttack1", 0.1f);
+                        currentCharacter.PlayAnimation("MeleeAttack1"); // trying somethin
+                    }
+                    if (attackHits)
+                    {
+                        hitByMelee = true;
+                        lastTarget.PlayAnimation("Death");
                     }
                     break;
 
                 default:
-                    lastRangedTargetLocation = projectileTarget.position;
-                    lastAttacker = currentCharacter;
-                    animator.CrossFade("AttackRanged", 0.1f);
+                    currentCharacter.PlayAnimation("AttackRanged");
                     GameObject.Instantiate(currentCharacter.character.projectile, shootOrigin, Quaternion.identity);
                     attackInProgress = true;
                     break;
@@ -128,12 +139,28 @@ namespace EV
         {
             int diceRoll = Random.Range(1,101);
             int result = attackAccuracy - diceRoll;
-            Debug.Log("Accuracy:" + attackAccuracy + " Roll:" + diceRoll); 
+            // Debug.Log("Accuracy:" + attackAccuracy + " Roll:" + diceRoll); 
             if (result >=0)
                 attackHits = true;
             else
                 attackHits = false;
             return result;
+        }
+
+        public void AttackSuccessful(SessionManager sessionManager)
+        {
+            if (lastTarget != null)
+            {
+                float damageDealt = lastAttacker.character.attackDamage;
+                if (lastTarget.character.braced)
+                    damageDealt = damageDealt * .75f;
+                lastTarget.character.hitPoints -= Mathf.RoundToInt(damageDealt);
+            }
+            if (lastTarget.character.hitPoints <=0)
+            {
+                Debug.Log(lastTarget.character.name + " defeated");
+                lastTarget.Death();
+            }
         }
 
         public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
@@ -150,13 +177,20 @@ namespace EV
                 if (iHit != null)
                 {
                     int attackDistance = Mathf.FloorToInt(Vector3.Distance(turn.player.stateManager.currentCharacter.transform.position, node.worldPosition));
-                    if (weaponRange >= attackDistance && !attackInProgress) 
+                    if (weaponRange >= attackDistance) 
                     {
-                        turn.player.stateManager.currentCharacter.transform.LookAt(hit.transform);
-                        iHit.OnHit(turn.player.stateManager.currentCharacter);
-                        currentPlayerAP -= apCost;
-                        lastTarget = node.character;
-                        PlayAttackAnimation(weaponType, turn, hit.transform);
+                        if (!attackInProgress)
+                        {
+                            turn.player.stateManager.currentCharacter.transform.LookAt(hit.transform);
+                            iHit.OnHit(turn.player.stateManager.currentCharacter);
+                            currentPlayerAP -= apCost;
+                            lastTarget = node.character;
+                            PlayAttackAnimation(weaponType, turn, hit.transform);
+                            if (diceRoll >= 0)
+                                AttackSuccessful(sessionManager);
+                            else 
+                                Debug.Log("attack missed!");
+                        }
                     }
                     else 
                     {

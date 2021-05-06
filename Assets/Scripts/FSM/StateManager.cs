@@ -54,13 +54,13 @@ namespace EV
                 Debug.LogError("State with id : " + id + " cannot be found! Check your states and ids!");
             }
 
-            Debug.Log("changed state to " + id);
+            // Debug.Log("changed state to " + id);
             currentState = targetState;
         }
 
         public void SetStartingState() 
         {
-            Debug.Log("changed state to starting state");
+            // Debug.Log("changed state to starting state");
             currentState = startingState;
         }
 

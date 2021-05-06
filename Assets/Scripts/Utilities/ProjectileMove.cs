@@ -41,11 +41,11 @@ namespace EV
         {
             if (AttackAction.attackHits)
             {
+                AttackAction.hitByMelee = false;
                 AttackAction.lastTarget.PlayAnimation("Death");
                 yield return new WaitForSeconds(.5f);
             }
             Destroy(this.gameObject);
-            AttackAction.attackInProgress = false;
         }
     }
 }

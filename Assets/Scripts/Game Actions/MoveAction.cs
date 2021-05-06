@@ -14,6 +14,9 @@ namespace EV
             StateManager states = turn.player.stateManager;
             IDetectable detectable = hit.transform.GetComponent<IDetectable>(); // Node detectable = the node at that hit point (using interface)
 
+            //if (SessionManager.currentGameState == GameState.Noncombat)
+            //    sessionManager.currentCharacter.ActionPoints = 20;
+
             if (detectable != null) // then we probably hit a character or something sitting on a node
             {
                 node = detectable.OnRaycastHit(); // makes it so you can hover the mouse over the collider instead of only the tile to detect a character
@@ -45,15 +48,17 @@ namespace EV
             StateManager states = turn.player.stateManager;
 
             // Moves Character
-            
             if (states.currentCharacter != null)
             {
                 if (states.currentCharacter.currentPath != null)
                 {
                     if (states.currentCharacter.currentPath.Count > 0)
                     {
-                        states.SetState("moveOnPath");
-                        return;
+                        if (!AttackAction.attackInProgress)
+                        {
+                            states.SetState("moveOnPath");
+                            return;
+                        }
                     }
                 }
             }
