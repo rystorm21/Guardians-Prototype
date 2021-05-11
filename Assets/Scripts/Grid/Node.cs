@@ -16,7 +16,6 @@ namespace EV
         public GridObject obstacle;
         public GameObject tileViz;
         public Renderer tileRenderer;
-        public TextMesh dddText;
         public GridCharacter character;
 
         int _steps;
@@ -27,18 +26,12 @@ namespace EV
 
         public int Steps {
             get { return _steps; }
-            set { _steps = value; SetText();}
+            set { _steps = value; }
         }
 
         public float fCost
         {
             get { return gCost + hCost; }
-        }
-
-        public void SetText() 
-        {
-                dddText.text = _steps.ToString(); 
-                dddText.gameObject.SetActive(true);
         }
     }
 }

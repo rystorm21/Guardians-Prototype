@@ -15,6 +15,7 @@ MonoBehaviour:
   characterName: Rai
   characterPortrait: {fileID: 21300000, guid: afb14023e35effd4c9a9c9ffc717fc61, type: 3}
   characterArchetype: 0
+  nanoArmor: 1
   projectile: {fileID: 7855271653542481463, guid: cd0441d067fec594e8e79e39c23d2f65,
     type: 3}
   hitPoints: 40

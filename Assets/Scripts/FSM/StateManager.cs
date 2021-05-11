@@ -16,12 +16,12 @@ namespace EV
 
         public PlayerHolder playerHolder;
         GridCharacter _currentCharacter;
-        public GridCharacter currentCharacter
+        public GridCharacter CurrentCharacter
         {
             get { return _currentCharacter; }
             set 
             { 
-                if (currentCharacter != null) _currentCharacter.OnDeselect(playerHolder);
+                if (CurrentCharacter != null) _currentCharacter.OnDeselect(playerHolder);
                 _currentCharacter = value;
             }
         }
@@ -62,6 +62,10 @@ namespace EV
         {
             // Debug.Log("changed state to starting state");
             currentState = startingState;
+            if (SessionManager.currentGameState == GameState.Noncombat)
+            {
+                CurrentCharacter.ActionPoints = CurrentCharacter.character.NonCombatAPCap;
+            }
         }
 
         State GetState(string id)

@@ -24,7 +24,7 @@ namespace EV
 
                 if (character.owner.isLocalPlayer)
                 {
-                    if (turn.player.stateManager.currentCharacter == character)
+                    if (turn.player.stateManager.CurrentCharacter == character)
                     {
                         sessionManager.HighlightAroundCharacter(character);
                     }
@@ -32,7 +32,7 @@ namespace EV
                 character.currentNode.isWalkable = false;
             }
 
-            if (turn.player.stateManager.currentCharacter == null)
+            if (turn.player.stateManager.CurrentCharacter == null)
             {
                 AutoSetPlayer(sessionManager, turn);
             }
@@ -41,7 +41,7 @@ namespace EV
         private void AutoSetPlayer(SessionManager sessionManager, Turn turn) 
         {
             GridCharacter defaultPlayer = turn.player.characters[0];
-            turn.player.stateManager.currentCharacter = defaultPlayer;
+            sessionManager.currentCharacter = defaultPlayer;
             sessionManager.HighlightAroundCharacter(defaultPlayer);
             sessionManager.currentCharacter.isSelected = true;
         }

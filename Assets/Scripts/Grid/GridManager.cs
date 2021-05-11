@@ -182,8 +182,6 @@ namespace EV
                             GameObject go = Instantiate(tileViz, node.worldPosition + Vector3.one * .1f, Quaternion.identity) as GameObject;
                             node.tileViz = go;
                             node.tileRenderer = go.GetComponentInChildren<Renderer>();
-                            node.dddText = go.GetComponentInChildren<TextMesh>();
-                            node.dddText.gameObject.SetActive(false);
                             go.transform.parent = tileContainer.transform;
                             go.SetActive(true);
                         }

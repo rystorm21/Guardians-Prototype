@@ -16,7 +16,7 @@ namespace EV
 
         public override bool IsActionValid(SessionManager sessionManager, Turn turn)
         {
-            if (turn.player.stateManager.currentCharacter == null)
+            if (turn.player.stateManager.CurrentCharacter == null)
             {
                 return false;
             }
@@ -27,7 +27,7 @@ namespace EV
         {
             if (node != null) 
             {
-                RaycastToTarget(turn.player.stateManager.currentCharacter, hit);
+                RaycastToTarget(turn.player.stateManager.CurrentCharacter, hit);
                 if (node.character == null || node.character.owner == turn.player)
                 {
                     sessionManager.SetAction("MoveAction");
@@ -81,7 +81,7 @@ namespace EV
 
         private void PlayAttackAnimation(int attackType, Turn turn, Transform projectileTarget) 
         {
-            GridCharacter currentCharacter = turn.player.stateManager.currentCharacter;
+            GridCharacter currentCharacter = turn.player.stateManager.CurrentCharacter;
             Vector3 shootOrigin = GameObject.Find(currentCharacter.character.name + "/metarig/IKHand.R").transform.position;
             SetAttackerDefender(currentCharacter, turn, projectileTarget);
 
@@ -90,7 +90,7 @@ namespace EV
             {
                 case 1:
                     // play melee attack animation
-                    if (turn.player.stateManager.currentCharacter.character.fightingStyle == 1)
+                    if (turn.player.stateManager.CurrentCharacter.character.fightingStyle == 1)
                     {
                         currentCharacter.PlayAnimation("SniperMeleeAttack1");
                     }
@@ -165,7 +165,7 @@ namespace EV
 
         public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
         {
-            int currentPlayerAP = turn.player.stateManager.currentCharacter.ActionPoints;
+            int currentPlayerAP = turn.player.stateManager.CurrentCharacter.ActionPoints;
             int weaponType = sessionManager.currentCharacter.character.weaponSelected;
             int apCost = AttackCost(weaponType);
             int weaponRange = AttackRange(sessionManager, weaponType);
@@ -176,13 +176,13 @@ namespace EV
                 int diceRoll = RollDDice(sessionManager);
                 if (iHit != null)
                 {
-                    int attackDistance = Mathf.FloorToInt(Vector3.Distance(turn.player.stateManager.currentCharacter.transform.position, node.worldPosition));
+                    int attackDistance = Mathf.FloorToInt(Vector3.Distance(turn.player.stateManager.CurrentCharacter.transform.position, node.worldPosition));
                     if (weaponRange >= attackDistance) 
                     {
                         if (!attackInProgress)
                         {
-                            turn.player.stateManager.currentCharacter.transform.LookAt(hit.transform);
-                            iHit.OnHit(turn.player.stateManager.currentCharacter);
+                            turn.player.stateManager.CurrentCharacter.transform.LookAt(hit.transform);
+                            iHit.OnHit(turn.player.stateManager.CurrentCharacter);
                             currentPlayerAP -= apCost;
                             lastTarget = node.character;
                             PlayAttackAnimation(weaponType, turn, hit.transform);
@@ -203,7 +203,7 @@ namespace EV
                 Debug.Log("Not enough action points!");
             }
 
-            turn.player.stateManager.currentCharacter.ActionPoints = currentPlayerAP;
+            turn.player.stateManager.CurrentCharacter.ActionPoints = currentPlayerAP;
         }
 
         public override void OnHighlightCharacter(SessionManager sessionManager, Turn turn, Node node)

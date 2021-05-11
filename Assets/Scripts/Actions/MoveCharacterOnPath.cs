@@ -22,7 +22,7 @@ namespace EV
 
         public override void Execute(StateManager states, SessionManager sessionManager, Turn turn)
         {
-            GridCharacter character = states.currentCharacter;
+            GridCharacter character = states.CurrentCharacter;
 
             if (!isInit)
             {

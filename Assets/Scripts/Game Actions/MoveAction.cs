@@ -14,9 +14,6 @@ namespace EV
             StateManager states = turn.player.stateManager;
             IDetectable detectable = hit.transform.GetComponent<IDetectable>(); // Node detectable = the node at that hit point (using interface)
 
-            //if (SessionManager.currentGameState == GameState.Noncombat)
-            //    sessionManager.currentCharacter.ActionPoints = 20;
-
             if (detectable != null) // then we probably hit a character or something sitting on a node
             {
                 node = detectable.OnRaycastHit(); // makes it so you can hover the mouse over the collider instead of only the tile to detect a character
@@ -36,7 +33,7 @@ namespace EV
                 {
                     sessionManager.OnHighlightCharacter(node);
                 }
-                if (states.currentCharacter != null && node.character == null)
+                if (states.CurrentCharacter != null && node.character == null)
                 {
                     PathDetection(states, sessionManager, node);
                 }
@@ -48,11 +45,11 @@ namespace EV
             StateManager states = turn.player.stateManager;
 
             // Moves Character
-            if (states.currentCharacter != null)
+            if (states.CurrentCharacter != null)
             {
-                if (states.currentCharacter.currentPath != null)
+                if (states.CurrentCharacter.currentPath != null)
                 {
-                    if (states.currentCharacter.currentPath.Count > 0)
+                    if (states.CurrentCharacter.currentPath.Count > 0)
                     {
                         if (!AttackAction.attackInProgress)
                         {
@@ -71,11 +68,14 @@ namespace EV
             {
                 if (node.character.owner == states.playerHolder)
                 {
-                    node.character.OnSelect(states.playerHolder);
-                    states.prevNode = null;
-                    sessionManager.ClearPath(states);
-                    sessionManager.HighlightAroundCharacter(node.character);
-                    sessionManager.gameVariables.UpdateCharacterPortrait(sessionManager.currentCharacter.character.characterPortrait);
+                    if (node.character != sessionManager.currentCharacter)
+                    {
+                        node.character.OnSelect(states.playerHolder);
+                        states.prevNode = null;
+                        sessionManager.ClearPath(states);
+                        sessionManager.HighlightAroundCharacter(node.character);
+                        sessionManager.gameVariables.UpdateCharacterPortrait(sessionManager.currentCharacter.character.characterPortrait);
+                    }
                 }
                 else
                 {
@@ -87,7 +87,6 @@ namespace EV
         public override void OnHighlightCharacter(SessionManager sessionManager, Turn turn, Node node)
         {
             StateManager states = turn.player.stateManager;
-
             if (node.character.owner == states.playerHolder)
             {
                 node.character.OnHighlight(states.playerHolder);
@@ -97,7 +96,7 @@ namespace EV
             
             else // you highlighted an enemy unit
             {
-                if (states.currentCharacter != null) // you have a character selected
+                if (states.CurrentCharacter != null) // you have a character selected
                 {
                     //attack
                     sessionManager.gameVariables.UpdateMouseText("Attack");
@@ -119,8 +118,8 @@ namespace EV
 
         public override void OnActionStart(SessionManager sessionManager, Turn turn)
         {
-            if (turn.player.stateManager.currentCharacter != null)
-                sessionManager.HighlightAroundCharacter(turn.player.stateManager.currentCharacter);
+            if (turn.player.stateManager.CurrentCharacter != null)
+                sessionManager.HighlightAroundCharacter(turn.player.stateManager.CurrentCharacter);
         }
 
         void PathDetection(StateManager states, SessionManager sessionManager, Node node)
@@ -132,7 +131,7 @@ namespace EV
                 if (states.currentNode != states.prevNode || states.prevNode == null)
                 {
                     states.prevNode = states.currentNode;
-                    sessionManager.PathfinderCall(states.currentCharacter, states.currentNode);
+                    sessionManager.PathfinderCall(states.CurrentCharacter, states.currentNode);
                 }
             }
         }

@@ -27,6 +27,8 @@ namespace EV
         public bool isRunning;
         public bool isCurrentlyMoving;
 
+        private bool isFirstTurn;
+
         [HideInInspector]
         public Node currentNode;
         [HideInInspector]
@@ -82,14 +84,26 @@ namespace EV
             {
                 _actionPoints = 0;
             }
+            if (SessionManager.currentGameState == GameState.Noncombat)
+            {
+                ActionPoints = character.NonCombatAPCap;
+            }
+            if (isFirstTurn)
+            {
+                if (character.teamLeader == true)
+                    OnSelect(owner);
+                isFirstTurn = false;
+            }
         }
 
         // initialize Character: 1- register this character with the PlayerHolder. 2- Set the player highlighter to false. 3- get the animator component from the child 4- Disable root motion
         public void OnInit()
         {
+            isFirstTurn = true;
+            character.NonCombatAPCap = 100;
             accuracyText = this.transform.GetChild(0).gameObject.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>(); // playerhighlight must be first child
-            braceShield = this.transform.GetChild(1).gameObject;
             highlighter = this.transform.GetChild(0).gameObject;
+            braceShield = this.transform.GetChild(1).gameObject;
             bladeL = GameObject.Find(character.characterName + "/Blade.L");
             bladeR = GameObject.Find(character.characterName + "/Blade.R");
             owner.RegisterCharacter(this);
@@ -103,6 +117,8 @@ namespace EV
             teamName = owner.name;
             character.hitPoints = SetHitPoints(character.characterArchetype); // just for testing purposes
             character.KO = false;
+            if (owner.characters[0].gameObject == this.gameObject)
+                character.teamLeader = true;
         }
 
         public void Death()
@@ -317,18 +333,21 @@ namespace EV
             accuracyText.gameObject.SetActive(false);
             isRunning = true; // set default movement to running
             isSelected = true;
-            player.stateManager.currentCharacter = this;
+            player.stateManager.CurrentCharacter = this;
+            Debug.Log(character + "selected");
         }
 
         public void OnDeselect(PlayerHolder player)
         {
             isSelected = false;
             highlighter.SetActive(false);
+            Debug.Log(character + "deselected");
         }
 
         public void OnHighlight(PlayerHolder player)
         {
-            highlighter.SetActive(true);
+            if (SessionManager.currentGameState == GameState.Combat)
+                highlighter.SetActive(true);
         }
 
         public void OnDeHighlight(PlayerHolder player, bool endTurnButton)

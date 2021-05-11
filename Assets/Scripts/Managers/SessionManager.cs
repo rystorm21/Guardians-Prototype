@@ -190,19 +190,29 @@ namespace EV
             reachablePathViz.positionCount = pathActual.Count + 1;
             reachablePathViz.SetPositions(reachablePositions.ToArray());
             unReachablePathViz.positionCount = unreachablePositions.Count;
-            unReachablePathViz.SetPositions(unreachablePositions.ToArray());
-
-            gameVariables.UpdateMouseText(actionPointsViz.ToString());
+            unReachablePathViz.SetPositions(unreachablePositions.ToArray());       
+            ToggleReachablePathViz(currentGameState == GameState.Combat);   // We only want the path viz to be active during combat mode     
+            // Ditto with the AP viz text
+            if (currentGameState == GameState.Combat)
+                gameVariables.UpdateMouseText(actionPointsViz.ToString());
+            else
+                gameVariables.UpdateMouseText("");
             character.LoadPath(pathActual);
+        }
+
+        public void ToggleReachablePathViz(bool toggle)
+        {
+            reachablePathViz.gameObject.SetActive(toggle);
+            unReachablePathViz.gameObject.SetActive(toggle);
         }
 
         public void ClearPath(StateManager states)
         {
             reachablePathViz.positionCount = 0;
             unReachablePathViz.positionCount = 0;
-            if (states.currentCharacter != null)
+            if (states.CurrentCharacter != null)
             {
-                states.currentCharacter.currentPath = null;
+                states.CurrentCharacter.currentPath = null;
             }
         }
 
@@ -270,6 +280,10 @@ namespace EV
 
         public void HighlightAroundCharacter(GridCharacter character)
         {
+            // We only want the highlighting to happen when in combat mode. 
+            if (currentGameState == GameState.Noncombat)
+                return;
+
             currentCharacter = character;
             Node centerNode = character.currentNode;
 
@@ -339,7 +353,6 @@ namespace EV
             foreach (Node node in list)
             {
                 node.tileRenderer.material = reachableTileMaterial;
-                node.dddText.gameObject.SetActive(true);
             }
 
             highlightedTiles = list;
@@ -352,7 +365,6 @@ namespace EV
             foreach (Node node in highlightedTiles)
             {
                 node.tileRenderer.material = defaultTileMaterial;
-                node.dddText.gameObject.SetActive(false);
             }
             highlightedTiles.Clear();
         }
@@ -470,12 +482,12 @@ namespace EV
                 case 0:
                     Debug.Log("Ranged Weapon Selected");
                     currentCharacter.character.weaponSelected = 0;
-                    turns[TurnIndex].player.stateManager.currentCharacter.PlayIdleAnimation();
+                    turns[TurnIndex].player.stateManager.CurrentCharacter.PlayIdleAnimation();
                     break;
                 case 1:
                     Debug.Log("Melee Weapon Selected");
                     currentCharacter.character.weaponSelected = 1;
-                    turns[TurnIndex].player.stateManager.currentCharacter.PlaySelectMeleeWeapon();
+                    turns[TurnIndex].player.stateManager.CurrentCharacter.PlaySelectMeleeWeapon();
                     break;
             }
         }
@@ -485,13 +497,13 @@ namespace EV
             switch(stanceInt.value)
             {
                 case 0:
-                    turns[TurnIndex].player.stateManager.currentCharacter.ResetStance();
+                    turns[TurnIndex].player.stateManager.CurrentCharacter.ResetStance();
                     break;
                 
                 case 1:
                     if (currentCharacter.ActionPoints >= 2)
                     {
-                        turns[TurnIndex].player.stateManager.currentCharacter.SetBrace();
+                        turns[TurnIndex].player.stateManager.CurrentCharacter.SetBrace();
                         currentCharacter.ActionPoints = 0;
                         ClearReachableTiles();
                         HighlightAroundCharacter(currentCharacter);
