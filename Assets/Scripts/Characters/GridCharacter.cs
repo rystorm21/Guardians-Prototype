@@ -55,8 +55,57 @@ namespace EV
             get { return _actionPoints; }
             set { _actionPoints = value; }
         }
-    
-        
+
+        #region Init
+        // initialize Character: 1- register this character with the PlayerHolder. 2- Set the player highlighter to false. 3- get the animator component from the child 4- Disable root motion
+        public void OnInit()
+        {
+            isFirstTurn = true;
+            character.NonCombatAPCap = 100;
+            accuracyText = this.transform.GetChild(0).gameObject.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>(); // playerhighlight must be first child
+            highlighter = this.transform.GetChild(0).gameObject;
+            braceShield = this.transform.GetChild(1).gameObject;
+            bladeL = GameObject.Find(character.characterName + "/Blade.L");
+            bladeR = GameObject.Find(character.characterName + "/Blade.R");
+            owner.RegisterCharacter(this);
+            animator = GetComponentInChildren<Animator>();
+            animator.applyRootMotion = false;
+            animator.SetInteger("CurrentStance", idleStance);
+            highlighter.SetActive(false);
+            braceShield.SetActive(false);
+            MeleeActivation(false);
+            character.weaponSelected = 0;
+            teamName = owner.name;
+            character.hitPoints = SetHitPoints(character.characterArchetype); // just for testing purposes
+            character.KO = false;
+            character.teamLeader = false;
+            if (owner.characters[0].gameObject == this.gameObject)
+                character.teamLeader = true;
+        }
+
+        public int SetHitPoints(int archetype)
+        {
+            int hitPoints;
+            int blaster = 1;
+            int defender = 1;
+            switch (archetype)
+            {
+                case 0:
+                    hitPoints = defender;
+                    break;
+
+                case 1:
+                    hitPoints = blaster;
+                    break;
+
+                default:
+                    hitPoints = 0;
+                    break;
+            }
+
+            return hitPoints;
+        }
+
         public void LoadPath(List<Node> path)
         {
             currentPath = path;
@@ -96,37 +145,15 @@ namespace EV
             }
         }
 
-        // initialize Character: 1- register this character with the PlayerHolder. 2- Set the player highlighter to false. 3- get the animator component from the child 4- Disable root motion
-        public void OnInit()
-        {
-            isFirstTurn = true;
-            character.NonCombatAPCap = 100;
-            accuracyText = this.transform.GetChild(0).gameObject.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>(); // playerhighlight must be first child
-            highlighter = this.transform.GetChild(0).gameObject;
-            braceShield = this.transform.GetChild(1).gameObject;
-            bladeL = GameObject.Find(character.characterName + "/Blade.L");
-            bladeR = GameObject.Find(character.characterName + "/Blade.R");
-            owner.RegisterCharacter(this);
-            animator = GetComponentInChildren<Animator>();
-            animator.applyRootMotion = false;
-            animator.SetInteger("CurrentStance", idleStance);
-            highlighter.SetActive(false);
-            braceShield.SetActive(false);
-            MeleeActivation(false);
-            character.weaponSelected = 0;
-            teamName = owner.name;
-            character.hitPoints = SetHitPoints(character.characterArchetype); // just for testing purposes
-            character.KO = false;
-            if (owner.characters[0].gameObject == this.gameObject)
-                character.teamLeader = true;
-        }
+        #endregion
 
+        #region Game State Events
         public void Death()
         {
             character.KO = true;
             if (owner.name == "Enemy")
             {
-                StartCoroutine(EnemyKilled());
+                StartCoroutine(EnemyKilled(this));
             }
             if (AllTeamDead())
             {
@@ -137,7 +164,6 @@ namespace EV
                 {
                     SessionManager.currentGameState = GameState.Noncombat;
                     SessionManager.combatVictory = true;
-                    Debug.Log("All enemies defeated!");
                 }
             }
         }
@@ -145,6 +171,7 @@ namespace EV
         bool AllTeamDead()
         {
             bool allDead = true;
+            
             foreach (GridCharacter character in owner.characters)
             {
                 if (!character.character.KO)
@@ -153,28 +180,7 @@ namespace EV
             return allDead;
         }
 
-        public int SetHitPoints(int archetype) 
-        {
-            int hitPoints;
-            int blaster = 1;
-            int defender = 1;
-            switch(archetype)
-            {
-                case 0:
-                    hitPoints = defender;
-                break;
-
-                case 1:
-                    hitPoints = blaster;
-                break;
-
-                default:
-                    hitPoints = 0;
-                break;
-            }
-
-            return hitPoints;
-        }
+        #endregion
 
         #region Stance Handling
         const int idleStance = 1;
@@ -294,9 +300,31 @@ namespace EV
             if (targetAnim.Contains("Attack"))
                 StartCoroutine("DelayAttack");
         }
+        #endregion
 
-        IEnumerator EnemyKilled()
+        #region Situational Co-Routines
+        IEnumerator EnemyKilled(GridCharacter character)
         {
+            bool teamLeaderDown = false;
+
+            if (character.character.teamLeader)
+            {
+                character.character.teamLeader = false;
+                teamLeaderDown = true;
+            }
+            // Changes team leader if enemy team leader dies. Prevents the turn from getting 'locked' if enemy leader dies before other enemies are selected
+            if (teamLeaderDown)
+            {
+                foreach (GridCharacter newLeader in owner.characters)
+                {
+                    if (!newLeader.character.KO)
+                    {
+                        newLeader.character.teamLeader = true;
+                        teamLeaderDown = false;
+                        break;
+                    }
+                }
+            }
             yield return new WaitForSeconds(1.5f);
             owner.UnRegisterCharacter(this);
             this.currentNode.isWalkable = true;
@@ -323,7 +351,6 @@ namespace EV
             animator.Play("Death");
             AttackAction.hitByMelee = false;
         }
-
         #endregion
 
         #region Interfaces
@@ -334,14 +361,12 @@ namespace EV
             isRunning = true; // set default movement to running
             isSelected = true;
             player.stateManager.CurrentCharacter = this;
-            Debug.Log(character + "selected");
         }
 
         public void OnDeselect(PlayerHolder player)
         {
             isSelected = false;
             highlighter.SetActive(false);
-            Debug.Log(character + "deselected");
         }
 
         public void OnHighlight(PlayerHolder player)

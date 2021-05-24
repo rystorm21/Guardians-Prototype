@@ -31,13 +31,6 @@ namespace EV
                     states.SetStartingState();
                     return;
                 }
-
-                isInit = true;
-                startNode = character.currentNode;
-                targetNode = character.currentPath[index];
-                float time_ = time - 1;
-                time_ = Mathf.Clamp01(time_);
-                time = time_;
                 MoveCharacter(sessionManager, character);
             }
 
@@ -47,35 +40,49 @@ namespace EV
             if (time > 1)
             {
                 isInit = false;
-                character.currentNode.character = null;
-                character.currentNode = targetNode;
-                character.currentNode.character = character;
+                CheckForInactive(character);
+
                 character.ActionPoints -= moveCost; // decrement AP for every step, 2 if diagonal
                 character.isCurrentlyMoving = true;
-
                 index++;
 
                 if (index > character.currentPath.Count - 1)
                 {
                     // we moved on to our path, so return to starting state & play idle animation
-                    time = 1;
-                    index = 0;
-
-                    states.SetStartingState();
-                    character.PlayIdleAnimation();
-                    firstInit = false;
-                    sessionManager.HighlightAroundCharacter(character);
-                    character.currentNode.isWalkable = false;       // make currently occupied square not walkable
-                    character.isCurrentlyMoving = false;
-                    if (character.ActionPoints == 0) 
-                    {
-                        sessionManager.APCheck();
-                    }
+                    MoveComplete(states, sessionManager, turn);
                 }
             }
 
             Vector3 targetPos = Vector3.Lerp(startNode.worldPosition, targetNode.worldPosition, time);
             character.transform.position = targetPos;
+        }
+
+        private void CheckForInactive(GridCharacter character)
+        {
+                if (!character.currentNode.inactiveCharWasHere) // prevents player from making a character unclickable when being replaced
+                    character.currentNode.character = null;
+                character.currentNode = targetNode;
+                if (!character.currentNode.inactiveCharWasHere) // ditto with the above, needed to be in order
+                    character.currentNode.character = character;
+        }
+
+        private void MoveComplete(StateManager states, SessionManager sessionManager, Turn turn)
+        {
+            GridCharacter character = states.CurrentCharacter;
+            time = 1;
+            index = 0;
+
+            states.SetStartingState();
+            character.PlayIdleAnimation();
+            firstInit = false;
+            sessionManager.HighlightAroundCharacter(character);
+            character.currentNode.isWalkable = false;       // make currently occupied square not walkable
+            character.isCurrentlyMoving = false;
+            character.currentNode.inactiveCharWasHere = false;
+            if (character.ActionPoints == 0)
+            {
+                sessionManager.APCheck();
+            }
         }
 
         private void RotateCharacter(GridCharacter character, StateManager states)
@@ -90,6 +97,13 @@ namespace EV
 
         private void MoveCharacter(SessionManager sessionManager, GridCharacter character)
         {
+            isInit = true;
+            startNode = character.currentNode;
+            targetNode = character.currentPath[index];
+            float time_ = time - 1;
+            time_ = Mathf.Clamp01(time_);
+            time = time_;
+
             float distance = Vector3.Distance(startNode.worldPosition, targetNode.worldPosition);
             speed = character.GetSpeed() / distance;
 

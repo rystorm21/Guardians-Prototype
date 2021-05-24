@@ -72,6 +72,7 @@ namespace EV
                     unit.transform.position = node.worldPosition;
                     node.character = unit;
                     unit.currentNode = node;
+                    unit.currentNode.isWalkable = false;
                 }
             }
         }
@@ -391,9 +392,28 @@ namespace EV
 
                 if (combatVictory)
                 {
-                    combatVictory = false;
+                    StartCoroutine(CombatVictory());
                     EndTurn();
                 }
+
+                if (Input.GetKeyDown("t")) // just testing functionality here (re-entering combat mode)
+                {
+                    foreach (GridCharacter character in currentCharacter.owner.characters)
+                    {
+                        if (currentGameState == GameState.Noncombat)
+                        {
+                            if (character == character.character.teamLeader)
+                                currentCharacter = character;
+                            character.ActionPoints = character.character.StartingAP;
+                            character.gameObject.SetActive(true);
+                            character.currentNode.inactiveCharWasHere = false;
+                            character.currentNode.isWalkable = false;
+                        }
+                    }
+                    currentGameState = GameState.Combat;
+                    currentCharacter.isSelected = true;
+                    HighlightAroundCharacter(currentCharacter);
+                } // end re-enter combat test
 
                 delta = Time.deltaTime;
 
@@ -434,6 +454,8 @@ namespace EV
 
         public void EndTurn()
         {
+            if (currentGameState == GameState.Noncombat)
+                return;
             if (!currentCharacter.isCurrentlyMoving)
             {
                 // deHighlight the current player when the turn ends
@@ -461,6 +483,44 @@ namespace EV
                 EndTurn();
             }
         }
+        #endregion 
+
+        #region State Management
+
+        IEnumerator CombatVictory()
+        {
+            combatVictory = false;
+            Debug.Log("All enemies defeated!");
+            if (!currentCharacter.character.teamLeader)
+                currentCharacter.OnDeselect(currentCharacter.owner);
+
+            yield return new WaitForSeconds(2);
+            NonCombatModeEnter();
+        }
+
+        public void NonCombatModeEnter()
+        {
+            foreach (GridCharacter character in currentCharacter.owner.characters)
+            {
+                if (character.character.teamLeader)
+                {
+                    gameVariables.UpdateCharacterPortrait(character.character.characterPortrait);
+                    character.OnSelect(currentCharacter.owner);
+                    character.highlighter.SetActive(false);
+                    currentCharacter = character;
+                    currentCharacter.character.weaponSelected = 0;
+                    currentCharacter.SetRun();
+                    turns[TurnIndex].player.stateManager.CurrentCharacter.PlayIdleAnimation();
+                    currentCharacter.ActionPoints = currentCharacter.character.NonCombatAPCap;
+                }
+                else
+                {
+                    character.currentNode.isWalkable = true;
+                    character.currentNode.inactiveCharWasHere = true;
+                    character.gameObject.SetActive(false);
+                }
+            }
+        }
 
         IEnumerator GameOverScreen()
         {
@@ -469,14 +529,19 @@ namespace EV
             Debug.Log("Game Over"); // game over dog
             SceneManager.LoadScene("GameOverScreen", LoadSceneMode.Additive);
         }
+
         #endregion
 
         #region Events
         public SO.IntVariable stanceInt;
         public SO.IntVariable attackType;
+        public SO.IntVariable specialAbilitySelect;
 
         public void SetWeaponForCurrentPlayer()
         {
+            if (currentGameState != GameState.Combat)
+                return;
+
             switch(attackType.value)
             {
                 case 0:
@@ -494,6 +559,9 @@ namespace EV
 
         public void SetStanceForCurrentPlayer()
         {
+            if (currentGameState != GameState.Combat)
+                return;
+
             switch(stanceInt.value)
             {
                 case 0:
@@ -519,6 +587,11 @@ namespace EV
                     }
                     break;
             }
+        }
+
+        public void SpecialAbility()
+        {
+            Debug.Log("special ability " + specialAbilitySelect.value + " selected");
         }
         #endregion
 

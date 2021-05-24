@@ -12,6 +12,7 @@ namespace EV
 
         public bool isAir;
         public bool isWalkable;
+        public bool inactiveCharWasHere = false;
         public Vector3 worldPosition;
         public GridObject obstacle;
         public GameObject tileViz;

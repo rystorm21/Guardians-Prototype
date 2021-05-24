@@ -33,9 +33,10 @@ namespace EV
                 {
                     sessionManager.OnHighlightCharacter(node);
                 }
-                if (states.CurrentCharacter != null && node.character == null)
+                if (states.CurrentCharacter != null)
                 {
-                    PathDetection(states, sessionManager, node);
+                    if (node.character == null) 
+                        PathDetection(states, sessionManager, node);
                 }
             }
         }
@@ -68,7 +69,7 @@ namespace EV
             {
                 if (node.character.owner == states.playerHolder)
                 {
-                    if (node.character != sessionManager.currentCharacter)
+                    if (node.character != sessionManager.currentCharacter && !node.inactiveCharWasHere)
                     {
                         node.character.OnSelect(states.playerHolder);
                         states.prevNode = null;
@@ -87,25 +88,28 @@ namespace EV
         public override void OnHighlightCharacter(SessionManager sessionManager, Turn turn, Node node)
         {
             StateManager states = turn.player.stateManager;
-            if (node.character.owner == states.playerHolder)
+            if (node.character.owner != null)
             {
-                node.character.OnHighlight(states.playerHolder);
-                previousCharacter = node.character;
-                sessionManager.ClearPath(states);
-            }
-            
-            else // you highlighted an enemy unit
-            {
-                if (states.CurrentCharacter != null) // you have a character selected
+                if (node.character.owner == states.playerHolder)
                 {
-                    //attack
-                    sessionManager.gameVariables.UpdateMouseText("Attack");
-                    sessionManager.SetAction("AttackAction");
+                    node.character.OnHighlight(states.playerHolder);
+                    previousCharacter = node.character;
+                    sessionManager.ClearPath(states);
                 }
-                else
+
+                else // you highlighted an enemy unit
                 {
-                    //indicate
-                    //sessionManager.gameVariables.UpdateMouseText("Enemy");
+                    if (states.CurrentCharacter != null) // you have a character selected
+                    {
+                        //attack
+                        sessionManager.gameVariables.UpdateMouseText("Attack");
+                        sessionManager.SetAction("AttackAction");
+                    }
+                    else
+                    {
+                        //indicate
+                        //sessionManager.gameVariables.UpdateMouseText("Enemy");
+                    }
                 }
             }
         }

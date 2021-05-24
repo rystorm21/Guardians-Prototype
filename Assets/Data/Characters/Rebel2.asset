@@ -17,7 +17,7 @@ MonoBehaviour:
   characterArchetype: 0
   projectile: {fileID: 7855271653542481463, guid: cd0441d067fec594e8e79e39c23d2f65,
     type: 3}
-  hitPoints: 1
+  hitPoints: 40
   agility: 10
   rangedAttackRange: 20
   rangeEffectiveRange: 10
@@ -28,5 +28,6 @@ MonoBehaviour:
   weaponSelected: 0
   fightingStyle: 0
   currentStance: 1
+  teamLeader: 1
   braced: 0
   KO: 0

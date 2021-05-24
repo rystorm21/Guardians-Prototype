@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f17a02cf8234f564695c1a2513d23385, type: 3}
-  m_Name: Rebel
+  m_Name: Rebel3
   m_EditorClassIdentifier: 
   characterName: Rebel
   characterPortrait: {fileID: 0}
   characterArchetype: 0
   projectile: {fileID: 7855271653542481463, guid: cd0441d067fec594e8e79e39c23d2f65,
     type: 3}
-  hitPoints: 40
+  hitPoints: 1
   agility: 10
   rangedAttackRange: 20
   rangeEffectiveRange: 10
@@ -28,6 +28,6 @@ MonoBehaviour:
   weaponSelected: 0
   fightingStyle: 0
   currentStance: 1
-  teamLeader: 0
+  teamLeader: 1
   braced: 0
   KO: 0
