@@ -25,6 +25,7 @@ namespace EV
                     previousCharacter.OnDeHighlight(states.playerHolder, false);
                 }
                 sessionManager.gameVariables.UpdateCharacterPortrait(sessionManager.currentCharacter.character.characterPortrait);
+                sessionManager.gameVariables.UpdateAbility(sessionManager.currentCharacter.character.abilityPool[0].abilityIcon);
             }
 
             if (node != null)
@@ -76,6 +77,7 @@ namespace EV
                         sessionManager.ClearPath(states);
                         sessionManager.HighlightAroundCharacter(node.character);
                         sessionManager.gameVariables.UpdateCharacterPortrait(sessionManager.currentCharacter.character.characterPortrait);
+                        sessionManager.gameVariables.UpdateAbility(sessionManager.currentCharacter.character.abilityPool[0].abilityIcon);
                     }
                 }
                 else

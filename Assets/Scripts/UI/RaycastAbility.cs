@@ -6,7 +6,7 @@ namespace EV
 {
     // For LoS Abilities
     [CreateAssetMenu(menuName = "Abilities/RaycastAbility")]
-    public class RaycastAbility : Ability
+    public class RaycastAbility : Ability2
     {
         public int Damage = 1;
         public float weaponRange = 50;

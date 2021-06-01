@@ -13,6 +13,8 @@ namespace EV.Characters
         public Sprite characterPortrait;
         public int characterArchetype;
         public GameObject projectile;
+        public Inventory inventory;
+        public List<AbilitySlot> abilityPool;
         
         public int hitPoints;
         public int agility = 10;
@@ -23,6 +25,7 @@ namespace EV.Characters
         public int defense;
         public int meleeAttackRange;
         public int weaponSelected;
+        public int abilitySelected;
 
         public int fightingStyle;
         public int currentStance = 1;

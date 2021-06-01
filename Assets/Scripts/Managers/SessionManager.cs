@@ -505,6 +505,7 @@ namespace EV
                 if (character.character.teamLeader)
                 {
                     gameVariables.UpdateCharacterPortrait(character.character.characterPortrait);
+                    gameVariables.UpdateAbility(character.character.abilityPool[0].abilityIcon);
                     character.OnSelect(currentCharacter.owner);
                     character.highlighter.SetActive(false);
                     currentCharacter = character;
@@ -541,7 +542,8 @@ namespace EV
         {
             if (currentGameState != GameState.Combat)
                 return;
-
+            
+            SetAction("MoveAction");
             switch(attackType.value)
             {
                 case 0:
@@ -569,6 +571,7 @@ namespace EV
                     break;
                 
                 case 1:
+                    SetAction("MoveAction");
                     if (currentCharacter.ActionPoints >= 2)
                     {
                         turns[TurnIndex].player.stateManager.CurrentCharacter.SetBrace();
@@ -591,7 +594,10 @@ namespace EV
 
         public void SpecialAbility()
         {
-            Debug.Log("special ability " + specialAbilitySelect.value + " selected");
+            if (currentGameState != GameState.Combat)
+                return;
+            currentCharacter.character.abilitySelected = specialAbilitySelect.value;
+            SetAction("SpecialAbilityAction");
         }
         #endregion
 
@@ -608,6 +614,7 @@ namespace EV
         {
             gameActions.Add("MoveAction", new MoveAction());
             gameActions.Add("AttackAction", new AttackAction());
+            gameActions.Add("SpecialAbilityAction", new SpecialAbilityAction()); // added 5/30/21
         }
 
         public void SetAction(string targetAction)

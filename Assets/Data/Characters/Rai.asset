@@ -17,6 +17,10 @@ MonoBehaviour:
   characterArchetype: 0
   projectile: {fileID: 7855271653542481463, guid: cd0441d067fec594e8e79e39c23d2f65,
     type: 3}
+  inventory: {fileID: 0}
+  abilityPool:
+  - ability: {fileID: 11400000, guid: 77fa162807a7ef44d953764773f146b2, type: 2}
+    abilityIcon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   hitPoints: 1
   agility: 10
   rangedAttackRange: 20
@@ -26,6 +30,7 @@ MonoBehaviour:
   defense: 10
   meleeAttackRange: 1
   weaponSelected: 0
+  abilitySelected: 5
   fightingStyle: 0
   currentStance: 1
   teamLeader: 0

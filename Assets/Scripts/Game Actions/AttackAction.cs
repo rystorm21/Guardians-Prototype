@@ -82,6 +82,7 @@ namespace EV
         private void PlayAttackAnimation(int attackType, Turn turn, Transform projectileTarget) 
         {
             GridCharacter currentCharacter = turn.player.stateManager.CurrentCharacter;
+            Debug.Log(currentCharacter.character.name);
             Vector3 shootOrigin = GameObject.Find(currentCharacter.character.name + "/metarig/IKHand.R").transform.position;
             SetAttackerDefender(currentCharacter, turn, projectileTarget);
 

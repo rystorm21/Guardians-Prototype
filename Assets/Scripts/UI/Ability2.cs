@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace EV
 {
-    public abstract class Ability : ScriptableObject
+    public abstract class Ability2 : ScriptableObject // changed to ability2 from ability - lost in the sauce. test if it works.
     {
         public string abilityName = "New Ability";
         public string abilitySprite;

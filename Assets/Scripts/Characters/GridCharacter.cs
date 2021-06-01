@@ -9,6 +9,7 @@ namespace EV
     {
         public PlayerHolder owner;
         public Characters.Character character; // Character is in the EV.Characters namespace
+
         [System.NonSerialized]
         public GameObject highlighter;
         GameObject bladeR;
@@ -88,6 +89,8 @@ namespace EV
             int hitPoints;
             int blaster = 1;
             int defender = 1;
+            int tanker = 60;
+
             switch (archetype)
             {
                 case 0:
@@ -98,6 +101,10 @@ namespace EV
                     hitPoints = blaster;
                     break;
 
+                case 2:
+                    hitPoints = tanker;
+                    break;
+                    
                 default:
                     hitPoints = 0;
                     break;
