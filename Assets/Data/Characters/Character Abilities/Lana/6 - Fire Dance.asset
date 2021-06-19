@@ -12,12 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8ed5555c96195041a84c7ab132956f5, type: 3}
   m_Name: 6 - Fire Dance
   m_EditorClassIdentifier: 
+  abilityName: Fire Dance
   prefab: {fileID: 0}
   type: 3
-  description: 'Lana conjures flames and damages all enemies within 4 squares.
-
-
-    PBAoE,
-    4x4
-
-    1.0x + Burn Damage'
+  apCost: 4
+  duration: 0
+  coolDown: 4
+  radius: 4
+  description: Lana conjures flames and damages all nearby enemies.

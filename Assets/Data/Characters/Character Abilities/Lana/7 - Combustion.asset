@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 861893e50cfdae846b053a36bee173d0, type: 3}
   m_Name: 7 - Combustion
   m_EditorClassIdentifier: 
+  abilityName: Combustion
   prefab: {fileID: 0}
   type: 0
-  description: 'Lana covers an enemy in flames, causing the enemy to burn
-
-
-    Melee
-    attack, DoT Damage
-
-    2.5x damage over 5 turns'
+  apCost: 4
+  duration: 0
+  coolDown: 4
+  radius: 0
+  description: Lana hits a single enemy with a concentrated short-range blast, covering
+    them in flames.

@@ -13,7 +13,7 @@ namespace EV
 
         public virtual void OnActionStop(SessionManager sessionManager, Turn turn)
         {
-
+            
         }
 
         public virtual bool IsActionValid(SessionManager sessionManager, Turn turn)

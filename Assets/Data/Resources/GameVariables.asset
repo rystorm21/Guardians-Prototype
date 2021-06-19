@@ -19,7 +19,15 @@ MonoBehaviour:
     type: 2}
   actionPointsText: {fileID: 11400000, guid: 267a9d3c6677cd548936c2dbf82b75a4, type: 2}
   characterPortrait: {fileID: 11400000, guid: f50597843c987714fb8f7c8cfdd0b0f2, type: 2}
-  characterSA: {fileID: 11400000, guid: 448ed6415f5ad4543a25e28e99297201, type: 2}
+  abilityList:
+  - {fileID: 11400000, guid: 448ed6415f5ad4543a25e28e99297201, type: 2}
+  - {fileID: 11400000, guid: d9141cf732f8ad34e8b64e8e7d08e9fb, type: 2}
+  - {fileID: 11400000, guid: fb928c72c0c94984192c580f7fd9878a, type: 2}
+  - {fileID: 11400000, guid: daf8e9c0da8693f4f84bab5a17b96d4d, type: 2}
+  - {fileID: 11400000, guid: dc37a747c1871314aa6564908c0437f5, type: 2}
+  - {fileID: 11400000, guid: 8344f133dd3136f4f93c5557bc5ddfc5, type: 2}
+  - {fileID: 11400000, guid: 401665dee9d934a40a1af7cb7eb1bdb4, type: 2}
+  - {fileID: 11400000, guid: 62a5861854bc54848a689d7ed21b2ce1, type: 2}
   cameraTransform: {fileID: 11400000, guid: 2e138e9c6f2ad7d449258ff84b53a5e5, type: 2}
   horizontalInput: {fileID: 11400000, guid: 2e3429809ce613e4c887890d6856a9a4, type: 2}
   verticalInput: {fileID: 11400000, guid: 95e876390edd9c749b09e665172b6671, type: 2}

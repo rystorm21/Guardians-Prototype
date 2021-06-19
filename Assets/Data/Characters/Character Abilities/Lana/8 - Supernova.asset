@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8ed5555c96195041a84c7ab132956f5, type: 3}
   m_Name: 8 - Supernova
   m_EditorClassIdentifier: 
+  abilityName: Supernova
   prefab: {fileID: 0}
   type: 3
-  description: '5x5 PBAoE
-
-    Damage: Extreme + Burn DoT
-
-    Cooldown: 6 turns'
+  apCost: 4
+  duration: 0
+  coolDown: 8
+  radius: 5
+  description: The ultimate fire guardian power. Unleashes a massive explosion, causing
+    great damage all nearby enemies. This power leaves the guardian temporarily drained
+    however, unable to use any other special abilities for 2 turns.

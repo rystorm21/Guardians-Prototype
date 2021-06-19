@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f8b009f49b5731478a3b58115a79522, type: 3}
   m_Name: 5 - Infernal Rage
   m_EditorClassIdentifier: 
+  abilityName: Infernal Rage
   prefab: {fileID: 0}
   type: 2
-  description: 'For 2 turns:
-
-    Damage + 100%
-
-    Accuracy + 25%
-
-    Cooldown:
-    5 turns'
+  apCost: 2
+  duration: 2
+  coolDown: 5
+  radius: 0
+  description: Lana's fire mastery allows her to channel pure rage into her attacks.
+    For 2 turns, she deals double damage with all attacks and abilities. This bonus
+    stacks with Focus Fire.

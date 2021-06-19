@@ -19,6 +19,22 @@ MonoBehaviour:
     type: 3}
   inventory: {fileID: 11400000, guid: fce7e338aedb6fb4eaabf44912f8adcf, type: 2}
   abilityPool:
+  - ability: {fileID: 11400000, guid: f9df0089037345c4fa438d8310afe807, type: 2}
+    abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  - ability: {fileID: 11400000, guid: 032ca18a44d5ec545a9a886c6ffe4954, type: 2}
+    abilityIcon: {fileID: 21300000, guid: 5ec3ee83907b7bf4584d553d1a09f75a, type: 3}
+  - ability: {fileID: 11400000, guid: 72c857d33ab98344d9c5fd7ee4849fe4, type: 2}
+    abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  - ability: {fileID: 11400000, guid: 1253379488dfa4143abcc4fbf8c637c9, type: 2}
+    abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  - ability: {fileID: 11400000, guid: 9ccf2fe67486fd74698e0c5a07e6ac8f, type: 2}
+    abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  - ability: {fileID: 11400000, guid: a2d6a1cfb87851443b245c219786af5a, type: 2}
+    abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  - ability: {fileID: 11400000, guid: 5e401d50e5499e748a1852e9baaa0655, type: 2}
+    abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  - ability: {fileID: 11400000, guid: 7cb8aa591a2ef69469f972fa5ede5675, type: 2}
+    abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   - ability: {fileID: 11400000, guid: f9f1d84baa0047b4c87dfd6baedb61a5, type: 2}
     abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   hitPoints: 1
@@ -30,7 +46,7 @@ MonoBehaviour:
   defense: 0
   meleeAttackRange: 2
   weaponSelected: 0
-  abilitySelected: 5
+  abilitySelected: 3
   fightingStyle: 1
   currentStance: 1
   teamLeader: 0

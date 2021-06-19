@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c7e553af88f4f944ae9febbf4612f7e, type: 3}
   m_Name: _Hells Fury
   m_EditorClassIdentifier: 
+  abilityName: Hell's Fury
   prefab: {fileID: 0}
   type: 4
   description: Lana's attacks cause enemies to burn, dealing additional damage.

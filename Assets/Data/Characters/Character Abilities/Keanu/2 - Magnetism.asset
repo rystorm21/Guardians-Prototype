@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8ed5555c96195041a84c7ab132956f5, type: 3}
   m_Name: 2 - Magnetism
   m_EditorClassIdentifier: 
+  abilityName: Magnetism
   prefab: {fileID: 0}
   type: 3
-  description: '10x10 PBAoE
-
-    All enemies within area of effect are forced to
-    attack / target Keanu'
+  apCost: 4
+  coolDown: 0
+  description: All enemies near Keanu will be forced to attack him.

@@ -12,12 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f8b009f49b5731478a3b58115a79522, type: 3}
   m_Name: 3 - Gaia's Embrace
   m_EditorClassIdentifier: 
+  abilityName: Gaia's Embrace
   prefab: {fileID: 0}
   type: 2
-  description: 'Keanu can channel earth''s energy to heal himself
-
-
-    Self Heal:
-    +50%
-
-    Cooldown: 5 turns'
+  apCost: 3
+  coolDown: 0
+  description: Keanu can channel earth's energy to heal himself up to 50% of his
+    maximum HP.

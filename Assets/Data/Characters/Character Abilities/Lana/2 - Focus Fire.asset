@@ -12,13 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f8b009f49b5731478a3b58115a79522, type: 3}
   m_Name: 2 - Focus Fire
   m_EditorClassIdentifier: 
+  abilityName: Focus Fire
   prefab: {fileID: 0}
   type: 2
-  description: 'For 2 turns:
-
-    +50% Accuracy
-
-    +25% Damage
-
-    Cooldown: 5
-    turns'
+  apCost: 2
+  duration: 2
+  coolDown: 5
+  radius: 0
+  description: Lana channels her power and receives a bonus to accuracy and damage
+    to all attacks and abilities for the next 2 rounds.

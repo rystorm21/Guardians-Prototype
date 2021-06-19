@@ -22,7 +22,7 @@ MonoBehaviour:
   - ability: {fileID: 11400000, guid: 100dd3c6f17f7e64d9a68ba09e31cc34, type: 2}
     abilityIcon: {fileID: 21300000, guid: 4f6068e89df94c2438a76e04d4414901, type: 3}
   - ability: {fileID: 11400000, guid: 50ee0d47626c43d479d9a51926676c58, type: 2}
-    abilityIcon: {fileID: 0}
+    abilityIcon: {fileID: 21300000, guid: e06d3e666276b564d99c47d81c2bfddf, type: 3}
   - ability: {fileID: 11400000, guid: 093a09caa759c0d449dc19fb10a1253e, type: 2}
     abilityIcon: {fileID: 0}
   - ability: {fileID: 11400000, guid: fb85c133bfd073040b549204486c425b, type: 2}

@@ -12,13 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f8b009f49b5731478a3b58115a79522, type: 3}
   m_Name: 1 - Magma Hands
   m_EditorClassIdentifier: 
+  abilityName: Magma Hands
   prefab: {fileID: 0}
   type: 2
-  description: 'Keanu''s fists are surrounded by burning magma, his melee attacks
-    now deal 50% more damage.
-
-
-    Duration: 3 turns
-
-    Damage: +50% damage to
-    melee attacks'
+  apCost: 2
+  duration: 0
+  coolDown: 0
+  description: Keanu's fists are surrounded by burning magma, his melee attacks now
+    deal 50% more damage.

@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9259a69919041ef4eb4b15f43058f579, type: 3}
   m_Name: 7 - Meteor Strike
   m_EditorClassIdentifier: 
+  abilityName: Meteor Strike
   prefab: {fileID: 0}
   type: 1
-  description: "Dash up to 5 distance to strike one enemy, the impact also damages
-    additional enemies within the explosion (5x5) \n\nDamage: \n  - 2.0x to primary
-    target\n  - .75x to enemies in AoE\nStatus:\n  - -4 AP to primary target\n  -
-    50% chance -2 AP to enemies in AoE"
+  apCost: 4
+  duration: 0
+  coolDown: 0
+  description: Dash up to 5 distance to strike one enemy, the impact also damages
+    additional enemies within the explosion. The primary target is stunned and suffers
+    an AP penalty.

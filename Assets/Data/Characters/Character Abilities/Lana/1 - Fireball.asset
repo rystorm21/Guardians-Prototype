@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9259a69919041ef4eb4b15f43058f579, type: 3}
   m_Name: 1 - Fireball
   m_EditorClassIdentifier: 
+  abilityName: Fireball
   prefab: {fileID: 0}
   type: 1
-  description: 'Ranged 5x5 AoE
-
-    Damage: Moderate + Burn DoT
-
-    Cooldown: 3
-    turns'
+  apCost: 4
+  duration: 0
+  coolDown: 4
+  radius: 3
+  description: Ranged fireball attack that explodes on impact. Damages all enemies
+    in the explosion radius.

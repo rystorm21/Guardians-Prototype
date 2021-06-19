@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 861893e50cfdae846b053a36bee173d0, type: 3}
   m_Name: 4 - Incinerate
   m_EditorClassIdentifier: 
+  abilityName: Incinerate
   prefab: {fileID: 0}
   type: 0
-  description: 'Ranged
-
-    Damage: Heavy + Burn DoT
-
-    Cooldown: 4 turns'
+  apCost: 4
+  coolDown: 0
+  description: Lana shoots a concentrated blast that hits a single enemy target.
+    Deals double her normal attack damage.

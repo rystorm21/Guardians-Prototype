@@ -12,13 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8ed5555c96195041a84c7ab132956f5, type: 3}
   m_Name: 4 - Seismic Smash
   m_EditorClassIdentifier: 
+  abilityName: Seismic Smash
   prefab: {fileID: 0}
   type: 3
-  description: '3x3 PBAoE
-
-    Dmg: 1.0x, all enemies in area of effect
-
-    Status:
-    50% chance -4AP
-
-'
+  apCost: 4
+  coolDown: 0
+  description: Damages all nearby enemies with a 50% chance to knock them off balance.

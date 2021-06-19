@@ -18,7 +18,7 @@ namespace EV
         #region Scriptables
         public SO.StringVariable actionPointsText;
         public SO.SpriteVariable characterPortrait;
-        public SO.SpriteVariable characterSA;
+        public List<SO.SpriteVariable> abilityList;
 
         public TransformVariable cameraTransform;
         public FloatVariable horizontalInput;
@@ -37,9 +37,13 @@ namespace EV
             updatePortrait.Raise();
         }
 
-        public void UpdateAbility(Sprite abilitySprite)
+        public void UpdateAbilities(SessionManager sessionManager)
         {
-            characterSA.value = abilitySprite;
+            GridCharacter currentCharacter = sessionManager.currentCharacter;
+            for (int i=0; i < abilityList.Count - 1; i++)
+            {
+                abilityList[i].value = currentCharacter.character.abilityPool[i].abilityIcon;
+            }
             updateSpecialAbility.Raise();
         }
     }

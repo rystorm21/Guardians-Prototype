@@ -25,6 +25,8 @@ namespace EV
         public bool isInit;
         public float delta;
 
+        public PopUpUI popUpUI;
+        public AbilityPanelUI abilityPanelUI;
         public VariablesHolder gameVariables;
         public LineRenderer reachablePathViz;
         public LineRenderer unReachablePathViz;
@@ -32,6 +34,7 @@ namespace EV
 
         public Material defaultTileMaterial;
         public Material reachableTileMaterial;
+        public Material abilityTileMaterial;
 
         public int TurnIndex
         {
@@ -53,6 +56,8 @@ namespace EV
             isInit = true;          // start the Update
             SetAction("MoveAction");
             currentGameState = GameState.Combat;
+            abilityPanelUI.Activate(this);
+            popUpUI.Deactivate(this);
         }
 
         // Create an array of GridCharacters (all objects with the "GridCharacter script), ie Player Characters")
@@ -303,6 +308,8 @@ namespace EV
             {
                 Node currentNode = openSet[0];
                 steps = currentNode.Steps;
+                Debug.Log("Reachable Nodes: " + reachableNodes.Count);
+                Debug.Log("Steps" + steps);
 
                 if(currentNode.Steps <= character.ActionPoints)
                 {
@@ -398,6 +405,7 @@ namespace EV
 
                 if (Input.GetKeyDown("t")) // just testing functionality here (re-entering combat mode)
                 {
+                    abilityPanelUI.Activate(this);
                     foreach (GridCharacter character in currentCharacter.owner.characters)
                     {
                         if (currentGameState == GameState.Noncombat)
@@ -435,20 +443,6 @@ namespace EV
                     }
 
                 }
-
-                if (Input.GetMouseButtonDown(1))
-                {
-                    if (!isAttack)
-                    {
-                        isAttack = true;
-                        SetAction("AttackAction");
-                    }
-                    else
-                    {
-                        isAttack = false;
-                        SetAction("MoveAction");
-                    }
-                }
             }
         }
 
@@ -456,6 +450,9 @@ namespace EV
         {
             if (currentGameState == GameState.Noncombat)
                 return;
+            
+            popUpUI.Deactivate(this);
+            
             if (!currentCharacter.isCurrentlyMoving)
             {
                 // deHighlight the current player when the turn ends
@@ -500,12 +497,14 @@ namespace EV
 
         public void NonCombatModeEnter()
         {
+            popUpUI.Deactivate(this);
+            abilityPanelUI.Deactivate(this);
             foreach (GridCharacter character in currentCharacter.owner.characters)
             {
                 if (character.character.teamLeader)
                 {
                     gameVariables.UpdateCharacterPortrait(character.character.characterPortrait);
-                    gameVariables.UpdateAbility(character.character.abilityPool[0].abilityIcon);
+                    gameVariables.UpdateAbilities(this);
                     character.OnSelect(currentCharacter.owner);
                     character.highlighter.SetActive(false);
                     currentCharacter = character;
@@ -537,22 +536,21 @@ namespace EV
         public SO.IntVariable stanceInt;
         public SO.IntVariable attackType;
         public SO.IntVariable specialAbilitySelect;
+        public SO.BoolVariable powerActivated;
 
         public void SetWeaponForCurrentPlayer()
         {
             if (currentGameState != GameState.Combat)
                 return;
             
-            SetAction("MoveAction");
+            popUpUI.Deactivate(this);
             switch(attackType.value)
             {
                 case 0:
-                    Debug.Log("Ranged Weapon Selected");
                     currentCharacter.character.weaponSelected = 0;
                     turns[TurnIndex].player.stateManager.CurrentCharacter.PlayIdleAnimation();
                     break;
                 case 1:
-                    Debug.Log("Melee Weapon Selected");
                     currentCharacter.character.weaponSelected = 1;
                     turns[TurnIndex].player.stateManager.CurrentCharacter.PlaySelectMeleeWeapon();
                     break;
@@ -563,7 +561,7 @@ namespace EV
         {
             if (currentGameState != GameState.Combat)
                 return;
-
+            popUpUI.Deactivate(this);
             switch(stanceInt.value)
             {
                 case 0:
@@ -598,6 +596,11 @@ namespace EV
                 return;
             currentCharacter.character.abilitySelected = specialAbilitySelect.value;
             SetAction("SpecialAbilityAction");
+        }
+
+        public void PowerActivated()
+        {
+            popUpUI.PowerActivate(this, powerActivated.value);
         }
         #endregion
 

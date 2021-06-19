@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8ed5555c96195041a84c7ab132956f5, type: 3}
   m_Name: 6 - Quicksand
   m_EditorClassIdentifier: 
+  abilityName: Quicksand
   prefab: {fileID: 0}
   type: 3
-  description: 'PBAoE 5x5
-
-    All enemies hit take a -4AP penalty for 2 rounds'
+  apCost: 4
+  coolDown: 0
+  description: Creates a quicksand pit, all nearby enemies hit take a -4AP penalty
+    for 2 rounds

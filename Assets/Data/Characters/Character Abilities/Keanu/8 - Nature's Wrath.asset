@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f8b009f49b5731478a3b58115a79522, type: 3}
   m_Name: 8 - Nature's Wrath
   m_EditorClassIdentifier: 
+  abilityName: Nature's Wrath
   prefab: {fileID: 0}
   type: 2
-  description: "Keanu becomes an unstoppable force of nature\n\nDuration: 3 turns\nSpecial:
-    \n  - +75% damage resistance (not stackable with brace)\n  - +4 AP per round\n 
-    - Immune to all status effects\n  - All abilities -1 cooldown\n  - When effect
-    wears off, Keanu loses all AP for one turn\n\nCooldown: 6 turns"
+  apCost: 2
+  duration: 0
+  coolDown: 0
+  description: 'Keanu becomes an unstoppable force of nature. Gains a large bonus
+    to damage resistance, immunity to status effects, and gains additional AP. However,
+    when the the power wears off, he is unable to use any special abilities for 2
+    rounds.
+
+
+'
