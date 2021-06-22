@@ -46,7 +46,7 @@ MonoBehaviour:
   defense: 0
   meleeAttackRange: 1
   weaponSelected: 0
-  abilitySelected: 0
+  abilitySelected: 1
   fightingStyle: 0
   currentStance: 1
   teamLeader: 1

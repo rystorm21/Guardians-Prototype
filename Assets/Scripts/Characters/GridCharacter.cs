@@ -87,8 +87,8 @@ namespace EV
         public int SetHitPoints(int archetype)
         {
             int hitPoints;
-            int blaster = 1;
-            int defender = 1;
+            int blaster = 40;
+            int defender = 45;
             int tanker = 60;
 
             switch (archetype)

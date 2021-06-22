@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: Covering Mist
   prefab: {fileID: 0}
-  type: 0
+  type: 1
+  buff: 1
   apCost: 2
+  damageModifier: 0
   duration: 0
-  coolDown: 0
+  coolDown: 4
+  radius: 5
   description: Covers all nearby allies in a protective mist, giving them a +25%
     defense bonus and +10% damage resistance.

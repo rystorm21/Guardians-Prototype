@@ -12,7 +12,7 @@ namespace EV
         public static bool attackInProgress;
         public static bool attackHits;
         public static bool hitByMelee;
-        private int attackAccuracy;
+        public static int attackAccuracy;
 
         public override bool IsActionValid(SessionManager sessionManager, Turn turn)
         {
@@ -34,10 +34,7 @@ namespace EV
                 }
                 else
                 {
-                    node.character.highlighter.SetActive(true); // highlight enemy info
-                    node.character.accuracyText.gameObject.SetActive(true); // chance to hit this character - accuracy
                     attackAccuracy = GetAttackAccuracy(sessionManager, node);
-                    node.character.accuracyText.text = attackAccuracy.ToString() + "%";
                 }
             }
             
@@ -47,15 +44,21 @@ namespace EV
             }
         }
 
-        private int GetAttackAccuracy(SessionManager sessionManager, Node node) 
+        public static int GetAttackAccuracy(SessionManager sessionManager, Node node) 
         {
-            Vector3 attacker = sessionManager.currentCharacter.transform.position;
-            Vector3 defender = node.character.transform.position;
-            int targetDistance = Mathf.RoundToInt(Vector3.Distance(attacker, defender));
-            int effectiveRange = sessionManager.currentCharacter.character.rangeEffectiveRange;
-            int accuracy = sessionManager.currentCharacter.character.attackAccuracy - node.character.character.defense;
-            int closeRange = 5;
+            if (SpecialAbilityAction.buffAbilitySelected)
+                return 1;
 
+            GridCharacter attacker = sessionManager.currentCharacter;
+            GridCharacter defender = node.character;
+            defender.accuracyText.gameObject.SetActive(true); // chance to hit this character - accuracy
+            defender.highlighter.SetActive(true); // highlight enemy info
+
+            int targetDistance = Mathf.RoundToInt(Vector3.Distance(attacker.transform.position, defender.transform.position));
+            int effectiveRange = attacker.character.rangeEffectiveRange;
+            int accuracy = attacker.character.attackAccuracy - defender.character.defense;
+            int closeRange = 5;
+            
             if (targetDistance > effectiveRange)
             {   
                 // penalty for exceeding effective range
@@ -70,6 +73,7 @@ namespace EV
                 accuracy = 100;
             if (accuracy < 0)
                 accuracy = 0;
+            defender.accuracyText.text = accuracy + "%";
             return accuracy;
         }
 
@@ -135,11 +139,13 @@ namespace EV
             return weaponRange;
         }
 
-        int RollDDice(SessionManager sessionManager)
+        public static int RollDDice(SessionManager sessionManager)
         {
+            if (SpecialAbilityAction.buffAbilitySelected)
+                return 100;
             int diceRoll = Random.Range(1,101);
             int result = attackAccuracy - diceRoll;
-            // Debug.Log("Accuracy:" + attackAccuracy + " Roll:" + diceRoll); 
+            // Debug.Log("accuracy: " + attackAccuracy + ", diceRoll: " + diceRoll); // for testing purposes
             if (result >=0)
                 attackHits = true;
             else
@@ -147,7 +153,7 @@ namespace EV
             return result;
         }
 
-        public void AttackSuccessful(SessionManager sessionManager)
+        public static void AttackSuccessful(SessionManager sessionManager)
         {
             if (lastTarget != null)
             {

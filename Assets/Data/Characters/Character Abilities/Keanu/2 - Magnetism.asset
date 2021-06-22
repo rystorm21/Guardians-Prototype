@@ -16,5 +16,7 @@ MonoBehaviour:
   prefab: {fileID: 0}
   type: 3
   apCost: 4
-  coolDown: 0
+  duration: 5
+  coolDown: 5
+  radius: 8
   description: All enemies near Keanu will be forced to attack him.

@@ -15,6 +15,10 @@ MonoBehaviour:
   abilityName: Seismic Smash
   prefab: {fileID: 0}
   type: 3
+  buff: 0
   apCost: 4
-  coolDown: 0
-  description: Damages all nearby enemies with a 50% chance to knock them off balance.
+  damageModifier: 1
+  duration: 0
+  coolDown: 4
+  radius: 3
+  description: Damages all nearby enemies with a 50% chance to inflict a -2AP penalty

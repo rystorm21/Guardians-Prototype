@@ -10,12 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8ed5555c96195041a84c7ab132956f5, type: 3}
-  m_Name: 6 - Quicksand
+  m_Name: 6 - Earthquake
   m_EditorClassIdentifier: 
-  abilityName: Quicksand
+  abilityName: Earthquake
   prefab: {fileID: 0}
   type: 3
+  buff: 0
   apCost: 4
-  coolDown: 0
-  description: Creates a quicksand pit, all nearby enemies hit take a -4AP penalty
-    for 2 rounds
+  damageModifier: 0.5
+  duration: 2
+  coolDown: 5
+  radius: 5
+  description: Creates an earthquake, damaging all nearby enemies and inflicting
+    a -4AP penalty for 2 rounds

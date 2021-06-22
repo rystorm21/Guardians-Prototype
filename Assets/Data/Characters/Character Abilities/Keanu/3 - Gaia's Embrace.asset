@@ -15,7 +15,11 @@ MonoBehaviour:
   abilityName: Gaia's Embrace
   prefab: {fileID: 0}
   type: 2
+  buff: 1
   apCost: 3
-  coolDown: 0
+  damageModifier: 0
+  duration: 0
+  coolDown: 4
+  radius: 0
   description: Keanu can channel earth's energy to heal himself up to 50% of his
     maximum HP.

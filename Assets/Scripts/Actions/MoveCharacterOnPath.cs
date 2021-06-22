@@ -75,7 +75,7 @@ namespace EV
             states.SetStartingState();
             character.PlayIdleAnimation();
             firstInit = false;
-            sessionManager.HighlightAroundCharacter(character);
+            sessionManager.HighlightAroundCharacter(character, null, 0);
             character.currentNode.isWalkable = false;       // make currently occupied square not walkable
             character.isCurrentlyMoving = false;
             character.currentNode.inactiveCharWasHere = false;
@@ -83,6 +83,7 @@ namespace EV
             {
                 sessionManager.APCheck();
             }
+            sessionManager.SetAction("MoveAction");
         }
 
         private void RotateCharacter(GridCharacter character, StateManager states)

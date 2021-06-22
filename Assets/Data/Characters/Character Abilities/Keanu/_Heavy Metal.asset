@@ -12,7 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f8b009f49b5731478a3b58115a79522, type: 3}
   m_Name: _Heavy Metal
   m_EditorClassIdentifier: 
+  abilityName: 
   prefab: {fileID: 0}
   type: 2
-  description: Keanu's affinity with earth allows him to create a more powerful barrier,
-    gaining an additional 25% resistance and defense when bracing.
+  buff: 0
+  apCost: 0
+  damageModifier: 0
+  duration: 0
+  coolDown: 0
+  radius: 0
+  description: Earth Guardians create a more powerful barrier, gaining an additional
+    25% resistance and defense when bracing.

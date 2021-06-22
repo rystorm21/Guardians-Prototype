@@ -15,7 +15,10 @@ MonoBehaviour:
   abilityName: Rolling Thunder
   prefab: {fileID: 0}
   type: 1
+  buff: 0
   apCost: 4
+  damageModifier: 1
   duration: 0
-  coolDown: 0
+  coolDown: 4
+  radius: 3
   description: Damages enemies in an area of effect

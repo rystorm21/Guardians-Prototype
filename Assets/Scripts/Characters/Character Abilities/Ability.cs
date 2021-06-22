@@ -18,7 +18,9 @@ namespace EV
         public string abilityName;
         public GameObject prefab;
         public AbilityType type;
+        public bool buff;
         public int apCost;
+        public float damageModifier;
         public int duration;
         public int coolDown;
         public int radius;

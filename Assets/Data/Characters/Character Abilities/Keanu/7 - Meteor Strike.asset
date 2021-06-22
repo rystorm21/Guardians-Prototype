@@ -15,9 +15,12 @@ MonoBehaviour:
   abilityName: Meteor Strike
   prefab: {fileID: 0}
   type: 1
+  buff: 0
   apCost: 4
+  damageModifier: 2
   duration: 0
-  coolDown: 0
+  coolDown: 5
+  radius: 0
   description: Dash up to 5 distance to strike one enemy, the impact also damages
     additional enemies within the explosion. The primary target is stunned and suffers
     an AP penalty.

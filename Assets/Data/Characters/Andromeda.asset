@@ -37,16 +37,16 @@ MonoBehaviour:
     abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   - ability: {fileID: 11400000, guid: f9f1d84baa0047b4c87dfd6baedb61a5, type: 2}
     abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
-  hitPoints: 1
+  hitPoints: 45
   agility: 8
   rangedAttackRange: 30
   rangeEffectiveRange: 20
-  attackAccuracy: 95
+  attackAccuracy: 85
   attackDamage: 6
   defense: 0
   meleeAttackRange: 2
   weaponSelected: 0
-  abilitySelected: 3
+  abilitySelected: 0
   fightingStyle: 1
   currentStance: 1
   teamLeader: 0

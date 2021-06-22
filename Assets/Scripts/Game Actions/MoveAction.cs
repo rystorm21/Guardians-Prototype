@@ -75,9 +75,10 @@ namespace EV
                         node.character.OnSelect(states.playerHolder);
                         states.prevNode = null;
                         sessionManager.ClearPath(states);
-                        sessionManager.HighlightAroundCharacter(node.character);
+                        sessionManager.HighlightAroundCharacter(node.character, null, 0);
                         sessionManager.gameVariables.UpdateCharacterPortrait(sessionManager.currentCharacter.character.characterPortrait);
                         sessionManager.gameVariables.UpdateAbilities(sessionManager);
+                        DisplayEnemyAcc(sessionManager);
                     }
                 }
                 else
@@ -124,8 +125,9 @@ namespace EV
 
         public override void OnActionStart(SessionManager sessionManager, Turn turn)
         {
+            DisplayEnemyAcc(sessionManager);
             if (turn.player.stateManager.CurrentCharacter != null)
-                sessionManager.HighlightAroundCharacter(turn.player.stateManager.CurrentCharacter);
+                sessionManager.HighlightAroundCharacter(turn.player.stateManager.CurrentCharacter, null, 0);
         }
 
         void PathDetection(StateManager states, SessionManager sessionManager, Node node)
@@ -139,6 +141,18 @@ namespace EV
                     states.prevNode = states.currentNode;
                     sessionManager.PathfinderCall(states.CurrentCharacter, states.currentNode);
                 }
+            }
+        }
+
+        static void DisplayEnemyAcc(SessionManager sessionManager)
+        {
+            if (sessionManager.currentCharacter == null)
+                sessionManager.currentCharacter = sessionManager.turns[0].player.characters[0];
+
+            int enemy = 1;
+            foreach(GridCharacter character in sessionManager.turns[enemy].player.characters)
+            {
+                AttackAction.GetAttackAccuracy(sessionManager, character.currentNode);
             }
         }
     }

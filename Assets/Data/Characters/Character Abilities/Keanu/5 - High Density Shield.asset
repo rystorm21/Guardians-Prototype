@@ -15,7 +15,11 @@ MonoBehaviour:
   abilityName: High Density Shield
   prefab: {fileID: 0}
   type: 2
+  buff: 1
   apCost: 2
-  coolDown: 0
+  damageModifier: 0
+  duration: 4
+  coolDown: 4
+  radius: 0
   description: 'Keanu is immune to status effects / knockdown, and any powers that
     cause -AP penalties while this power is active. '

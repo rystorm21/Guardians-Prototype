@@ -15,7 +15,9 @@ MonoBehaviour:
   abilityName: Infernal Rage
   prefab: {fileID: 0}
   type: 2
+  buff: 1
   apCost: 2
+  damageModifier: 0
   duration: 2
   coolDown: 5
   radius: 0

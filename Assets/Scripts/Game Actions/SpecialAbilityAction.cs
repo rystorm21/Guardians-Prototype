@@ -7,6 +7,7 @@ namespace EV
 {
     public class SpecialAbilityAction : GameAction
     {
+        public static bool buffAbilitySelected;
         SessionManager sessionManager;
         GridCharacter currentCharacter;
         Ability abilitySelected;
@@ -21,6 +22,8 @@ namespace EV
             selection = currentCharacter.character.abilitySelected;
             abilitySelected = currentCharacter.character.abilityPool[selection].ability;
             lastNode = sessionManager.currentCharacter.currentNode;
+            sessionManager.ClearReachableTiles();
+            buffAbilitySelected = abilitySelected.buff;
 
             if (sessionManager.currentCharacter.ActionPoints < abilitySelected.apCost)
             {
@@ -33,10 +36,11 @@ namespace EV
             switch (abilitySelected.type.ToString())
             {
                 case "Self":
-                    sessionManager.currentCharacter.currentNode.tileRenderer.material = sessionManager.abilityTileMaterial;
+                    sessionManager.currentCharacter.currentNode.tileRenderer.material = sessionManager.buffAbilityTileMaterial;
                     break;
                 case "PBAoE":
                     // insert logic for player-based aoe abilities
+                    sessionManager.HighlightAroundCharacter(sessionManager.currentCharacter, sessionManager.currentCharacter.currentNode, abilitySelected.radius);
                     break;
                 case "Ranged":
                     // insert logic for ranged abilities
@@ -55,7 +59,7 @@ namespace EV
             // insert stuff here
             if (sessionManager.powerActivated.value)
             {
-                AbilityType();
+                AbilityType(sessionManager);
                 if (targetingMode)
                     sessionManager.popUpUI.Deactivate(sessionManager, targetingMode);
                 else
@@ -71,15 +75,20 @@ namespace EV
         {
         }
 
+        // triggered by mouseclick on a non-UI location (DetectMousePosition.cs)
         public override void OnDoAction(SessionManager sm, Turn turn, Node node, RaycastHit hit)
         {
-            // triggered by mouseclick on a non-UI location (DetectMousePosition.cs)
-            Debug.Log("Shot fired");
-            sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
-            ExitMode();
+            if (targetingMode)
+            {
+                string abilityTypeInUse;
+                abilityTypeInUse = abilitySelected.type.ToString();
+                BlastRadius(sm, currentCharacter.owner.name, false);
+                sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
+                ExitMode();
+            }
         }
 
-        void AbilityType()
+        void AbilityType(SessionManager sessionManager)
         {
             targetingMode = false;
 
@@ -91,8 +100,8 @@ namespace EV
                     sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
                     break;
                 case "PBAoE":
-                    // insert logic for player-based aoe abilities
-                    Debug.Log("Kaboom probably");
+                    // insert logi)c for player-based aoe abilities
+                    BlastRadius(sessionManager, currentCharacter.owner.name, false);
                     sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
                     break;
                 case "Ranged":
@@ -112,16 +121,20 @@ namespace EV
             targetingMode = true;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            Debug.Log(radius);
 
             if (Physics.Raycast(ray, out hit, 1000))                                 // if the raycast hits something
             {
                 Node node = sessionManager.gridManager.GetNode(hit.point);          // get the node at the hit point 
                 if (node != null)
                 {
+                    sessionManager.HighlightAroundCharacter(sessionManager.currentCharacter, node, radius);
                     ClearLastTargetTile();
                     if (node.tileRenderer != null)
-                        node.tileRenderer.material = sessionManager.abilityTileMaterial;
+                        if (!abilitySelected.buff)
+                            node.tileRenderer.material = sessionManager.abilityTileMaterial;
+                        else
+                            node.tileRenderer.material = sessionManager.buffAbilityTileMaterial;
+
                     lastNode = node;
                 }
                 if (EventSystem.current.IsPointerOverGameObject()) // don't register the click if it's on a GUI object
@@ -130,6 +143,68 @@ namespace EV
                         if (node.tileRenderer != null)
                             node.tileRenderer.material = sessionManager.defaultTileMaterial;
                 }
+            }
+        }
+
+        void BlastRadius(SessionManager sessionManager, string teamName, bool buff)
+        {
+            string targetTeamName = "";
+            if (teamName == "Player1") 
+                if (buffAbilitySelected)
+                    targetTeamName = "Player1";
+                else
+                    targetTeamName = "Enemy";
+
+            if (teamName == "Enemy") 
+                if (buffAbilitySelected)
+                    targetTeamName = "Enemy";
+                else
+                    targetTeamName = "Player1";
+
+            foreach (Node node in sessionManager.GetTargetNodes())
+            {
+                if (node.character != null)
+                {
+                    if (node.character.owner.name == targetTeamName)
+                    {
+                        AttackAction.attackAccuracy = AttackAction.GetAttackAccuracy(sessionManager, node);
+                        int diceRoll = AttackAction.RollDDice(sessionManager);
+                        if (diceRoll >= 0)
+                        {
+                            Debug.Log(node.character.name + " hit by " + abilitySelected.abilityName + ", accuracy: " + diceRoll);
+                            AbilityHit(sessionManager, node, sessionManager.currentCharacter);
+                        }
+                        else
+                            Debug.Log(abilitySelected.abilityName + " missed " + node.character.name);
+                    }
+                }
+            }
+        }
+
+        void AbilityHit(SessionManager sessionManager, Node node, GridCharacter attacker)
+        {
+            GridCharacter defender = node.character;
+            if (!buffAbilitySelected)
+            {
+                int actualDamage;
+                float damageDealt = attacker.character.attackDamage;
+                damageDealt = damageDealt * abilitySelected.damageModifier;
+                actualDamage = Mathf.RoundToInt(damageDealt);
+
+                defender.PlayAnimation("Death");
+                if (defender.character.braced)
+                    damageDealt = damageDealt * .75f;
+                defender.character.hitPoints -= Mathf.RoundToInt(damageDealt);
+
+                if (defender.character.hitPoints <= 0)
+                {
+                    Debug.Log(defender.character.name + " defeated");
+                    defender.Death();
+                }
+            }
+            else 
+            {
+                Debug.Log(defender.character.name + " got buffed yo");
             }
         }
 

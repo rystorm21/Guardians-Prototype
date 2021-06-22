@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: Hurricane
   prefab: {fileID: 0}
-  type: 1
+  type: 3
   apCost: 4
-  duration: 0
-  coolDown: 0
+  duration: 3
+  coolDown: 5
+  radius: 8
   description: 'Summons a hurricane, all nearby opponents have a -25% penalty to
     accuracy. '

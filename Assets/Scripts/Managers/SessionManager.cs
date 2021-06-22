@@ -35,6 +35,8 @@ namespace EV
         public Material defaultTileMaterial;
         public Material reachableTileMaterial;
         public Material abilityTileMaterial;
+        public Material buffAbilityTileMaterial;
+        private List<Node> targetedNodes;
 
         public int TurnIndex
         {
@@ -49,6 +51,7 @@ namespace EV
         #region Init
         private void Start()
         {
+            Application.targetFrameRate = 60;
             InitGameActions();
             gridManager.Init();     // initialize the grid
             PlaceUnits();           // snap units to grid
@@ -228,7 +231,7 @@ namespace EV
         #region Tile Management
         List<Node> highlightedTiles;
 
-        List<Node> GetNeighborsManhattan(Node center)
+        List<Node> GetNeighborsManhattan(Node center, Node target)
         {
             List<Node> returnVal = new List<Node>();
 
@@ -237,7 +240,14 @@ namespace EV
                 Node node = gridManager.GetNode(center.x + x, center.y, center.z);
                 if (node != null)
                 {
-                    if (node.isWalkable)
+                    if (target == null)
+                    {
+                        if (node.isWalkable)
+                        {
+                            returnVal.Add(node);
+                        }
+                    }
+                    else
                     {
                         returnVal.Add(node);
                     }
@@ -249,7 +259,14 @@ namespace EV
                 Node node = gridManager.GetNode(center.x, center.y, center.z + z);
                 if (node != null)
                 {
-                    if (node.isWalkable)
+                    if (target == null)
+                    {
+                        if (node.isWalkable)
+                        {
+                            returnVal.Add(node);
+                        }
+                    }
+                    else
                     {
                         returnVal.Add(node);
                     }
@@ -259,7 +276,7 @@ namespace EV
             return returnVal;
         }
 
-        List<Node> GetNeighborsDiagonal(Node center)
+        List<Node> GetNeighborsDiagonal(Node center, Node target)
         {
             List<Node> returnVal = new List<Node>();
 
@@ -272,7 +289,14 @@ namespace EV
                         Node node = gridManager.GetNode(center.x + x, center.y, center.z + z);
                         if (node != null)
                         {
-                            if (node.isWalkable)
+                            if (target == null)
+                            {
+                                if (node.isWalkable)
+                                {
+                                    returnVal.Add(node);
+                                }
+                            }
+                            else
                             {
                                 returnVal.Add(node);
                             }
@@ -284,7 +308,7 @@ namespace EV
             return returnVal;
         }
 
-        public void HighlightAroundCharacter(GridCharacter character)
+        public void HighlightAroundCharacter(GridCharacter character, Node target, int radius)
         {
             // We only want the highlighting to happen when in combat mode. 
             if (currentGameState == GameState.Noncombat)
@@ -297,8 +321,15 @@ namespace EV
             List<Node> openSet = new List<Node>();
             HashSet<Node> closedSet = new HashSet<Node>();
 
+            int showRadius = character.ActionPoints;
+            if (target != null)
+            {
+                showRadius = radius;
+                centerNode = target;
+            }
             reachableNodes.Add(centerNode);
             openSet.Add(centerNode);
+
             centerNode.Steps = 0;
             int steps = 0; 
 
@@ -308,18 +339,16 @@ namespace EV
             {
                 Node currentNode = openSet[0];
                 steps = currentNode.Steps;
-                Debug.Log("Reachable Nodes: " + reachableNodes.Count);
-                Debug.Log("Steps" + steps);
 
-                if(currentNode.Steps <= character.ActionPoints)
+                if(currentNode.Steps <= showRadius)
                 {
-                    foreach (Node node in GetNeighborsManhattan(currentNode))
+                    foreach (Node node in GetNeighborsManhattan(currentNode, target))
                     {
                         if (!closedSet.Contains(node))
                         {
                             int newStepCost = steps + 1;
 
-                            if (newStepCost <= character.ActionPoints)
+                            if (newStepCost <= showRadius)
                             {
                                 if (!openSet.Contains(node))
                                 {
@@ -330,13 +359,13 @@ namespace EV
                             }
                         }
                     }
-                    foreach (Node node in GetNeighborsDiagonal(currentNode))
+                    foreach (Node node in GetNeighborsDiagonal(currentNode, target))
                     {
                         if (!closedSet.Contains(node))
                         {
                             int newStepCost = steps + 2;
 
-                            if (newStepCost <= character.ActionPoints)
+                            if (newStepCost <= showRadius)
                             {
                                 if (!openSet.Contains(node))
                                 {
@@ -351,19 +380,29 @@ namespace EV
                 openSet.Remove(currentNode);
                 closedSet.Add(currentNode);
             }
-            UpdateListToReachableMaterial(reachableNodes);
+            UpdateListToReachableMaterial(reachableNodes, target);
         }
 
-        void UpdateListToReachableMaterial(List<Node> list)
+        void UpdateListToReachableMaterial(List<Node> list, Node target)
         {
             ClearReachableTiles();
 
             foreach (Node node in list)
             {
-                node.tileRenderer.material = reachableTileMaterial;
+                if (node.tileRenderer != null)
+                    if (target == null)
+                        node.tileRenderer.material = reachableTileMaterial;
+                    else
+                    {
+                        if (SpecialAbilityAction.buffAbilitySelected)
+                            node.tileRenderer.material = buffAbilityTileMaterial;
+                        else
+                            node.tileRenderer.material = abilityTileMaterial;
+                    }
             }
 
             highlightedTiles = list;
+            targetedNodes = highlightedTiles;
         }
 
         public void ClearReachableTiles()
@@ -372,9 +411,15 @@ namespace EV
                 return;
             foreach (Node node in highlightedTiles)
             {
-                node.tileRenderer.material = defaultTileMaterial;
+                if (node.tileRenderer != null)
+                    node.tileRenderer.material = defaultTileMaterial;
             }
             highlightedTiles.Clear();
+        }
+
+        public List<Node> GetTargetNodes()
+        {
+            return targetedNodes;
         }
         #endregion
 
@@ -420,7 +465,7 @@ namespace EV
                     }
                     currentGameState = GameState.Combat;
                     currentCharacter.isSelected = true;
-                    HighlightAroundCharacter(currentCharacter);
+                    HighlightAroundCharacter(currentCharacter, null, 0);
                 } // end re-enter combat test
 
                 delta = Time.deltaTime;
@@ -575,7 +620,7 @@ namespace EV
                         turns[TurnIndex].player.stateManager.CurrentCharacter.SetBrace();
                         currentCharacter.ActionPoints = 0;
                         ClearReachableTiles();
-                        HighlightAroundCharacter(currentCharacter);
+                        HighlightAroundCharacter(currentCharacter, null, 0);
                     }
                     else {
                         Debug.Log("Not enough AP to brace");

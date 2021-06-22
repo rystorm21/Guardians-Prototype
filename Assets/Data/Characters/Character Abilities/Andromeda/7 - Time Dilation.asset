@@ -15,4 +15,10 @@ MonoBehaviour:
   abilityName: Time Dilation
   prefab: {fileID: 0}
   type: 2
+  buff: 1
+  apCost: 0
+  damageModifier: 0
+  duration: 0
+  coolDown: 0
+  radius: 0
   description: All Allies receive a +8 bonus to AP for one round

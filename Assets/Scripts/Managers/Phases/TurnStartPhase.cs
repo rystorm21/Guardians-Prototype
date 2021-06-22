@@ -26,7 +26,7 @@ namespace EV
                 {
                     if (turn.player.stateManager.CurrentCharacter == character)
                     {
-                        sessionManager.HighlightAroundCharacter(character);
+                        sessionManager.HighlightAroundCharacter(character, null, 0);
                     }
                 }
                 character.currentNode.isWalkable = false;
@@ -42,7 +42,7 @@ namespace EV
         {
             GridCharacter defaultPlayer = turn.player.characters[0];
             sessionManager.currentCharacter = defaultPlayer;
-            sessionManager.HighlightAroundCharacter(defaultPlayer);
+            sessionManager.HighlightAroundCharacter(defaultPlayer, null, 0);
             sessionManager.currentCharacter.isSelected = true;
         }
     }

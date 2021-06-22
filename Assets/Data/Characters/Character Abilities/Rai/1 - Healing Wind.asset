@@ -15,6 +15,10 @@ MonoBehaviour:
   abilityName: Healing Wind
   prefab: {fileID: 0}
   type: 0
+  buff: 1
   apCost: 3
-  coolDown: 0
+  damageModifier: 0
+  duration: 0
+  coolDown: 4
+  radius: 0
   description: Heals one ally 40% of max HP

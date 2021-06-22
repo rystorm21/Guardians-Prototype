@@ -4998,6 +4998,8 @@ MonoBehaviour:
   reachableTileMaterial: {fileID: 2100000, guid: b7d8a9a5adb92fc488576d039e5e0a60,
     type: 2}
   abilityTileMaterial: {fileID: 2100000, guid: e3155402d9bccd947981c7fa8833095f, type: 2}
+  buffAbilityTileMaterial: {fileID: 2100000, guid: 9f66315e76cb9d0459270f14e0fbda7f,
+    type: 2}
   stanceInt: {fileID: 11400000, guid: 091b5d2e876ae3f41a57fab626ba7247, type: 2}
   attackType: {fileID: 11400000, guid: 1bffca97343186c4d8ec85ae2b06b509, type: 2}
   specialAbilitySelect: {fileID: 11400000, guid: 0064a40fd202f1d4393656900c7a4b4d,

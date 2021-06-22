@@ -15,8 +15,10 @@ MonoBehaviour:
   abilityName: Firestorm
   prefab: {fileID: 0}
   type: 1
+  buff: 0
   apCost: 4
-  duration: 0
+  damageModifier: 0.5
+  duration: 3
   coolDown: 5
   radius: 5
   description: Shoots an explosive blast that damages all enemies in its area of

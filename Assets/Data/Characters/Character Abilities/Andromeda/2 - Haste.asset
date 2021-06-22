@@ -15,6 +15,12 @@ MonoBehaviour:
   abilityName: Haste
   prefab: {fileID: 0}
   type: 0
+  buff: 1
+  apCost: 0
+  damageModifier: 0
+  duration: 0
+  coolDown: 0
+  radius: 0
   description: 'Ally, Targeted
 
     Ally''s AP is doubled for 3 turns

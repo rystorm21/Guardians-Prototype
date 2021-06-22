@@ -15,8 +15,11 @@ MonoBehaviour:
   abilityName: Magma Hands
   prefab: {fileID: 0}
   type: 2
+  buff: 0
   apCost: 2
-  duration: 0
-  coolDown: 0
+  damageModifier: 0
+  duration: 3
+  coolDown: 4
+  radius: 0
   description: Keanu's fists are surrounded by burning magma, his melee attacks now
     deal 50% more damage.

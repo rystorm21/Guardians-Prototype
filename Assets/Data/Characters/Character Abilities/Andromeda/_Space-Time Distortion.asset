@@ -15,5 +15,12 @@ MonoBehaviour:
   abilityName: Space-Time Distortion
   prefab: {fileID: 0}
   type: 4
+  buff: 0
+  apCost: 0
+  damageModifier: 0
+  duration: 0
+  coolDown: 0
+  radius: 0
   description: Andromeda has the ability to bend space-time, allowing her to attack
-    distant targets with higher accuracy.
+    distant targets with higher accuracy. Her special abilities also hit with 100%
+    accuracy.
