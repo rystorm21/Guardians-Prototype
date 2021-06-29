@@ -35,18 +35,27 @@ MonoBehaviour:
     abilityIcon: {fileID: 0}
   - ability: {fileID: 0}
     abilityIcon: {fileID: 0}
+  appliedBuffs: []
+  maxHitPoints: 45
   hitPoints: 45
   agility: 10
   rangedAttackRange: 20
   rangeEffectiveRange: 10
-  attackAccuracy: 50
+  attackAccuracy: 100
   attackDamage: 6
   defense: 7
+  damageResist: 50
   meleeAttackRange: 1
   weaponSelected: 0
   abilitySelected: 0
   fightingStyle: 0
   currentStance: 1
   teamLeader: 0
-  braced: 0
+  braced: 1
   KO: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffMeleeDmg: 0
+  buffRangeDmg: 0
+  buffDmgRes: 0

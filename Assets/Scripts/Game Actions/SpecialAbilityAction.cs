@@ -25,10 +25,11 @@ namespace EV
             sessionManager.ClearReachableTiles();
             buffAbilitySelected = abilitySelected.buff;
 
-            if (sessionManager.currentCharacter.ActionPoints < abilitySelected.apCost)
+            if (currentCharacter.ActionPoints < abilitySelected.apCost)
             {
                 // if trying to use an ability without enough AP
-                sessionManager.SetAction("MoveAction");
+                Debug.Log("Not enough AP to use this ability.");
+                ExitMode();
                 return;
             }
             sessionManager.currentCharacter.currentNode.tileRenderer.material = sessionManager.defaultTileMaterial;
@@ -36,11 +37,11 @@ namespace EV
             switch (abilitySelected.type.ToString())
             {
                 case "Self":
-                    sessionManager.currentCharacter.currentNode.tileRenderer.material = sessionManager.buffAbilityTileMaterial;
+                    sessionManager.HighlightAroundCharacter(currentCharacter, currentCharacter.currentNode, abilitySelected.radius);
                     break;
                 case "PBAoE":
                     // insert logic for player-based aoe abilities
-                    sessionManager.HighlightAroundCharacter(sessionManager.currentCharacter, sessionManager.currentCharacter.currentNode, abilitySelected.radius);
+                    sessionManager.HighlightAroundCharacter(currentCharacter, currentCharacter.currentNode, abilitySelected.radius);
                     break;
                 case "Ranged":
                     // insert logic for ranged abilities
@@ -96,7 +97,7 @@ namespace EV
             {
                 case "Self":
                     // insert logic for self-based abilities
-                    Debug.Log("Self ability type used: " + abilitySelected.abilityName.ToString());
+                    BuffAbility(currentCharacter, true);
                     sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
                     break;
                 case "PBAoE":
@@ -114,7 +115,23 @@ namespace EV
                     break;
             }
         }
-        
+
+        void BuffAbility(GridCharacter target)
+        {
+            target.character.hitPoints += Mathf.RoundToInt(target.character.maxHitPoints * abilitySelected.healingModifier);
+            if (target.character.hitPoints >= target.character.maxHitPoints)
+                target.character.hitPoints = target.character.maxHitPoints;
+            target.character.AddAppliedBuff(abilitySelected);
+            abilitySelected.durationCountdown = abilitySelected.duration;
+            target.character.ApplyBuffs(abilitySelected);
+            MoveAction.DisplayEnemyAcc(sessionManager);
+        }
+
+        void BuffAbility(GridCharacter target, bool self)
+        {
+            BuffAbility(target);
+            ExitMode();
+        }        
         // Targeting mode for ranged / ranged AoE Attacks
         void TargetingMode(int radius)
         {
@@ -171,11 +188,13 @@ namespace EV
                         int diceRoll = AttackAction.RollDDice(sessionManager);
                         if (diceRoll >= 0)
                         {
-                            Debug.Log(node.character.name + " hit by " + abilitySelected.abilityName + ", accuracy: " + diceRoll);
                             AbilityHit(sessionManager, node, sessionManager.currentCharacter);
                         }
                         else
-                            Debug.Log(abilitySelected.abilityName + " missed " + node.character.name);
+                        {
+                            // indicate that player missed
+                            // Debug.Log(abilitySelected.abilityName + " missed " + node.character.name);
+                        }
                     }
                 }
             }
@@ -186,15 +205,9 @@ namespace EV
             GridCharacter defender = node.character;
             if (!buffAbilitySelected)
             {
-                int actualDamage;
-                float damageDealt = attacker.character.attackDamage;
-                damageDealt = damageDealt * abilitySelected.damageModifier;
-                actualDamage = Mathf.RoundToInt(damageDealt);
-
-                defender.PlayAnimation("Death");
-                if (defender.character.braced)
-                    damageDealt = damageDealt * .75f;
+                float damageDealt = AttackAction.DamageDealt(sessionManager, 0, attacker, defender);
                 defender.character.hitPoints -= Mathf.RoundToInt(damageDealt);
+                defender.PlayAnimation("Death");
 
                 if (defender.character.hitPoints <= 0)
                 {
@@ -204,7 +217,7 @@ namespace EV
             }
             else 
             {
-                Debug.Log(defender.character.name + " got buffed yo");
+                BuffAbility(defender);
             }
         }
 
@@ -216,6 +229,7 @@ namespace EV
 
         void ExitMode()
         {
+            buffAbilitySelected = false;
             ClearLastTargetTile();
             sessionManager.SetAction("MoveAction");
             sessionManager.popUpUI.Deactivate(sessionManager);

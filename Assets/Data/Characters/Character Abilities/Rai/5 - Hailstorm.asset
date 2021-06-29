@@ -15,8 +15,22 @@ MonoBehaviour:
   abilityName: Hailstorm
   prefab: {fileID: 0}
   type: 1
+  buff: 0
   apCost: 4
-  duration: 0
+  damageModifier: 0
+  healingModifier: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffDmg: 0
+  buffDmgRes: 0
+  debuffAcc: 0
+  debuffActionPoints: 2
+  debuffDefense: 0.15
+  debuffDmg: 0
+  debuffDmgRes: 0.15
+  duration: 3
   coolDown: 0
+  radius: 0
   description: Summons a hail storm. Enemies caught in the area of effect are slowed
     and suffer a penalty to defense and damage resistance.

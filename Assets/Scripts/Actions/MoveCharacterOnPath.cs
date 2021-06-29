@@ -23,6 +23,7 @@ namespace EV
         public override void Execute(StateManager states, SessionManager sessionManager, Turn turn)
         {
             GridCharacter character = states.CurrentCharacter;
+            sessionManager.moveInProgress = true;
 
             if (!isInit)
             {
@@ -43,7 +44,6 @@ namespace EV
                 CheckForInactive(character);
 
                 character.ActionPoints -= moveCost; // decrement AP for every step, 2 if diagonal
-                character.isCurrentlyMoving = true;
                 index++;
 
                 if (index > character.currentPath.Count - 1)
@@ -76,8 +76,8 @@ namespace EV
             character.PlayIdleAnimation();
             firstInit = false;
             sessionManager.HighlightAroundCharacter(character, null, 0);
+            sessionManager.moveInProgress = false;
             character.currentNode.isWalkable = false;       // make currently occupied square not walkable
-            character.isCurrentlyMoving = false;
             character.currentNode.inactiveCharWasHere = false;
             if (character.ActionPoints == 0)
             {

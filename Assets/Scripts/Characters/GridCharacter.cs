@@ -26,7 +26,6 @@ namespace EV
         public bool isSelected;
         public bool isBraced;
         public bool isRunning;
-        public bool isCurrentlyMoving;
 
         private bool isFirstTurn;
 
@@ -62,6 +61,7 @@ namespace EV
         public void OnInit()
         {
             isFirstTurn = true;
+            character.ClearAllStatus();
             character.NonCombatAPCap = 100;
             accuracyText = this.transform.GetChild(0).gameObject.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>(); // playerhighlight must be first child
             highlighter = this.transform.GetChild(0).gameObject;
@@ -77,7 +77,8 @@ namespace EV
             MeleeActivation(false);
             character.weaponSelected = 0;
             teamName = owner.name;
-            character.hitPoints = SetHitPoints(character.characterArchetype); // just for testing purposes
+            character.maxHitPoints = SetHitPoints(character.characterArchetype); // just for testing purposes
+            character.hitPoints = character.maxHitPoints;
             character.KO = false;
             character.teamLeader = false;
             if (owner.characters[0].gameObject == this.gameObject)
@@ -150,6 +151,9 @@ namespace EV
                     OnSelect(owner);
                 isFirstTurn = false;
             }
+            SpecialAbilityAction.buffAbilitySelected = false;
+            character.CycleStatus();
+            character.ApplyBuffs();
         }
 
         #endregion

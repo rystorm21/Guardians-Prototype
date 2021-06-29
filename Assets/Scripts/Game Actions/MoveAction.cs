@@ -144,7 +144,7 @@ namespace EV
             }
         }
 
-        static void DisplayEnemyAcc(SessionManager sessionManager)
+        public static void DisplayEnemyAcc(SessionManager sessionManager)
         {
             if (sessionManager.currentCharacter == null)
                 sessionManager.currentCharacter = sessionManager.turns[0].player.characters[0];

@@ -56,7 +56,7 @@ namespace EV
 
             int targetDistance = Mathf.RoundToInt(Vector3.Distance(attacker.transform.position, defender.transform.position));
             int effectiveRange = attacker.character.rangeEffectiveRange;
-            int accuracy = attacker.character.attackAccuracy - defender.character.defense;
+            int accuracy = Mathf.RoundToInt((attacker.character.attackAccuracy + attacker.character.buffAcc) - (defender.character.defense + defender.character.buffDefense));
             int closeRange = 5;
             
             if (targetDistance > effectiveRange)
@@ -153,13 +153,11 @@ namespace EV
             return result;
         }
 
-        public static void AttackSuccessful(SessionManager sessionManager)
+        public static void AttackSuccessful(SessionManager sessionManager, int weaponType)
         {
             if (lastTarget != null)
             {
-                float damageDealt = lastAttacker.character.attackDamage;
-                if (lastTarget.character.braced)
-                    damageDealt = damageDealt * .75f;
+                float damageDealt = DamageDealt(sessionManager, weaponType, lastAttacker, lastTarget);
                 lastTarget.character.hitPoints -= Mathf.RoundToInt(damageDealt);
             }
             if (lastTarget.character.hitPoints <=0)
@@ -167,6 +165,22 @@ namespace EV
                 Debug.Log(lastTarget.character.name + " defeated");
                 lastTarget.Death();
             }
+        }
+
+        public static float DamageDealt(SessionManager sessionManager, int weaponType, GridCharacter attacker, GridCharacter defender)
+        {
+            float damageDealt;
+            if (weaponType == 0)
+                damageDealt = attacker.character.attackDamage + (attacker.character.attackDamage * attacker.character.buffRangeDmg);
+            else
+                damageDealt = attacker.character.attackDamage + (attacker.character.attackDamage * attacker.character.buffMeleeDmg);
+
+            if (defender.character.braced)
+                damageDealt = (damageDealt * (.75f - (defender.character.damageResist * .01f)));
+            else
+                damageDealt *= 1 - (defender.character.damageResist * .01f);
+
+            return damageDealt;
         }
 
         public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
@@ -193,7 +207,7 @@ namespace EV
                             lastTarget = node.character;
                             PlayAttackAnimation(weaponType, turn, hit.transform);
                             if (diceRoll >= 0)
-                                AttackSuccessful(sessionManager);
+                                AttackSuccessful(sessionManager, weaponType);
                             else 
                                 Debug.Log("attack missed!");
                         }

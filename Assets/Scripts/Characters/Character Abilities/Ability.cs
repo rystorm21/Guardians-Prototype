@@ -21,7 +21,20 @@ namespace EV
         public bool buff;
         public int apCost;
         public float damageModifier;
+        public float healingModifier;
+        public float buffAcc;
+        public float buffActionPoints;
+        public float buffDefense;
+        public float buffMeleeDmg;
+        public float buffRangeDmg;
+        public float buffDmgRes;
+        public float debuffAcc;
+        public float debuffActionPoints;
+        public float debuffDefense;
+        public float debuffDmg;
+        public float debuffDmgRes;
         public int duration;
+        public int durationCountdown;
         public int coolDown;
         public int radius;
         [TextArea(15, 20)]

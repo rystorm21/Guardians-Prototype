@@ -18,7 +18,20 @@ MonoBehaviour:
   buff: 0
   apCost: 2
   damageModifier: 0
+  healingModifier: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffMeleeDmg: 0.5
+  buffRangeDmg: 0
+  buffDmgRes: 0
+  debuffAcc: 0
+  debuffActionPoints: 0
+  debuffDefense: 0
+  debuffDmg: 0
+  debuffDmgRes: 0
   duration: 3
+  durationCountdown: 0
   coolDown: 4
   radius: 0
   description: Keanu's fists are surrounded by burning magma, his melee attacks now

@@ -15,8 +15,22 @@ MonoBehaviour:
   abilityName: Thunderstorm
   prefab: {fileID: 0}
   type: 3
+  buff: 0
   apCost: 4
-  duration: 0
+  damageModifier: 0
+  healingModifier: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffDmg: 0
+  buffDmgRes: 0
+  debuffAcc: 0
+  debuffActionPoints: 0
+  debuffDefense: 0
+  debuffDmg: 0
+  debuffDmgRes: 0
+  duration: 3
   coolDown: 0
+  radius: 0
   description: 'For 3 turns, nearest 2 enemies to caster gets hit with a lightning
     bolt. If only one enemy in the area of affect, target gets hit twice. '

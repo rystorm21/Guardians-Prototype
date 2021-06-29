@@ -35,6 +35,8 @@ MonoBehaviour:
     abilityIcon: {fileID: 0}
   - ability: {fileID: 11400000, guid: 056772048ef6f2d418427a53f49e2806, type: 2}
     abilityIcon: {fileID: 0}
+  appliedBuffs: []
+  maxHitPoints: 40
   hitPoints: 40
   agility: 8
   rangedAttackRange: 20
@@ -44,9 +46,14 @@ MonoBehaviour:
   defense: 5
   meleeAttackRange: 1
   weaponSelected: 0
-  abilitySelected: 0
+  abilitySelected: 4
   fightingStyle: 0
   currentStance: 1
   teamLeader: 0
   braced: 0
   KO: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffDmg: 0
+  buffDmgRes: 0

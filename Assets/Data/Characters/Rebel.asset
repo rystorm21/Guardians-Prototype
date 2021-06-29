@@ -35,11 +35,12 @@ MonoBehaviour:
     abilityIcon: {fileID: 0}
   - ability: {fileID: 0}
     abilityIcon: {fileID: 0}
+  maxHitPoints: 45
   hitPoints: 45
   agility: 10
   rangedAttackRange: 20
   rangeEffectiveRange: 10
-  attackAccuracy: 50
+  attackAccuracy: 100
   attackDamage: 6
   defense: 25
   meleeAttackRange: 1

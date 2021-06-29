@@ -14,14 +14,28 @@ namespace EV
 
         public override void OnStartPhase(SessionManager sessionManager, Turn turn)
         {
+            List<Ability> decrementor = new List<Ability>();
+            
             // just to show which turn it is - debugging purposes
             Debug.Log(turn.name); 
-
+            
             foreach (GridCharacter character in turn.player.characters)
             {
                 // initializes the characters stats / AP for all characters
+                if (character.character.appliedBuffs.Count > 0)
+                {
+                    for (int i = 0; i < character.character.appliedBuffs.Count; i++)
+                    {
+                        if (!decrementor.Contains(character.character.appliedBuffs[i]))
+                        {
+                            // ensures ability / buffs only get decremented once
+                            decrementor.Add(character.character.appliedBuffs[i]);
+                            character.character.appliedBuffs[i].durationCountdown--;
+                        }
+                    }
+                }
+                character.character.ZeroBuffs();
                 character.OnStartTurn();
-
                 if (character.owner.isLocalPlayer)
                 {
                     if (turn.player.stateManager.CurrentCharacter == character)

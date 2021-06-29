@@ -14,6 +14,7 @@ namespace EV
     {
         public static GameState currentGameState;
         public static bool combatVictory;
+        public bool moveInProgress;
         bool gameOverScreenLoaded;
 
         int _turnIndex;
@@ -493,22 +494,19 @@ namespace EV
 
         public void EndTurn()
         {
-            if (currentGameState == GameState.Noncombat)
+            if (currentGameState == GameState.Noncombat || moveInProgress)
                 return;
             
             popUpUI.Deactivate(this);
             
-            if (!currentCharacter.isCurrentlyMoving)
+            // deHighlight the current player when the turn ends
+            if (currentCharacter != null)
             {
-                // deHighlight the current player when the turn ends
-                if (currentCharacter != null)
-                {
-                    currentCharacter.OnDeHighlight(turns[TurnIndex].player, true);
-                    ClearReachableTiles();
-                    ClearPath(turns[TurnIndex].player.stateManager);
-                }
-                turns[_turnIndex].EndCurrentPhase();
+                currentCharacter.OnDeHighlight(turns[TurnIndex].player, true);
+                ClearReachableTiles();
+                ClearPath(turns[TurnIndex].player.stateManager);
             }
+            turns[_turnIndex].EndCurrentPhase();
         }
 
         public void APCheck() 
@@ -637,7 +635,7 @@ namespace EV
 
         public void SpecialAbility()
         {
-            if (currentGameState != GameState.Combat)
+            if (currentGameState != GameState.Combat || moveInProgress)
                 return;
             currentCharacter.character.abilitySelected = specialAbilitySelect.value;
             SetAction("SpecialAbilityAction");

@@ -14,8 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: Hurricane
   prefab: {fileID: 0}
-  type: 3
+  type: 1
+  buff: 0
   apCost: 4
+  damageModifier: 0
+  healingModifier: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffDmg: 0
+  buffDmgRes: 0
+  debuffAcc: 0.25
+  debuffActionPoints: 0
+  debuffDefense: 0
+  debuffDmg: 0
+  debuffDmgRes: 0
   duration: 3
   coolDown: 5
   radius: 8

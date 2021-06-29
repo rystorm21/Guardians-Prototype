@@ -18,7 +18,20 @@ MonoBehaviour:
   buff: 1
   apCost: 2
   damageModifier: 0
-  duration: 2
+  healingModifier: 0
+  buffAcc: 50
+  buffActionPoints: 0
+  buffDefense: 0
+  buffMeleeDmg: 0.25
+  buffRangeDmg: 0.25
+  buffDmgRes: 0
+  debuffAcc: 0
+  debuffActionPoints: 0
+  debuffDefense: 0
+  debuffDmg: 0
+  debuffDmgRes: 0
+  duration: 3
+  durationCountdown: 2
   coolDown: 5
   radius: 0
   description: Lana channels her power and receives a bonus to accuracy and damage
