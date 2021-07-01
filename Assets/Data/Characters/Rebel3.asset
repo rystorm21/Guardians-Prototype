@@ -35,13 +35,13 @@ MonoBehaviour:
     abilityIcon: {fileID: 0}
   - ability: {fileID: 0}
     abilityIcon: {fileID: 0}
-  appliedBuffs: []
+  appliedStatus: []
   maxHitPoints: 45
   hitPoints: 45
   agility: 10
   rangedAttackRange: 20
   rangeEffectiveRange: 10
-  attackAccuracy: 100
+  attackAccuracy: 75
   attackDamage: 6
   defense: 7
   damageResist: 50
@@ -51,7 +51,7 @@ MonoBehaviour:
   fightingStyle: 0
   currentStance: 1
   teamLeader: 0
-  braced: 1
+  braced: 0
   KO: 0
   buffAcc: 0
   buffActionPoints: 0
@@ -59,3 +59,9 @@ MonoBehaviour:
   buffMeleeDmg: 0
   buffRangeDmg: 0
   buffDmgRes: 0
+  debuffAcc: 0
+  debuffActionPoints: 0
+  debuffDefense: 0
+  debuffMeleeDmg: 0
+  debuffRangeDmg: 0
+  debuffDmgRes: 0

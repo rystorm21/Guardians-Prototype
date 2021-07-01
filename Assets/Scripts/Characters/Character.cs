@@ -4,6 +4,13 @@ using UnityEngine;
 
 namespace EV.Characters
 {
+    public enum Archetype
+    {
+        Defender,
+        Blaster,
+        Tanker
+    }
+
     [CreateAssetMenu(menuName = "Characters/Character")]
     public class Character : ScriptableObject
     {
@@ -15,8 +22,7 @@ namespace EV.Characters
         public GameObject projectile;
         public Inventory inventory;
         public List<AbilitySlot> abilityPool;
-        public List<Ability> appliedBuffs; // make private when done testing
-        private List<Ability> appliedDebuffs;
+        public List<Ability> appliedStatus; // make private when done testing
         public int maxHitPoints;
         public int hitPoints;
         public int agility = 10;
@@ -43,6 +49,13 @@ namespace EV.Characters
         public float buffMeleeDmg;
         public float buffRangeDmg;
         public float buffDmgRes;
+
+        public float debuffAcc;
+        public float debuffActionPoints;
+        public float debuffDefense;
+        public float debuffMeleeDmg;
+        public float debuffRangeDmg;
+        public float debuffDmgRes;
         
         public int StartingAP 
         {
@@ -55,75 +68,73 @@ namespace EV.Characters
             set { nonCombatAPCap = value; }
         }
 
-        public List<Ability> GetAppliedBuffs()
+        public List<Ability> GetAppliedStatus()
         {
-            return appliedBuffs;
+            return appliedStatus;
         }
 
-        public void AddAppliedBuff(Ability buff)
+        public void AddAppliedStatus(Ability status)
         {
-            if (buff.duration > 0)
-                appliedBuffs.Add(buff);
-        }
-
-        public List<Ability> GetAppliedDebuffs()
-        {
-            return appliedDebuffs;
-        }
-
-        public void AddAppliedDebuff(Ability debuff)
-        {
-            appliedDebuffs.Add(debuff);
+            status.durationCountdown = status.duration;
+            if (!appliedStatus.Contains(status))
+                appliedStatus.Add(status);
         }
 
         #region Status Effect Management
         public void ClearAllStatus()
         {
-            appliedBuffs.Clear();
-            appliedDebuffs.Clear();
+            appliedStatus.Clear();
         }
 
         public void CycleStatus()
         {
-            List<Ability> buffsToRemove = new List<Ability>();
-            foreach (Ability buff in appliedBuffs)
+            List<Ability> statusToRemove = new List<Ability>();
+            foreach (Ability ability in appliedStatus)
             {
-                if (buff.durationCountdown == 0)
-                    buffsToRemove.Add(buff);
+                if (ability.durationCountdown == 0)
+                    statusToRemove.Add(ability);
             }
-            if (buffsToRemove.Count > 0)
+            if (statusToRemove.Count > 0)
             {
-                foreach (Ability buff in buffsToRemove)
+                foreach (Ability buff in statusToRemove)
                 {
-                    appliedBuffs.Remove(buff);
+                    appliedStatus.Remove(buff);
                 }
             }
         }
 
-        public void ApplyBuffs()
+        public void ApplyStatus()
         {
-            foreach (Ability buff in appliedBuffs)
+            foreach (Ability status in appliedStatus)
             {
-                buffAcc += buff.buffAcc;
-                buffActionPoints += buff.buffActionPoints;
-                buffDefense += buff.buffDefense;
-                buffMeleeDmg += buff.buffMeleeDmg;
-                buffRangeDmg += buff.buffRangeDmg;
-                buffDmgRes += buff.buffDmgRes;
+                ApplyAll(status);
             }
         }
 
-        public void ApplyBuffs(Ability buff)
+        public void ApplyStatus(Ability status)
         {
-            buffAcc += buff.buffAcc;
-            buffActionPoints += buff.buffActionPoints;
-            buffDefense += buff.buffDefense;
-            buffMeleeDmg += buff.buffMeleeDmg;
-            buffRangeDmg += buff.buffRangeDmg;
-            buffDmgRes += buff.buffDmgRes; 
+            if (!appliedStatus.Contains(status))
+                ApplyAll(status);
         }
 
-        public void ZeroBuffs()
+        public void ApplyAll(Ability status)
+        {
+            buffAcc += status.buffAcc;
+            buffActionPoints += status.buffActionPoints;
+            buffDefense += status.buffDefense;
+            buffMeleeDmg += status.buffMeleeDmg;
+            buffRangeDmg += status.buffRangeDmg;
+            buffDmgRes += status.buffDmgRes;
+
+            debuffAcc += status.debuffAcc;
+            debuffActionPoints += status.debuffActionPoints;
+            debuffDefense += status.debuffDefense;
+            debuffMeleeDmg += status.debuffMeleeDmg;
+            debuffRangeDmg += status.debuffRangeDmg;
+            debuffDmgRes += status.debuffDmgRes;
+        }
+
+        public void ZeroStatus()
         {
             buffAcc = 0;
             buffActionPoints = 0;
@@ -131,13 +142,21 @@ namespace EV.Characters
             buffMeleeDmg = 0;
             buffRangeDmg = 0;
             buffDmgRes = 0;
-        }
 
-        public void ApplyDebuffs()
-        {
-
+            debuffAcc = 0;
+            debuffActionPoints = 0;
+            debuffDefense = 0;
+            debuffMeleeDmg = 0;
+            debuffRangeDmg = 0;
+            debuffDmgRes = 0;  
+            
         }
         #endregion
+
+        public int GetArchetype()
+        {
+            return characterArchetype;
+        }
     }
 }
 

@@ -22,15 +22,18 @@ MonoBehaviour:
   buffAcc: 0
   buffActionPoints: 0
   buffDefense: 0
-  buffDmg: 0
+  buffMeleeDmg: 0
+  buffRangeDmg: 0
   buffDmgRes: 0
-  debuffAcc: 0.25
+  debuffAcc: 25
   debuffActionPoints: 0
   debuffDefense: 0
-  debuffDmg: 0
+  debuffMeleeDmg: 0
+  debuffRangeDmg: 0
   debuffDmgRes: 0
   duration: 3
+  durationCountdown: 3
   coolDown: 5
   radius: 8
-  description: 'Summons a hurricane, all nearby opponents have a -25% penalty to
+  description: 'Summons a hurricane, all affected opponents have a -25% penalty to
     accuracy. '

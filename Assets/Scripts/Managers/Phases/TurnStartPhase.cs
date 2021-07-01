@@ -22,19 +22,19 @@ namespace EV
             foreach (GridCharacter character in turn.player.characters)
             {
                 // initializes the characters stats / AP for all characters
-                if (character.character.appliedBuffs.Count > 0)
+                if (character.character.appliedStatus.Count > 0)
                 {
-                    for (int i = 0; i < character.character.appliedBuffs.Count; i++)
+                    for (int i = 0; i < character.character.appliedStatus.Count; i++)
                     {
-                        if (!decrementor.Contains(character.character.appliedBuffs[i]))
+                        if (!decrementor.Contains(character.character.appliedStatus[i]))
                         {
                             // ensures ability / buffs only get decremented once
-                            decrementor.Add(character.character.appliedBuffs[i]);
-                            character.character.appliedBuffs[i].durationCountdown--;
+                            decrementor.Add(character.character.appliedStatus[i]);
+                            character.character.appliedStatus[i].durationCountdown--;
                         }
                     }
                 }
-                character.character.ZeroBuffs();
+                character.character.ZeroStatus();
                 character.OnStartTurn();
                 if (character.owner.isLocalPlayer)
                 {

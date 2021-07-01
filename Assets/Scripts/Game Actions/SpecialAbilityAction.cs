@@ -97,7 +97,7 @@ namespace EV
             {
                 case "Self":
                     // insert logic for self-based abilities
-                    BuffAbility(currentCharacter, true);
+                    StatusAbility(currentCharacter, true);
                     sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
                     break;
                 case "PBAoE":
@@ -116,22 +116,24 @@ namespace EV
             }
         }
 
-        void BuffAbility(GridCharacter target)
+        void StatusAbility(GridCharacter target)
         {
             target.character.hitPoints += Mathf.RoundToInt(target.character.maxHitPoints * abilitySelected.healingModifier);
             if (target.character.hitPoints >= target.character.maxHitPoints)
                 target.character.hitPoints = target.character.maxHitPoints;
-            target.character.AddAppliedBuff(abilitySelected);
-            abilitySelected.durationCountdown = abilitySelected.duration;
-            target.character.ApplyBuffs(abilitySelected);
+            if (abilitySelected.duration == 0)
+                return;
+            target.character.ApplyStatus(abilitySelected);
+            target.character.AddAppliedStatus(abilitySelected);
             MoveAction.DisplayEnemyAcc(sessionManager);
         }
 
-        void BuffAbility(GridCharacter target, bool self)
+        void StatusAbility(GridCharacter target, bool self)
         {
-            BuffAbility(target);
+            StatusAbility(target);
             ExitMode();
         }        
+
         // Targeting mode for ranged / ranged AoE Attacks
         void TargetingMode(int radius)
         {
@@ -193,7 +195,7 @@ namespace EV
                         else
                         {
                             // indicate that player missed
-                            // Debug.Log(abilitySelected.abilityName + " missed " + node.character.name);
+                            Debug.Log(abilitySelected.abilityName + " missed " + node.character.name);
                         }
                     }
                 }
@@ -205,8 +207,9 @@ namespace EV
             GridCharacter defender = node.character;
             if (!buffAbilitySelected)
             {
-                float damageDealt = AttackAction.DamageDealt(sessionManager, 0, attacker, defender);
+                float damageDealt = AttackAction.DamageDealt(sessionManager, 2, attacker, defender, abilitySelected);
                 defender.character.hitPoints -= Mathf.RoundToInt(damageDealt);
+                StatusAbility(defender);
                 defender.PlayAnimation("Death");
 
                 if (defender.character.hitPoints <= 0)
@@ -217,7 +220,7 @@ namespace EV
             }
             else 
             {
-                BuffAbility(defender);
+                StatusAbility(defender);
             }
         }
 

@@ -4,6 +4,13 @@ using UnityEngine;
 
 namespace EV
 {
+    public enum attackType
+    {
+        Ranged,
+        Melee,
+        Ability
+    }
+
     public class AttackAction : GameAction
     {
         public static Vector3 lastRangedTargetLocation; // for the last target shot
@@ -56,7 +63,7 @@ namespace EV
 
             int targetDistance = Mathf.RoundToInt(Vector3.Distance(attacker.transform.position, defender.transform.position));
             int effectiveRange = attacker.character.rangeEffectiveRange;
-            int accuracy = Mathf.RoundToInt((attacker.character.attackAccuracy + attacker.character.buffAcc) - (defender.character.defense + defender.character.buffDefense));
+            int accuracy = Mathf.RoundToInt((attacker.character.attackAccuracy + attacker.character.buffAcc - attacker.character.debuffAcc) - (defender.character.defense + defender.character.buffDefense - defender.character.debuffDefense));
             int closeRange = 5;
             
             if (targetDistance > effectiveRange)
@@ -120,7 +127,7 @@ namespace EV
         int AttackCost(int weaponType)
         {
             int apCost = 4;
-            if (weaponType == 1)
+            if (weaponType == ((int)attackType.Melee))
                 apCost--;
             return apCost;
         }
@@ -128,7 +135,7 @@ namespace EV
         int AttackRange(SessionManager sessionManager, int weaponType)
         {
             int weaponRange = 0;
-            if (weaponType == 0) 
+            if (weaponType == ((int)attackType.Ranged)) 
             {
                 weaponRange = sessionManager.currentCharacter.character.rangedAttackRange;
             }
@@ -157,7 +164,7 @@ namespace EV
         {
             if (lastTarget != null)
             {
-                float damageDealt = DamageDealt(sessionManager, weaponType, lastAttacker, lastTarget);
+                float damageDealt = DamageDealt(sessionManager, weaponType, lastAttacker, lastTarget, null);
                 lastTarget.character.hitPoints -= Mathf.RoundToInt(damageDealt);
             }
             if (lastTarget.character.hitPoints <=0)
@@ -167,19 +174,28 @@ namespace EV
             }
         }
 
-        public static float DamageDealt(SessionManager sessionManager, int weaponType, GridCharacter attacker, GridCharacter defender)
+        public static float DamageDealt(SessionManager sessionManager, int weaponType, GridCharacter attacker, GridCharacter defender, Ability abilitySelected)
         {
-            float damageDealt;
-            if (weaponType == 0)
+            float damageDealt = 0;
+            if (weaponType == ((int)attackType.Ranged))
                 damageDealt = attacker.character.attackDamage + (attacker.character.attackDamage * attacker.character.buffRangeDmg);
-            else
+            if (weaponType == ((int)attackType.Melee))
                 damageDealt = attacker.character.attackDamage + (attacker.character.attackDamage * attacker.character.buffMeleeDmg);
+            if (weaponType == ((int)attackType.Ability))
+            {
+                damageDealt = (attacker.character.attackDamage * abilitySelected.damageModifier);
+                if (attacker.character.GetArchetype() == ((int)Characters.Archetype.Tanker))
+                    damageDealt += damageDealt * attacker.character.buffMeleeDmg;
+                else
+                    damageDealt += damageDealt * attacker.character.buffRangeDmg;
+            }
 
             if (defender.character.braced)
-                damageDealt = (damageDealt * (.75f - (defender.character.damageResist * .01f)));
+                damageDealt = damageDealt + (damageDealt * ((1f - defender.character.damageResist + defender.character.debuffDmgRes -25f) * .01f));
             else
-                damageDealt *= 1 - (defender.character.damageResist * .01f);
+                damageDealt = damageDealt + (damageDealt * ((1f - defender.character.damageResist + defender.character.debuffDmgRes) * .01f));
 
+            Debug.Log(damageDealt);
             return damageDealt;
         }
 

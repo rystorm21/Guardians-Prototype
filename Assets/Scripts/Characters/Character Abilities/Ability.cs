@@ -31,7 +31,8 @@ namespace EV
         public float debuffAcc;
         public float debuffActionPoints;
         public float debuffDefense;
-        public float debuffDmg;
+        public float debuffMeleeDmg;
+        public float debuffRangeDmg;
         public float debuffDmgRes;
         public int duration;
         public int durationCountdown;

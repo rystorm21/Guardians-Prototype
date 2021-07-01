@@ -153,7 +153,7 @@ namespace EV
             }
             SpecialAbilityAction.buffAbilitySelected = false;
             character.CycleStatus();
-            character.ApplyBuffs();
+            character.ApplyStatus();
         }
 
         #endregion

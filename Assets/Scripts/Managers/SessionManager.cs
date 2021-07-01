@@ -74,7 +74,7 @@ namespace EV
             foreach (GridCharacter unit in units)
             {
                 unit.OnInit();
-
+                unit.character.ZeroStatus();
                 Node node = gridManager.GetNode(unit.transform.position);
                 if (node != null)
                 {
