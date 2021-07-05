@@ -16,9 +16,24 @@ MonoBehaviour:
   prefab: {fileID: 0}
   type: 1
   buff: 0
+  ignoreCover: 1
   apCost: 4
   damageModifier: 1
+  healingModifier: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffMeleeDmg: 0
+  buffRangeDmg: 0
+  buffDmgRes: 0
+  debuffAcc: 0
+  debuffActionPoints: 0
+  debuffDefense: 0
+  debuffMeleeDmg: 0
+  debuffRangeDmg: 0
+  debuffDmgRes: 0
   duration: 0
+  durationCountdown: 0
   coolDown: 4
   radius: 3
   description: Damages enemies in an area of effect

@@ -119,12 +119,14 @@ namespace EV
             currentPath = path;
         }
 
-        public void OnStartTurn()
+        public void OnStartTurn(SessionManager sessionManager)
         {
+            // this.character.covered = this.character.IsCovered(sessionManager); this doesn't work for some reason, marks all as covered at start.
             if (!character.KO)
             {
                 _actionPoints = character.StartingAP;
                 accuracyText.gameObject.SetActive(false);
+                this.character.abilityInUse = null;
                 SetRun();
                 if (character.hitPoints > 0)
                 {
@@ -154,6 +156,7 @@ namespace EV
             SpecialAbilityAction.buffAbilitySelected = false;
             character.CycleStatus();
             character.ApplyStatus();
+            //MoveAction.DisplayEnemyAcc(sessionManager);
         }
 
         #endregion

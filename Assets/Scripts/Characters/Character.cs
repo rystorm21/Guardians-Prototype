@@ -40,6 +40,9 @@ namespace EV.Characters
         public int currentStance = 1;
         public bool teamLeader = false;
         public bool braced = false;
+        public bool covered = false;
+        public GameObject coveredBy;
+        public Ability abilityInUse;
         public bool KO = false;
 
         // change these to private later maybe
@@ -149,7 +152,26 @@ namespace EV.Characters
             debuffMeleeDmg = 0;
             debuffRangeDmg = 0;
             debuffDmgRes = 0;  
-            
+        }
+
+        public bool IsCovered(SessionManager sessionManager, GridCharacter character)
+        {
+            Node currentNode = character.currentNode;
+            bool isCovered = false;
+            coveredBy = null;
+
+            List<Node> test = sessionManager.GetNeighborsManhattan(currentNode, currentNode);
+            foreach (Node node in test)
+            {
+                if (!node.isWalkable && !node.character)
+                {
+                    isCovered = true;
+                    RaycastHit hit;
+                    if (Physics.Raycast(character.transform.position, node.worldPosition - character.transform.position, out hit, 1f))
+                        coveredBy = hit.transform.gameObject;
+               }
+            }
+            return isCovered;
         }
         #endregion
 

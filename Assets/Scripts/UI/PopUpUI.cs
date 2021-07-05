@@ -18,6 +18,7 @@ namespace EV
 
         public void Deactivate(SessionManager sessionManager)
         {
+            sessionManager.currentCharacter.character.abilityInUse = null;
             sessionManager.popUpUI.gameObject.SetActive(false);
             sessionManager.SetAction("MoveAction");
         }

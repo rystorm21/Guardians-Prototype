@@ -19,6 +19,7 @@ namespace EV
         public GameObject prefab;
         public AbilityType type;
         public bool buff;
+        public bool ignoreCover;
         public int apCost;
         public float damageModifier;
         public float healingModifier;

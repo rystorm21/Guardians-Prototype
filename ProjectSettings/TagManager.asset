@@ -9,6 +9,8 @@ TagManager:
   - PlayerHighlight
   - Ground
   - Projectile
+  - Cover-Low
+  - Cover-High
   layers:
   - Default
   - TransparentFX

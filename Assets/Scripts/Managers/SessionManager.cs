@@ -82,6 +82,7 @@ namespace EV
                     node.character = unit;
                     unit.currentNode = node;
                     unit.currentNode.isWalkable = false;
+                    unit.character.covered = unit.character.IsCovered(this, unit);
                 }
             }
         }
@@ -232,7 +233,7 @@ namespace EV
         #region Tile Management
         List<Node> highlightedTiles;
 
-        List<Node> GetNeighborsManhattan(Node center, Node target)
+        public List<Node> GetNeighborsManhattan(Node center, Node target)
         {
             List<Node> returnVal = new List<Node>();
 
@@ -277,7 +278,7 @@ namespace EV
             return returnVal;
         }
 
-        List<Node> GetNeighborsDiagonal(Node center, Node target)
+        public List<Node> GetNeighborsDiagonal(Node center, Node target)
         {
             List<Node> returnVal = new List<Node>();
 
@@ -422,6 +423,7 @@ namespace EV
         {
             return targetedNodes;
         }
+
         #endregion
 
         #region Turn Management

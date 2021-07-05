@@ -41,7 +41,7 @@ namespace EV
                 }
                 else
                 {
-                    attackAccuracy = GetAttackAccuracy(sessionManager, node);
+                    attackAccuracy = GetAttackAccuracy(sessionManager.currentCharacter, node.character, false);
                 }
             }
             
@@ -51,19 +51,55 @@ namespace EV
             }
         }
 
-        public static int GetAttackAccuracy(SessionManager sessionManager, Node node) 
+        public static int CheckTargetCover(GridCharacter attacker, GridCharacter defender)
         {
-            if (SpecialAbilityAction.buffAbilitySelected)
-                return 1;
+            Vector3 attackerPosition = attacker.transform.position;
+            Vector3 defenderPosition = defender.transform.position;
+            Vector3 direction = defenderPosition - attackerPosition;
+            float distance = Vector3.Distance(attackerPosition, defenderPosition);
+            if (distance < 2)
+                return 0;
+            int coverDefense = 0;
+            Debug.DrawLine(attackerPosition, defenderPosition, Color.blue);
 
-            GridCharacter attacker = sessionManager.currentCharacter;
-            GridCharacter defender = node.character;
-            defender.accuracyText.gameObject.SetActive(true); // chance to hit this character - accuracy
-            defender.highlighter.SetActive(true); // highlight enemy info
+            RaycastHit[] coverHits;
+            coverHits = Physics.RaycastAll(attackerPosition, defenderPosition - attackerPosition, distance);
+            if (coverHits.Length > 0)
+            {
+                for (int i = 0; i < coverHits.Length; i++)
+                {
+                    if (coverHits[i].transform.gameObject.tag != "Player" && coverHits[i].transform.gameObject.tag != "Enemy")
+                    {
+                        if (defender.character.covered)
+                        {
+                            if (coverHits[i].transform.gameObject == defender.character.coveredBy)
+                            {
+                                int coverHigh = 50;
+                                int coverLow = 25;
+                                if (defender.character.coveredBy.tag == "Cover-Low")
+                                    coverDefense = coverLow;
+                                if (defender.character.coveredBy.tag == "Cover-High")
+                                    coverDefense = coverHigh;
+                            }
+                        }
+                    }
+                }
+            }
+            return coverDefense;
+        }
 
+        public static int GetAttackAccuracy(GridCharacter attacker, GridCharacter defender, bool ignoreCover) 
+        {
+            int coverDefense = 0;
+            coverDefense = CheckTargetCover(attacker, defender);
+            if (attacker.character.abilityInUse != null)
+                if (attacker.character.abilityInUse.ignoreCover)
+                    coverDefense = 0;
+
+            ToggleHighlighterText(defender, true);
             int targetDistance = Mathf.RoundToInt(Vector3.Distance(attacker.transform.position, defender.transform.position));
             int effectiveRange = attacker.character.rangeEffectiveRange;
-            int accuracy = Mathf.RoundToInt((attacker.character.attackAccuracy + attacker.character.buffAcc - attacker.character.debuffAcc) - (defender.character.defense + defender.character.buffDefense - defender.character.debuffDefense));
+            int accuracy = Mathf.RoundToInt((attacker.character.attackAccuracy + attacker.character.buffAcc - attacker.character.debuffAcc) - (defender.character.defense + defender.character.buffDefense - defender.character.debuffDefense + coverDefense));
             int closeRange = 5;
             
             if (targetDistance > effectiveRange)
@@ -81,7 +117,18 @@ namespace EV
             if (accuracy < 0)
                 accuracy = 0;
             defender.accuracyText.text = accuracy + "%";
+            if (SpecialAbilityAction.buffAbilitySelected)
+            {
+                ToggleHighlighterText(defender, false);
+                return 1;
+            }
             return accuracy;
+        }
+
+        public static void ToggleHighlighterText(GridCharacter character, bool toggle)
+        {
+            character.accuracyText.gameObject.SetActive(toggle); // chance to hit this character - accuracy
+            character.highlighter.SetActive(toggle); // highlight enemy info
         }
 
         private void SetAttackerDefender(GridCharacter currentCharacter, Turn turn, Transform projectileTarget)
@@ -195,7 +242,7 @@ namespace EV
             else
                 damageDealt = damageDealt + (damageDealt * ((1f - defender.character.damageResist + defender.character.debuffDmgRes) * .01f));
 
-            Debug.Log(damageDealt);
+            //Debug.Log(damageDealt);
             return damageDealt;
         }
 
@@ -250,7 +297,7 @@ namespace EV
         {
             if (character != null) 
             {
-                Vector3 origin = character.transform.position + Vector3.up * 1.56f;
+                Vector3 origin = character.transform.position + Vector3.up * 1f;
                 Vector3 direction = mouseHit.point - origin;
                 Debug.DrawRay(origin, direction, Color.red);
             }

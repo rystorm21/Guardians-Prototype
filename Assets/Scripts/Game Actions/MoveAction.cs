@@ -40,6 +40,7 @@ namespace EV
                         PathDetection(states, sessionManager, node);
                 }
             }
+            DisplayEnemyAcc(sessionManager);
         }
 
         public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
@@ -78,7 +79,6 @@ namespace EV
                         sessionManager.HighlightAroundCharacter(node.character, null, 0);
                         sessionManager.gameVariables.UpdateCharacterPortrait(sessionManager.currentCharacter.character.characterPortrait);
                         sessionManager.gameVariables.UpdateAbilities(sessionManager);
-                        DisplayEnemyAcc(sessionManager);
                     }
                 }
                 else
@@ -146,13 +146,18 @@ namespace EV
 
         public static void DisplayEnemyAcc(SessionManager sessionManager)
         {
+            int whoseTurn = sessionManager.TurnIndex;
+            int opponentTeam = 0;
             if (sessionManager.currentCharacter == null)
-                sessionManager.currentCharacter = sessionManager.turns[0].player.characters[0];
+                sessionManager.currentCharacter = sessionManager.turns[whoseTurn].player.characters[0];
 
-            int enemy = 1;
-            foreach(GridCharacter character in sessionManager.turns[enemy].player.characters)
+            if (whoseTurn == 0)
+                opponentTeam = 1;
+            else
+                opponentTeam = 0;
+            foreach(GridCharacter character in sessionManager.turns[opponentTeam].player.characters)
             {
-                AttackAction.GetAttackAccuracy(sessionManager, character.currentNode);
+                AttackAction.GetAttackAccuracy(sessionManager.currentCharacter, character, false);
             }
         }
     }

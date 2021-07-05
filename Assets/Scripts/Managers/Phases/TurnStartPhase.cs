@@ -35,7 +35,7 @@ namespace EV
                     }
                 }
                 character.character.ZeroStatus();
-                character.OnStartTurn();
+                character.OnStartTurn(sessionManager);
                 if (character.owner.isLocalPlayer)
                 {
                     if (turn.player.stateManager.CurrentCharacter == character)

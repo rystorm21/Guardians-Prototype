@@ -71,7 +71,8 @@ namespace EV
             GridCharacter character = states.CurrentCharacter;
             time = 1;
             index = 0;
-
+            
+            character.character.covered = character.character.IsCovered(sessionManager, character);
             states.SetStartingState();
             character.PlayIdleAnimation();
             firstInit = false;

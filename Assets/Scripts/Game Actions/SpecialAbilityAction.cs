@@ -15,15 +15,18 @@ namespace EV
         int selection;
         bool targetingMode;
 
+        #region Base Methods
         public override void OnActionStart(SessionManager sm, Turn turn)
         {
             sessionManager = sm;
             currentCharacter = sessionManager.currentCharacter;
             selection = currentCharacter.character.abilitySelected;
             abilitySelected = currentCharacter.character.abilityPool[selection].ability;
+            currentCharacter.character.abilityInUse = abilitySelected;
             lastNode = sessionManager.currentCharacter.currentNode;
             sessionManager.ClearReachableTiles();
             buffAbilitySelected = abilitySelected.buff;
+            MoveAction.DisplayEnemyAcc(sessionManager);
 
             if (currentCharacter.ActionPoints < abilitySelected.apCost)
             {
@@ -33,7 +36,6 @@ namespace EV
                 return;
             }
             sessionManager.currentCharacter.currentNode.tileRenderer.material = sessionManager.defaultTileMaterial;
-
             switch (abilitySelected.type.ToString())
             {
                 case "Self":
@@ -53,6 +55,13 @@ namespace EV
             sessionManager.gameVariables.UpdateMouseText("");
             sessionManager.popUpUI.Activate(sessionManager);
             sessionManager.popUpUI.DisplaySkill(sessionManager, abilitySelected.abilityName, abilitySelected.description);
+        }
+
+        public override void OnActionStop(SessionManager sessionManager, Turn turn)
+        {
+            buffAbilitySelected = false;
+            currentCharacter.character.abilityInUse = null;
+            targetingMode = false;
         }
 
         public override void OnActionTick(SessionManager sm, Turn turn, Node node, RaycastHit hit)
@@ -76,7 +85,6 @@ namespace EV
         {
         }
 
-        // triggered by mouseclick on a non-UI location (DetectMousePosition.cs)
         public override void OnDoAction(SessionManager sm, Turn turn, Node node, RaycastHit hit)
         {
             if (targetingMode)
@@ -88,11 +96,12 @@ namespace EV
                 ExitMode();
             }
         }
+        #endregion
 
+        #region Deciding Ability Types
         void AbilityType(SessionManager sessionManager)
         {
             targetingMode = false;
-
             switch (abilitySelected.type.ToString())
             {
                 case "Self":
@@ -125,16 +134,16 @@ namespace EV
                 return;
             target.character.ApplyStatus(abilitySelected);
             target.character.AddAppliedStatus(abilitySelected);
-            MoveAction.DisplayEnemyAcc(sessionManager);
         }
 
         void StatusAbility(GridCharacter target, bool self)
         {
             StatusAbility(target);
             ExitMode();
-        }        
+        }
+        #endregion        
 
-        // Targeting mode for ranged / ranged AoE Attacks
+        #region Targeting
         void TargetingMode(int radius)
         {
             targetingMode = true;
@@ -186,7 +195,7 @@ namespace EV
                 {
                     if (node.character.owner.name == targetTeamName)
                     {
-                        AttackAction.attackAccuracy = AttackAction.GetAttackAccuracy(sessionManager, node);
+                        AttackAction.attackAccuracy = AttackAction.GetAttackAccuracy(sessionManager.currentCharacter, node.character, abilitySelected.ignoreCover);
                         int diceRoll = AttackAction.RollDDice(sessionManager);
                         if (diceRoll >= 0)
                         {
@@ -223,6 +232,7 @@ namespace EV
                 StatusAbility(defender);
             }
         }
+        #endregion
 
         void ClearLastTargetTile()
         {
@@ -230,12 +240,14 @@ namespace EV
                 lastNode.tileRenderer.material = sessionManager.defaultTileMaterial;
         }
 
-        void ExitMode()
+        public void ExitMode()
         {
             buffAbilitySelected = false;
             ClearLastTargetTile();
             sessionManager.SetAction("MoveAction");
             sessionManager.popUpUI.Deactivate(sessionManager);
+            sessionManager.currentCharacter.character.abilitySelected = 0;
+            currentCharacter.character.abilityInUse = null;
             targetingMode = false;
         }
     }

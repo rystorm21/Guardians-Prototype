@@ -16,6 +16,7 @@ MonoBehaviour:
   prefab: {fileID: 0}
   type: 1
   buff: 0
+  ignoreCover: 1
   apCost: 4
   damageModifier: 0
   healingModifier: 0
