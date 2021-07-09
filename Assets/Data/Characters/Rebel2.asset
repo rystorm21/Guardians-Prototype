@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: Rebel
   characterPortrait: {fileID: 0}
-  characterArchetype: 0
+  characterArchetype: 3
   projectile: {fileID: 7855271653542481463, guid: cd0441d067fec594e8e79e39c23d2f65,
     type: 3}
   inventory: {fileID: 0}
@@ -36,8 +36,8 @@ MonoBehaviour:
   - ability: {fileID: 0}
     abilityIcon: {fileID: 0}
   appliedStatus: []
-  maxHitPoints: 45
-  hitPoints: 45
+  maxHitPoints: 10
+  hitPoints: 10
   agility: 10
   rangedAttackRange: 20
   rangeEffectiveRange: 10
@@ -52,6 +52,9 @@ MonoBehaviour:
   currentStance: 1
   teamLeader: 1
   braced: 0
+  covered: 0
+  coveredBy: {fileID: 0}
+  abilityInUse: {fileID: 0}
   KO: 0
   buffAcc: 0
   buffActionPoints: 0

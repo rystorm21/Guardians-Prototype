@@ -14,7 +14,7 @@ namespace EV
 
         void Start()
         {
-            if (AttackAction.attackHits)
+            if (AttackAction.diceRoll > 0)
                 target = AttackAction.lastRangedTargetLocation;
             else
             {
@@ -39,7 +39,7 @@ namespace EV
         // A little delay for coolness ;)
         IEnumerator DestroyThis() 
         {
-            if (AttackAction.attackHits)
+            if (AttackAction.diceRoll > 0)
             {
                 AttackAction.hitByMelee = false;
                 AttackAction.lastTarget.PlayAnimation("Death");

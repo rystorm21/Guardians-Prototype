@@ -4921,6 +4921,7 @@ GameObject:
   - component: {fileID: 1222226766}
   - component: {fileID: 1222226768}
   - component: {fileID: 1222226769}
+  - component: {fileID: 1222226770}
   m_Layer: 0
   m_Name: Grid Manager
   m_TagString: Untagged
@@ -4980,9 +4981,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveInProgress: 0
+  enemyTurn: 0
   turns:
   - {fileID: 11400000, guid: e51f0e5ed93128948a84d8dc76358314, type: 2}
   - {fileID: 11400000, guid: cbe8f28a657ab1e488e5df8b3a649637, type: 2}
+  aIController: {fileID: 1222226770}
   gridManager: {fileID: 1222226766}
   currentCharacter: {fileID: 0}
   isInit: 0
@@ -5017,6 +5020,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxJobs: 3
   timerThreshold: 0.25
+--- !u!114 &1222226770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1222226765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8102c1518da2b14eb3bd1dc15c7cc2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sessionManager: {fileID: 1222226768}
 --- !u!1 &1252303292
 GameObject:
   m_ObjectHideFlags: 0

@@ -91,27 +91,30 @@ namespace EV
         public override void OnHighlightCharacter(SessionManager sessionManager, Turn turn, Node node)
         {
             StateManager states = turn.player.stateManager;
-            if (node.character.owner != null)
+            if (node.character != null)
             {
-                if (node.character.owner == states.playerHolder)
+                if (node.character.owner != null)
                 {
-                    node.character.OnHighlight(states.playerHolder);
-                    previousCharacter = node.character;
-                    sessionManager.ClearPath(states);
-                }
-
-                else // you highlighted an enemy unit
-                {
-                    if (states.CurrentCharacter != null) // you have a character selected
+                    if (node.character.owner == states.playerHolder)
                     {
-                        //attack
-                        sessionManager.gameVariables.UpdateMouseText("Attack");
-                        sessionManager.SetAction("AttackAction");
+                        node.character.OnHighlight(states.playerHolder);
+                        previousCharacter = node.character;
+                        sessionManager.ClearPath(states);
                     }
-                    else
+
+                    else // you highlighted an enemy unit
                     {
-                        //indicate
-                        //sessionManager.gameVariables.UpdateMouseText("Enemy");
+                        if (states.CurrentCharacter != null) // you have a character selected
+                        {
+                            //attack
+                            sessionManager.gameVariables.UpdateMouseText("Attack");
+                            sessionManager.SetAction("AttackAction");
+                        }
+                        else
+                        {
+                            //indicate
+                            //sessionManager.gameVariables.UpdateMouseText("Enemy");
+                        }
                     }
                 }
             }
@@ -146,12 +149,12 @@ namespace EV
 
         public static void DisplayEnemyAcc(SessionManager sessionManager)
         {
-            int whoseTurn = sessionManager.TurnIndex;
-            int opponentTeam = 0;
+            int opponentTeam;
+            
             if (sessionManager.currentCharacter == null)
-                sessionManager.currentCharacter = sessionManager.turns[whoseTurn].player.characters[0];
+                sessionManager.currentCharacter = sessionManager.turns[sessionManager.TurnIndex].player.characters[0];
 
-            if (whoseTurn == 0)
+            if (sessionManager.TurnIndex == 0)
                 opponentTeam = 1;
             else
                 opponentTeam = 0;

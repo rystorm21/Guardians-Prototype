@@ -9,16 +9,23 @@ namespace EV
     {
         Noncombat, Combat, GameOver, Dialog
     }
+
+    public enum PlayerTurn
+    {
+        Player, Enemy
+    }
     
     public class SessionManager : MonoBehaviour
     {
         public static GameState currentGameState;
         public static bool combatVictory;
         public bool moveInProgress;
+        public bool enemyTurn;
         bool gameOverScreenLoaded;
-
+        
         int _turnIndex;
         public Turn[] turns;
+        public AIController aIController;
 
         public GridManager gridManager;
         public GridCharacter currentCharacter;
@@ -126,7 +133,7 @@ namespace EV
             isPathfinding = false;
             if (path == null)
             {
-                // Debug.Log("Path is not valid");
+                Debug.Log("Path is not valid");
                 return;
             }
 
@@ -481,12 +488,12 @@ namespace EV
                         _turnIndex++;
                         if (_turnIndex > turns.Length - 1)
                         {
-                            _turnIndex = 0;
+                            _turnIndex = ((int)PlayerTurn.Player);
                         }
                     }
                     else if (currentGameState == GameState.Noncombat) // Stay with player turn if gamestate is Noncombat
                     {
-                        _turnIndex = 0;
+                        _turnIndex = ((int)PlayerTurn.Player);
                         Debug.Log("Non-combat Mode");
                     }
 
@@ -555,7 +562,7 @@ namespace EV
                     currentCharacter = character;
                     currentCharacter.character.weaponSelected = 0;
                     currentCharacter.SetRun();
-                    turns[TurnIndex].player.stateManager.CurrentCharacter.PlayIdleAnimation();
+                    currentCharacter.PlayIdleAnimation();
                     currentCharacter.ActionPoints = currentCharacter.character.NonCombatAPCap;
                 }
                 else
@@ -593,11 +600,11 @@ namespace EV
             {
                 case 0:
                     currentCharacter.character.weaponSelected = 0;
-                    turns[TurnIndex].player.stateManager.CurrentCharacter.PlayIdleAnimation();
+                    currentCharacter.PlayIdleAnimation();
                     break;
                 case 1:
                     currentCharacter.character.weaponSelected = 1;
-                    turns[TurnIndex].player.stateManager.CurrentCharacter.PlaySelectMeleeWeapon();
+                    currentCharacter.PlaySelectMeleeWeapon();
                     break;
             }
         }
@@ -610,14 +617,14 @@ namespace EV
             switch(stanceInt.value)
             {
                 case 0:
-                    turns[TurnIndex].player.stateManager.CurrentCharacter.ResetStance();
+                    currentCharacter.ResetStance();
                     break;
                 
                 case 1:
                     SetAction("MoveAction");
                     if (currentCharacter.ActionPoints >= 2)
                     {
-                        turns[TurnIndex].player.stateManager.CurrentCharacter.SetBrace();
+                        currentCharacter.SetBrace();
                         currentCharacter.ActionPoints = 0;
                         ClearReachableTiles();
                         HighlightAroundCharacter(currentCharacter, null, 0);
@@ -629,7 +636,6 @@ namespace EV
                     if (currentCharacter.ActionPoints == 0)
                     {
                         APCheck();
-                        AttackAction.attackHits = false;
                     }
                     break;
             }

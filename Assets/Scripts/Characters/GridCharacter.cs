@@ -91,6 +91,9 @@ namespace EV
             int blaster = 40;
             int defender = 45;
             int tanker = 60;
+            int minion = 1;
+            int lieutenant = 40;
+            int boss = 100;
 
             switch (archetype)
             {
@@ -105,7 +108,18 @@ namespace EV
                 case 2:
                     hitPoints = tanker;
                     break;
+                
+                case 3:
+                    hitPoints = minion;
+                    break;
                     
+                case 4: 
+                    hitPoints = lieutenant;
+                    break;
+
+                case 5: 
+                    hitPoints = boss;
+                    break;
                 default:
                     hitPoints = 0;
                     break;
@@ -130,7 +144,7 @@ namespace EV
                 SetRun();
                 if (character.hitPoints > 0)
                 {
-                    if (!AttackAction.attackHits) // preventing the idle animation from interrupting the hit animation
+                    if (AttackAction.diceRoll < 0) // preventing the idle animation from interrupting the hit animation
                         PlayIdleAnimation();
                     else
                     {
@@ -156,7 +170,6 @@ namespace EV
             SpecialAbilityAction.buffAbilitySelected = false;
             character.CycleStatus();
             character.ApplyStatus();
-            //MoveAction.DisplayEnemyAcc(sessionManager);
         }
 
         #endregion

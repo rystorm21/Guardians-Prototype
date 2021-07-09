@@ -50,6 +50,11 @@ namespace EV
             {
                 AutoSetPlayer(sessionManager, turn);
             }
+
+            if (turn.name == "EnemyTurn")
+            {
+                sessionManager.aIController.Init();
+            }
         }
 
         private void AutoSetPlayer(SessionManager sessionManager, Turn turn) 

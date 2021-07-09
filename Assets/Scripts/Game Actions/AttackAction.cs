@@ -17,13 +17,57 @@ namespace EV
         public static GridCharacter lastAttacker;
         public static GridCharacter lastTarget;
         public static bool attackInProgress;
-        public static bool attackHits;
         public static bool hitByMelee;
         public static int attackAccuracy;
+        public static int diceRoll;
+
+        #region Base Action Methods
+        public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
+        {
+            GridCharacter currentCharacter = sessionManager.currentCharacter;
+            int weaponType = currentCharacter.character.weaponSelected;
+
+            if (currentCharacter.ActionPoints >= AttackCost(weaponType))
+            {
+                IHittable iHit = hit.transform.GetComponentInParent<IHittable>();
+                diceRoll = RollDDice(sessionManager);
+                if (iHit != null)
+                {
+                    int attackDistance = Mathf.FloorToInt(Vector3.Distance(currentCharacter.transform.position, node.worldPosition));
+                    if (AttackRange(sessionManager, weaponType) >= attackDistance)
+                    {
+                        if (!attackInProgress)
+                        {
+                            currentCharacter.transform.LookAt(hit.transform);
+                            iHit.OnHit(currentCharacter);
+                            currentCharacter.ActionPoints -= AttackCost(weaponType);
+                            lastTarget = node.character;
+                            PlayAttackAnimation(weaponType, turn, hit.transform);
+                            if (diceRoll >= 0)
+                                AttackSuccessful(sessionManager, weaponType);
+                            else
+                                Debug.Log("attack missed!");
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("Target out of range!");
+                    }
+                }
+            }
+            else
+            {
+                Debug.Log("Not enough action points!");
+            }
+        }
+
+        public override void OnHighlightCharacter(SessionManager sessionManager, Turn turn, Node node)
+        {
+        }
 
         public override bool IsActionValid(SessionManager sessionManager, Turn turn)
         {
-            if (turn.player.stateManager.CurrentCharacter == null)
+            if (sessionManager.currentCharacter == null)
             {
                 return false;
             }
@@ -34,7 +78,7 @@ namespace EV
         {
             if (node != null) 
             {
-                RaycastToTarget(turn.player.stateManager.CurrentCharacter, hit);
+                RaycastToTarget(sessionManager.currentCharacter, hit);
                 if (node.character == null || node.character.owner == turn.player)
                 {
                     sessionManager.SetAction("MoveAction");
@@ -50,13 +94,59 @@ namespace EV
                 sessionManager.APCheck();
             }
         }
+        #endregion
+
+        #region Accuracy Calculation
+
+        private void SetAttackerDefender(GridCharacter currentCharacter, Turn turn, Transform projectileTarget)
+        {
+            lastRangedTargetLocation = projectileTarget.position;
+            lastAttacker = currentCharacter;
+        }
+
+        public static int GetAttackAccuracy(GridCharacter attacker, GridCharacter defender, bool ignoreCover)
+        {
+            int coverDefense = 0;
+            coverDefense = CheckTargetCover(attacker, defender);
+            if (attacker.character.abilityInUse != null)
+                if (attacker.character.abilityInUse.ignoreCover)
+                    coverDefense = 0;
+
+            ToggleHighlighterText(defender, true);
+            int targetDistance = Mathf.RoundToInt(Vector3.Distance(attacker.transform.position, defender.transform.position));
+            int effectiveRange = attacker.character.rangeEffectiveRange;
+            int accuracy = Mathf.RoundToInt((attacker.character.attackAccuracy + attacker.character.buffAcc - attacker.character.debuffAcc) - (defender.character.defense + defender.character.buffDefense - defender.character.debuffDefense + coverDefense));
+            int closeRange = 5;
+
+            if (targetDistance > effectiveRange)
+            {
+                // penalty for exceeding effective range
+                accuracy -= (targetDistance - effectiveRange) * 5;
+            }
+            if (targetDistance < closeRange)
+            {
+                // accuracy bonus for close-range attack
+                accuracy += (closeRange - targetDistance) * 5;
+            }
+            if (accuracy > 100)
+                accuracy = 100;
+            if (accuracy < 0)
+                accuracy = 0;
+            defender.accuracyText.text = accuracy + "%";
+            if (SpecialAbilityAction.buffAbilitySelected)
+            {
+                ToggleHighlighterText(defender, false);
+                return 1;
+            }
+            return accuracy;
+        }
 
         public static int CheckTargetCover(GridCharacter attacker, GridCharacter defender)
         {
             Vector3 attackerPosition = attacker.transform.position;
             Vector3 defenderPosition = defender.transform.position;
-            Vector3 direction = defenderPosition - attackerPosition;
             float distance = Vector3.Distance(attackerPosition, defenderPosition);
+
             if (distance < 2)
                 return 0;
             int coverDefense = 0;
@@ -88,87 +178,18 @@ namespace EV
             return coverDefense;
         }
 
-        public static int GetAttackAccuracy(GridCharacter attacker, GridCharacter defender, bool ignoreCover) 
+        int AttackRange(SessionManager sessionManager, int weaponType)
         {
-            int coverDefense = 0;
-            coverDefense = CheckTargetCover(attacker, defender);
-            if (attacker.character.abilityInUse != null)
-                if (attacker.character.abilityInUse.ignoreCover)
-                    coverDefense = 0;
-
-            ToggleHighlighterText(defender, true);
-            int targetDistance = Mathf.RoundToInt(Vector3.Distance(attacker.transform.position, defender.transform.position));
-            int effectiveRange = attacker.character.rangeEffectiveRange;
-            int accuracy = Mathf.RoundToInt((attacker.character.attackAccuracy + attacker.character.buffAcc - attacker.character.debuffAcc) - (defender.character.defense + defender.character.buffDefense - defender.character.debuffDefense + coverDefense));
-            int closeRange = 5;
-            
-            if (targetDistance > effectiveRange)
-            {   
-                // penalty for exceeding effective range
-                accuracy -= (targetDistance - effectiveRange) * 5;
-            }
-            if (targetDistance < closeRange)
+            int weaponRange;
+            if (weaponType == ((int)attackType.Ranged))
             {
-                // accuracy bonus for close-range attack
-                accuracy += (closeRange - targetDistance) * 5;
+                weaponRange = sessionManager.currentCharacter.character.rangedAttackRange;
             }
-            if (accuracy > 100)
-                accuracy = 100;
-            if (accuracy < 0)
-                accuracy = 0;
-            defender.accuracyText.text = accuracy + "%";
-            if (SpecialAbilityAction.buffAbilitySelected)
+            else
             {
-                ToggleHighlighterText(defender, false);
-                return 1;
+                weaponRange = sessionManager.currentCharacter.character.meleeAttackRange;
             }
-            return accuracy;
-        }
-
-        public static void ToggleHighlighterText(GridCharacter character, bool toggle)
-        {
-            character.accuracyText.gameObject.SetActive(toggle); // chance to hit this character - accuracy
-            character.highlighter.SetActive(toggle); // highlight enemy info
-        }
-
-        private void SetAttackerDefender(GridCharacter currentCharacter, Turn turn, Transform projectileTarget)
-        {
-            lastRangedTargetLocation = projectileTarget.position;
-            lastAttacker = currentCharacter;
-        }
-
-        private void PlayAttackAnimation(int attackType, Turn turn, Transform projectileTarget) 
-        {
-            GridCharacter currentCharacter = turn.player.stateManager.CurrentCharacter;
-            Vector3 shootOrigin = GameObject.Find(currentCharacter.character.name + "/metarig/IKHand.R").transform.position;
-            SetAttackerDefender(currentCharacter, turn, projectileTarget);
-
-            AttackAction.attackInProgress = true;
-            switch (attackType)
-            {
-                case 1:
-                    // play melee attack animation
-                    if (turn.player.stateManager.CurrentCharacter.character.fightingStyle == 1)
-                    {
-                        currentCharacter.PlayAnimation("SniperMeleeAttack1");
-                    }
-                    else 
-                    {
-                        currentCharacter.PlayAnimation("MeleeAttack1"); // trying somethin
-                    }
-                    if (attackHits)
-                    {
-                        hitByMelee = true;
-                        lastTarget.PlayAnimation("Death");
-                    }
-                    break;
-
-                default:
-                    currentCharacter.PlayAnimation("AttackRanged");
-                    GameObject.Instantiate(currentCharacter.character.projectile, shootOrigin, Quaternion.identity);
-                    attackInProgress = true;
-                    break;
-            }
+            return weaponRange;
         }
 
         int AttackCost(int weaponType)
@@ -179,34 +200,19 @@ namespace EV
             return apCost;
         }
 
-        int AttackRange(SessionManager sessionManager, int weaponType)
-        {
-            int weaponRange = 0;
-            if (weaponType == ((int)attackType.Ranged)) 
-            {
-                weaponRange = sessionManager.currentCharacter.character.rangedAttackRange;
-            }
-            else 
-            {
-                weaponRange = sessionManager.currentCharacter.character.meleeAttackRange;
-            }
-            return weaponRange;
-        }
-
         public static int RollDDice(SessionManager sessionManager)
         {
             if (SpecialAbilityAction.buffAbilitySelected)
                 return 100;
-            int diceRoll = Random.Range(1,101);
+            int diceRoll = Random.Range(1, 101);
             int result = attackAccuracy - diceRoll;
             // Debug.Log("accuracy: " + attackAccuracy + ", diceRoll: " + diceRoll); // for testing purposes
-            if (result >=0)
-                attackHits = true;
-            else
-                attackHits = false;
             return result;
         }
+        #endregion
 
+        #region Damage Dealing / Status effects
+    
         public static void AttackSuccessful(SessionManager sessionManager, int weaponType)
         {
             if (lastTarget != null)
@@ -224,6 +230,8 @@ namespace EV
         public static float DamageDealt(SessionManager sessionManager, int weaponType, GridCharacter attacker, GridCharacter defender, Ability abilitySelected)
         {
             float damageDealt = 0;
+            float braceRes = 25f;
+
             if (weaponType == ((int)attackType.Ranged))
                 damageDealt = attacker.character.attackDamage + (attacker.character.attackDamage * attacker.character.buffRangeDmg);
             if (weaponType == ((int)attackType.Melee))
@@ -238,7 +246,7 @@ namespace EV
             }
 
             if (defender.character.braced)
-                damageDealt = damageDealt + (damageDealt * ((1f - defender.character.damageResist + defender.character.debuffDmgRes -25f) * .01f));
+                damageDealt = damageDealt + (damageDealt * ((1f - defender.character.damageResist + defender.character.debuffDmgRes - braceRes) * .01f));
             else
                 damageDealt = damageDealt + (damageDealt * ((1f - defender.character.damageResist + defender.character.debuffDmgRes) * .01f));
 
@@ -246,51 +254,48 @@ namespace EV
             return damageDealt;
         }
 
-        public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
+        #endregion
+
+        #region Utilities
+
+        private void PlayAttackAnimation(int attackType, Turn turn, Transform projectileTarget)
         {
-            int currentPlayerAP = turn.player.stateManager.CurrentCharacter.ActionPoints;
-            int weaponType = sessionManager.currentCharacter.character.weaponSelected;
-            int apCost = AttackCost(weaponType);
-            int weaponRange = AttackRange(sessionManager, weaponType);
+            GridCharacter currentCharacter = turn.player.stateManager.CurrentCharacter;
+            Vector3 shootOrigin = GameObject.Find(currentCharacter.character.name + "/metarig/IKHand.R").transform.position;
+            SetAttackerDefender(currentCharacter, turn, projectileTarget);
 
-            if (currentPlayerAP >= apCost)
+            AttackAction.attackInProgress = true;
+            switch (attackType)
             {
-                IHittable iHit = hit.transform.GetComponentInParent<IHittable>();
-                int diceRoll = RollDDice(sessionManager);
-                if (iHit != null)
-                {
-                    int attackDistance = Mathf.FloorToInt(Vector3.Distance(turn.player.stateManager.CurrentCharacter.transform.position, node.worldPosition));
-                    if (weaponRange >= attackDistance) 
+                case 1:
+                    // play melee attack animation
+                    if (currentCharacter.character.fightingStyle == 1)
                     {
-                        if (!attackInProgress)
-                        {
-                            turn.player.stateManager.CurrentCharacter.transform.LookAt(hit.transform);
-                            iHit.OnHit(turn.player.stateManager.CurrentCharacter);
-                            currentPlayerAP -= apCost;
-                            lastTarget = node.character;
-                            PlayAttackAnimation(weaponType, turn, hit.transform);
-                            if (diceRoll >= 0)
-                                AttackSuccessful(sessionManager, weaponType);
-                            else 
-                                Debug.Log("attack missed!");
-                        }
+                        currentCharacter.PlayAnimation("SniperMeleeAttack1");
                     }
-                    else 
+                    else
                     {
-                        Debug.Log("Target out of range!");
+                        currentCharacter.PlayAnimation("MeleeAttack1"); // trying somethin
                     }
-                }
-            }
-            else
-            {
-                Debug.Log("Not enough action points!");
-            }
+                    if (diceRoll > 0)
+                    {
+                        hitByMelee = true;
+                        lastTarget.PlayAnimation("Death");
+                    }
+                    break;
 
-            turn.player.stateManager.CurrentCharacter.ActionPoints = currentPlayerAP;
+                default:
+                    currentCharacter.PlayAnimation("AttackRanged");
+                    GameObject.Instantiate(currentCharacter.character.projectile, shootOrigin, Quaternion.identity);
+                    attackInProgress = true;
+                    break;
+            }
         }
 
-        public override void OnHighlightCharacter(SessionManager sessionManager, Turn turn, Node node)
+        public static void ToggleHighlighterText(GridCharacter character, bool toggle)
         {
+            character.accuracyText.gameObject.SetActive(toggle); // chance to hit this character - accuracy
+            character.highlighter.SetActive(toggle); // highlight enemy info
         }
 
         void RaycastToTarget(GridCharacter character, RaycastHit mouseHit)
@@ -302,5 +307,7 @@ namespace EV
                 Debug.DrawRay(origin, direction, Color.red);
             }
         }
+
+        #endregion
     }
 }
