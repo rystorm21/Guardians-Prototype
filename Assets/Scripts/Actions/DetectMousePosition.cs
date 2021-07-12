@@ -11,6 +11,8 @@ namespace EV
 
         public override void Execute(StateManager states, SessionManager sessionManager, Turn turn)
         {
+            if (sessionManager.turns[sessionManager.TurnIndex].name == "EnemyTurn")
+                return;
             bool mouseClick = Input.GetMouseButtonDown(0); 
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

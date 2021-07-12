@@ -53,7 +53,12 @@ namespace EV
 
             if (turn.name == "EnemyTurn")
             {
+                sessionManager.aiBrain.SetActive(true);
                 sessionManager.aIController.Init();
+            }
+            else
+            {
+                sessionManager.aiBrain.SetActive(false);
             }
         }
 

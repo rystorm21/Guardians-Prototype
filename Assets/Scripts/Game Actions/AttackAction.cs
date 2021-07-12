@@ -145,12 +145,13 @@ namespace EV
         {
             Vector3 attackerPosition = attacker.transform.position;
             Vector3 defenderPosition = defender.transform.position;
+            Color rayColor = Color.blue;
             float distance = Vector3.Distance(attackerPosition, defenderPosition);
-
+            
             if (distance < 2)
                 return 0;
             int coverDefense = 0;
-            Debug.DrawLine(attackerPosition, defenderPosition, Color.blue);
+            Debug.DrawLine(attackerPosition, defenderPosition, rayColor);
 
             RaycastHit[] coverHits;
             coverHits = Physics.RaycastAll(attackerPosition, defenderPosition - attackerPosition, distance);

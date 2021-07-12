@@ -26,6 +26,7 @@ namespace EV
         int _turnIndex;
         public Turn[] turns;
         public AIController aIController;
+        public GameObject aiBrain;
 
         public GridManager gridManager;
         public GridCharacter currentCharacter;
@@ -42,9 +43,12 @@ namespace EV
 
         public Material defaultTileMaterial;
         public Material reachableTileMaterial;
+        public Material reachableEnemyTileMaterial;
         public Material abilityTileMaterial;
         public Material buffAbilityTileMaterial;
+        public Material testCoverMaterial;
         private List<Node> targetedNodes;
+        private List<Node> reachableNodesAI;
 
         public int TurnIndex
         {
@@ -389,18 +393,24 @@ namespace EV
                 openSet.Remove(currentNode);
                 closedSet.Add(currentNode);
             }
+            reachableNodesAI = reachableNodes;
             UpdateListToReachableMaterial(reachableNodes, target);
         }
 
         void UpdateListToReachableMaterial(List<Node> list, Node target)
         {
             ClearReachableTiles();
-
+            List<Node> coverNodes = new List<Node>();
             foreach (Node node in list)
             {
                 if (node.tileRenderer != null)
                     if (target == null)
-                        node.tileRenderer.material = reachableTileMaterial;
+                    {
+                        if (turns[TurnIndex].name == "EnemyTurn")
+                            node.tileRenderer.material = reachableEnemyTileMaterial;
+                        else
+                            node.tileRenderer.material = reachableTileMaterial;
+                    }
                     else
                     {
                         if (SpecialAbilityAction.buffAbilitySelected)
@@ -408,6 +418,8 @@ namespace EV
                         else
                             node.tileRenderer.material = abilityTileMaterial;
                     }
+                if (turns[TurnIndex].name == "EnemyTurn")
+                    AIFindCoverNodes(node, coverNodes);
             }
 
             highlightedTiles = list;
@@ -429,6 +441,24 @@ namespace EV
         public List<Node> GetTargetNodes()
         {
             return targetedNodes;
+        }
+
+        // For enemy AI - Reaching cover nodes
+        void AIFindCoverNodes(Node node, List<Node> coverNodes)
+        {
+            List<Node> test = this.GetNeighborsManhattan(node, node);
+            foreach (Node testNode in test)
+            {
+                if (!testNode.isWalkable && !testNode.character)
+                {
+                    if (node.tileRenderer != null)
+                    {
+                        node.tileRenderer.material = testCoverMaterial;
+                        coverNodes.Add(node);
+                    }
+                }
+            }
+            AIController.coverNodes = coverNodes;
         }
 
         #endregion

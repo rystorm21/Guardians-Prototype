@@ -37,6 +37,7 @@ namespace EV.Characters
         public int abilitySelected;
 
         public int fightingStyle;
+        public int personality;
         public int currentStance = 1;
         public bool teamLeader = false;
         public bool braced = false;
@@ -59,6 +60,11 @@ namespace EV.Characters
         public float debuffMeleeDmg;
         public float debuffRangeDmg;
         public float debuffDmgRes;
+
+        // use for Enemy AI
+        public int flankedBy;
+        public int threatLevel;
+        public bool aiMoveComplete;
         
         public int StartingAP 
         {
