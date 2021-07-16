@@ -537,7 +537,7 @@ namespace EV
                 return;
             
             popUpUI.Deactivate(this);
-            
+                        
             // deHighlight the current player when the turn ends
             if (currentCharacter != null)
             {

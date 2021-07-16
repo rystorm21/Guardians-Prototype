@@ -40,7 +40,7 @@ namespace EV
                         PathDetection(states, sessionManager, node);
                 }
             }
-            //DisplayEnemyAcc(sessionManager);
+            DisplayEnemyAcc(sessionManager);
         }
 
         public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)

@@ -36,8 +36,8 @@ MonoBehaviour:
   - ability: {fileID: 0}
     abilityIcon: {fileID: 0}
   appliedStatus: []
-  maxHitPoints: 10
-  hitPoints: 10
+  maxHitPoints: 1
+  hitPoints: 1
   agility: 10
   rangedAttackRange: 20
   rangeEffectiveRange: 10
@@ -49,10 +49,11 @@ MonoBehaviour:
   weaponSelected: 0
   abilitySelected: 0
   fightingStyle: 0
+  personality: 0
   currentStance: 1
   teamLeader: 0
   braced: 0
-  covered: 1
+  covered: 0
   coveredBy: {fileID: 0}
   abilityInUse: {fileID: 0}
   KO: 0
@@ -68,3 +69,6 @@ MonoBehaviour:
   debuffMeleeDmg: 0
   debuffRangeDmg: 0
   debuffDmgRes: 0
+  flankedBy: 4
+  threatLevel: 0
+  aiMoveComplete: 0

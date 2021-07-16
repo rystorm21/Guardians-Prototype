@@ -140,6 +140,7 @@ namespace EV
             {
                 _actionPoints = character.StartingAP;
                 accuracyText.gameObject.SetActive(false);
+                this.highlighter.SetActive(false);
                 this.character.abilityInUse = null;
                 SetRun();
                 if (character.hitPoints > 0)
