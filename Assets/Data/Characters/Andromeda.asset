@@ -53,7 +53,7 @@ MonoBehaviour:
   fightingStyle: 1
   personality: 0
   currentStance: 1
-  teamLeader: 0
+  teamLeader: 1
   braced: 0
   covered: 0
   coveredBy: {fileID: 0}

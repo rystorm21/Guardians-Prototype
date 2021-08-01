@@ -199,10 +199,8 @@ namespace EV
             yield return new WaitForSeconds(1);
             sessionManager.PathfinderCall(currentCharacter, node);
             //node.tileRenderer.material = sessionManager.abilityTileMaterial; // highlight closest safe node
-            
             yield return new WaitForSeconds(1);
             states.SetState("moveOnPath");
-            yield return new WaitForSeconds(1);
             AttackDecision(players);
         }
         #endregion
@@ -214,15 +212,18 @@ namespace EV
             AttackAction.attackAccuracy = AttackAction.GetAttackAccuracy(sessionManager.currentCharacter, target, false);
             float distance = Vector3.Distance(attackerPosition, defenderPosition);
             int index = 0;
+            yield return new WaitForSeconds(2);
             RaycastHit[] coverHits;
-            coverHits = Physics.RaycastAll(attackerPosition, defenderPosition - attackerPosition, distance + 1);
+            coverHits = Physics.RaycastAll(attackerPosition, (defenderPosition + Vector3.up) - attackerPosition, distance + 1); // change this
+            Debug.DrawRay(attackerPosition, (defenderPosition + Vector3.up) - attackerPosition);
             for (int i = 0; i < coverHits.Length; i++)
             {
+                Debug.Log(coverHits[i].transform.gameObject.name);
                 if (coverHits[i].transform.gameObject.name == target.name)
+                {
                     index = i;
+                }
             }
-            yield return new WaitForSeconds(2);
-
             sessionManager.SetAction("AttackAction");
             sessionManager.DoAction(node, coverHits[index]);
             sessionManager.HighlightAroundCharacter(currentCharacter, null, 0);

@@ -16,7 +16,16 @@ namespace EV
     public class Ability : ScriptableObject
     {
         public string abilityName;
-        public GameObject prefab;
+        public bool shotAbility;
+        public bool rayAbility;
+        public string windupAnimation;
+        public string actionAnimation;
+        public float animOrigin;
+        public GameObject shootPrefab;
+        public GameObject explosionEffectPrefab;
+        public GameObject channelPrefab;
+        public float projectileSpeed;
+        public float animationDuration;
         public AbilityType type;
         public bool buff;
         public bool ignoreCover;
@@ -38,6 +47,7 @@ namespace EV
         public int duration;
         public int durationCountdown;
         public int coolDown;
+        public int range;
         public int radius;
         [TextArea(15, 20)]
         public string description;

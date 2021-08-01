@@ -15,25 +15,25 @@ namespace EV
         #endregion
         
         #region Action Calls
-        public void CharacterAttacks(GridCharacter attacker, Vector3 targetPoint)
-        {
-            Vector3 origin = attacker.transform.position + Vector3.up * 1.7f;
-            Vector3 direction = targetPoint - origin;
-            Vector3 hitPoint = targetPoint;
+        // public void CharacterAttacks(GridCharacter attacker, Vector3 targetPoint)
+        // {
+        //     Vector3 origin = attacker.transform.position + Vector3.up * 1.7f;
+        //     Vector3 direction = targetPoint - origin;
+        //     Vector3 hitPoint = targetPoint;
 
-            RaycastHit hit;
-            int weaponRange = 50;
-            if (Physics.Raycast(origin, direction.normalized, out hit, weaponRange))
-            {
-                hitPoint = hit.point;
-                IHittable iHit = hit.transform.GetComponentInParent<IHittable>();
-                if (iHit != null)
-                {
-                    iHit.OnHit(attacker);
-                }
-            }
-            Debug.DrawRay(origin, hitPoint - origin, Color.red, 2);
-        }
+        //     RaycastHit hit;
+        //     int weaponRange = 50;
+        //     if (Physics.Raycast(origin, direction.normalized, out hit, weaponRange))
+        //     {
+        //         hitPoint = hit.point;
+        //         IHittable iHit = hit.transform.GetComponentInParent<IHittable>();
+        //         if (iHit != null)
+        //         {
+        //             iHit.OnHit(attacker);
+        //         }
+        //     }
+        //     Debug.DrawRay(origin, hitPoint - origin, Color.red, 2);
+        // }
 
         public void CharacterHealthUpdate(GridCharacter character)
         {

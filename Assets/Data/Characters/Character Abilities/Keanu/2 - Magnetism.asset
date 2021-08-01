@@ -13,11 +13,22 @@ MonoBehaviour:
   m_Name: 2 - Magnetism
   m_EditorClassIdentifier: 
   abilityName: Magnetism
-  prefab: {fileID: 0}
+  shotAbility: 0
+  rayAbility: 0
+  windupAnimation: Heal_Self
+  actionAnimation: 
+  animOrigin: 1.5
+  shootPrefab: {fileID: 0}
+  explosionEffectPrefab: {fileID: 1714552243977966, guid: f36719335e2592340b7bbb6a8ea33882,
+    type: 3}
+  channelPrefab: {fileID: 2492951927131106121, guid: b4636e09dfea7c54da55a7b0cb1e582f,
+    type: 3}
+  projectileSpeed: 0
+  animationDuration: 0
   type: 3
   buff: 0
   ignoreCover: 1
-  apCost: 4
+  apCost: 0
   damageModifier: 0
   healingModifier: 0
   buffAcc: 0
@@ -35,5 +46,7 @@ MonoBehaviour:
   duration: 5
   durationCountdown: 5
   coolDown: 5
-  radius: 8
-  description: All enemies near Keanu will be forced to attack him.
+  range: 0
+  radius: 0
+  description: Raises Keanu's threat level, increasing the likelihood of enemies
+    attacking him

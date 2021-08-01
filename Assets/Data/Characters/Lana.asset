@@ -37,7 +37,7 @@ MonoBehaviour:
     abilityIcon: {fileID: 0}
   appliedStatus: []
   maxHitPoints: 40
-  hitPoints: 40
+  hitPoints: 34
   agility: 8
   rangedAttackRange: 20
   rangeEffectiveRange: 10

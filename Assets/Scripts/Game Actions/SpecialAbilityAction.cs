@@ -8,17 +8,25 @@ namespace EV
     public class SpecialAbilityAction : GameAction
     {
         public static bool buffAbilitySelected;
+        public static bool abilityInProgress;
+        public static Node targetedNode;
+        public static GameObject explosion;
+        public GameObject shootPrefab;
+        public GameObject channelPrefab;
         SessionManager sessionManager;
         GridCharacter currentCharacter;
         Ability abilitySelected;
         Node lastNode;
         int selection;
         bool targetingMode;
+        bool abilityFinished;
+        Vector3 yOffset = new Vector3(0, 1f, 0);
 
         #region Base Methods
-        public override void OnActionStart(SessionManager sm, Turn turn)
+        public override void OnActionStart(SessionManager _sessionManager, Turn turn)
         {
-            sessionManager = sm;
+            abilityFinished = false;
+            sessionManager = _sessionManager;
             currentCharacter = sessionManager.currentCharacter;
             selection = currentCharacter.character.abilitySelected;
             abilitySelected = currentCharacter.character.abilityPool[selection].ability;
@@ -36,20 +44,21 @@ namespace EV
                 return;
             }
             sessionManager.currentCharacter.currentNode.tileRenderer.material = sessionManager.defaultTileMaterial;
+            currentCharacter.PlayAnimation(abilitySelected.windupAnimation);
+            if (abilitySelected.channelPrefab != null)
+                channelPrefab = GameObject.Instantiate(abilitySelected.channelPrefab, currentCharacter.transform.position + (Vector3.up * abilitySelected.animOrigin), Quaternion.identity);
+
             switch (abilitySelected.type.ToString())
             {
                 case "Self":
                     sessionManager.HighlightAroundCharacter(currentCharacter, currentCharacter.currentNode, abilitySelected.radius);
                     break;
                 case "PBAoE":
-                    // insert logic for player-based aoe abilities
                     sessionManager.HighlightAroundCharacter(currentCharacter, currentCharacter.currentNode, abilitySelected.radius);
                     break;
                 case "Ranged":
-                    // insert logic for ranged abilities
                     break;
                 case "RangedAoe":
-                    // insert logic for ranged aoe abilities
                     break;
             }
             sessionManager.gameVariables.UpdateMouseText("");
@@ -59,17 +68,52 @@ namespace EV
 
         public override void OnActionStop(SessionManager sessionManager, Turn turn)
         {
+            DestroyChannelPrefab();
+            ClearLastTargetTile();
+            abilityInProgress = false;
             buffAbilitySelected = false;
             currentCharacter.character.abilityInUse = null;
             targetingMode = false;
+            sessionManager.APCheck();
         }
 
         public override void OnActionTick(SessionManager sm, Turn turn, Node node, RaycastHit hit)
         {
-            // insert stuff here
-            if (sessionManager.powerActivated.value)
+            // if ability is in progress and not finished...
+            if (abilityInProgress && !abilityFinished)
             {
-                AbilityType(sessionManager);
+                // if a shot is fired (shoot prefab), move it towards the target and explode it. If a ray is shot, bascially do the same thing
+                if (shootPrefab != null)
+                {
+                    shootPrefab.transform.position = Vector3.MoveTowards(shootPrefab.transform.position, targetedNode.worldPosition + yOffset, abilitySelected.projectileSpeed * Time.deltaTime);
+                    if (Vector3.Distance(targetedNode.worldPosition + yOffset, shootPrefab.transform.position) < 1)
+                    {
+                        ShotExplosion(sm, targetedNode);
+                    }
+                    if (abilitySelected.rayAbility)
+                    {
+                        UnityEngine.Object.Destroy(shootPrefab, abilitySelected.animationDuration);
+                    }
+                }
+                // if an ability is in progress but shootPrefab is null, that means the object has been destroyed. Play the explosion animation.
+                else
+                {
+                    ShotExplosion(sm, targetedNode);
+                }
+            }
+            // if the ability is in progress and finished, check to see if the explosion is null. If that's the case, then we can exit and return to MoveAction Mode.
+            if (abilityInProgress && abilityFinished)
+            {
+                if (explosion == null)
+                {
+                    ExitMode(); //
+                }
+            }
+
+            if (sessionManager.powerActivated.value && !abilityInProgress)
+            {
+                if (!abilityFinished)
+                    AbilityType(sessionManager);
                 if (targetingMode)
                     sessionManager.popUpUI.Deactivate(sessionManager, targetingMode);
                 else
@@ -87,13 +131,21 @@ namespace EV
 
         public override void OnDoAction(SessionManager sm, Turn turn, Node node, RaycastHit hit)
         {
-            if (targetingMode)
+            if (node != null && !abilityInProgress)
             {
-                string abilityTypeInUse;
-                abilityTypeInUse = abilitySelected.type.ToString();
-                BlastRadius(sm, currentCharacter.owner.name, false);
-                sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
-                ExitMode();
+                if (Vector3.Distance(currentCharacter.currentNode.worldPosition, node.worldPosition) > abilitySelected.range)
+                {
+                    Debug.Log("target out of range.");
+                    Debug.Log("Distance: " + Vector3.Distance(currentCharacter.currentNode.worldPosition, node.worldPosition));
+                    return;
+                }
+                if (targetingMode && !abilityInProgress)
+                {
+                    string abilityTypeInUse;
+                    abilityTypeInUse = abilitySelected.type.ToString();
+                    BlastRadius(sm, currentCharacter.owner.name, node, false);
+                    sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
+                }
             }
         }
         #endregion
@@ -106,12 +158,14 @@ namespace EV
             {
                 case "Self":
                     // insert logic for self-based abilities
+                    targetingMode = true;
                     StatusAbility(currentCharacter, true);
                     sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
                     break;
                 case "PBAoE":
                     // insert logi)c for player-based aoe abilities
-                    BlastRadius(sessionManager, currentCharacter.owner.name, false);
+                    targetingMode = true;
+                    BlastRadius(sessionManager, currentCharacter.owner.name, currentCharacter.currentNode, false);
                     sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
                     break;
                 case "Ranged":
@@ -138,8 +192,18 @@ namespace EV
 
         void StatusAbility(GridCharacter target, bool self)
         {
+            abilityInProgress = true;
+            explosion = GameObject.Instantiate(abilitySelected.explosionEffectPrefab, target.transform.position, Quaternion.identity);
+            DestroyChannelPrefab();
+            abilityFinished = true;
+            UnityEngine.Object.Destroy(explosion, 2.0f);
             StatusAbility(target);
-            ExitMode();
+        }
+
+        void DestroyChannelPrefab()
+        {
+            if (channelPrefab)
+                UnityEngine.Object.Destroy(channelPrefab);
         }
         #endregion        
 
@@ -149,12 +213,12 @@ namespace EV
             targetingMode = true;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-
             if (Physics.Raycast(ray, out hit, 1000))                                 // if the raycast hits something
             {
                 Node node = sessionManager.gridManager.GetNode(hit.point);          // get the node at the hit point 
                 if (node != null)
                 {
+                    currentCharacter.transform.LookAt(node.worldPosition);
                     sessionManager.HighlightAroundCharacter(sessionManager.currentCharacter, node, radius);
                     ClearLastTargetTile();
                     if (node.tileRenderer != null)
@@ -174,21 +238,39 @@ namespace EV
             }
         }
 
-        void BlastRadius(SessionManager sessionManager, string teamName, bool buff)
+        void BlastRadius(SessionManager sessionManager, string teamName, Node targetNode, bool buff)
         {
+            abilityInProgress = true;
+            Debug.Log("ability in progress");
+            if (abilitySelected.actionAnimation != "")
+                currentCharacter.PlayAnimation(abilitySelected.actionAnimation);
+            if (abilitySelected.shotAbility || abilitySelected.rayAbility)
+            {
+                ShootIt(targetNode);
+            }
+            if (abilitySelected.type.ToString() == "PBAoE")
+            {
+                ShotExplosion(sessionManager, targetedNode);
+                DestroyChannelPrefab();
+            }
+
+        }
+        
+        void VerifyHits()
+        {
+            string teamName = currentCharacter.owner.name;
             string targetTeamName = "";
-            if (teamName == "Player1") 
+            if (teamName == "Player1")
                 if (buffAbilitySelected)
                     targetTeamName = "Player1";
                 else
                     targetTeamName = "Enemy";
 
-            if (teamName == "Enemy") 
+            if (teamName == "Enemy")
                 if (buffAbilitySelected)
                     targetTeamName = "Enemy";
                 else
                     targetTeamName = "Player1";
-
             foreach (Node node in sessionManager.GetTargetNodes())
             {
                 if (node.character != null)
@@ -209,6 +291,40 @@ namespace EV
                     }
                 }
             }
+        }
+
+        void ShootIt(Node node)
+        {
+            if (node != null)
+            {
+                currentCharacter.transform.LookAt(node.worldPosition);
+                shootPrefab = GameObject.Instantiate(abilitySelected.shootPrefab, currentCharacter.transform.position + (Vector3.up * abilitySelected.animOrigin) + (Vector3.forward), currentCharacter.transform.rotation);
+                DestroyChannelPrefab();
+                targetedNode = node;
+            }
+        }
+
+        void ShotExplosion(SessionManager sessionManager, Node node)
+        {
+            Vector3 explosionTarget = new Vector3();            
+            if (abilitySelected.shotAbility)
+            {
+                explosionTarget = shootPrefab.transform.position;
+                UnityEngine.Object.Destroy(shootPrefab);
+            }
+            if (abilitySelected.rayAbility)
+            {
+                explosionTarget = node.worldPosition;
+            }
+            if (abilitySelected.type.ToString() == "PBAoE")
+            {
+                explosionTarget = currentCharacter.currentNode.worldPosition;
+            }
+            explosion = GameObject.Instantiate(abilitySelected.explosionEffectPrefab, explosionTarget, Quaternion.identity);
+            abilityFinished = true;
+            UnityEngine.Object.Destroy(explosion, 2.0f);
+            VerifyHits();
+            sessionManager.ClearReachableTiles();
         }
 
         void AbilityHit(SessionManager sessionManager, Node node, GridCharacter attacker)
@@ -242,13 +358,8 @@ namespace EV
 
         public void ExitMode()
         {
-            buffAbilitySelected = false;
-            ClearLastTargetTile();
-            sessionManager.SetAction("MoveAction");
-            sessionManager.popUpUI.Deactivate(sessionManager);
             sessionManager.currentCharacter.character.abilitySelected = 0;
-            currentCharacter.character.abilityInUse = null;
-            targetingMode = false;
+            sessionManager.popUpUI.Deactivate(sessionManager);
         }
     }
 }

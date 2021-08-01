@@ -1132,7 +1132,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Keanu
+  m_text: CharName
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c72b73bc63f4d2141ab5d93c9815adc8, type: 2}
   m_sharedMaterial: {fileID: 2956293053311036417, guid: c72b73bc63f4d2141ab5d93c9815adc8,

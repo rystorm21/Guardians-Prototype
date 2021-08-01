@@ -18,6 +18,10 @@ namespace EV
 
         public void Deactivate(SessionManager sessionManager)
         {
+            if (sessionManager.currentCharacter.character.weaponSelected == 0)
+                sessionManager.currentCharacter.PlayAnimation("Idle");
+            else
+                sessionManager.currentCharacter.PlayAnimation("MeleeIdle");
             sessionManager.currentCharacter.character.abilityInUse = null;
             sessionManager.popUpUI.gameObject.SetActive(false);
             sessionManager.SetAction("MoveAction");

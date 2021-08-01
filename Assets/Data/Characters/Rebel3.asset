@@ -39,7 +39,7 @@ MonoBehaviour:
   maxHitPoints: 1
   hitPoints: 1
   agility: 10
-  rangedAttackRange: 20
+  rangedAttackRange: 25
   rangeEffectiveRange: 10
   attackAccuracy: 75
   attackDamage: 6
@@ -53,7 +53,7 @@ MonoBehaviour:
   currentStance: 1
   teamLeader: 0
   braced: 0
-  covered: 1
+  covered: 0
   coveredBy: {fileID: 0}
   abilityInUse: {fileID: 0}
   KO: 0
@@ -69,6 +69,6 @@ MonoBehaviour:
   debuffMeleeDmg: 0
   debuffRangeDmg: 0
   debuffDmgRes: 0
-  flankedBy: 0
+  flankedBy: 4
   threatLevel: 0
-  aiMoveComplete: 0
+  aiMoveComplete: 1

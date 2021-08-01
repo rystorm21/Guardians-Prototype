@@ -27,8 +27,9 @@ namespace EV
 
             if (!isInit)
             {
-                if (character == null || index > character.currentPath.Count -1)
+                if (character == null || character.currentPath == null || index > character.currentPath.Count -1)
                 {
+                    sessionManager.moveInProgress = false;
                     states.SetStartingState();
                     return;
                 }

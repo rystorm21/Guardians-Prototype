@@ -13,9 +13,21 @@ MonoBehaviour:
   m_Name: 5 - Infernal Rage
   m_EditorClassIdentifier: 
   abilityName: Infernal Rage
-  prefab: {fileID: 0}
+  shotAbility: 0
+  rayAbility: 0
+  windupAnimation: Heal_Self
+  actionAnimation: 
+  animOrigin: 1.5
+  shootPrefab: {fileID: 0}
+  explosionEffectPrefab: {fileID: 1365538819899408, guid: 556f3d66b1d3f2a4b902f09364e5e94f,
+    type: 3}
+  channelPrefab: {fileID: 2492951927131106121, guid: d022e2e6f4170c94cb8ee8e716c21dc8,
+    type: 3}
+  projectileSpeed: 0
+  animationDuration: 0
   type: 2
   buff: 1
+  ignoreCover: 0
   apCost: 2
   damageModifier: 0
   healingModifier: 0
@@ -28,11 +40,13 @@ MonoBehaviour:
   debuffAcc: 0
   debuffActionPoints: 0
   debuffDefense: 0
-  debuffDmg: 0
+  debuffMeleeDmg: 0
+  debuffRangeDmg: 0
   debuffDmgRes: 0
   duration: 3
   durationCountdown: 2
   coolDown: 5
+  range: 0
   radius: 0
   description: Lana's fire mastery allows her to channel pure rage into her attacks.
     For 2 turns, she deals double damage with all attacks and abilities. This bonus

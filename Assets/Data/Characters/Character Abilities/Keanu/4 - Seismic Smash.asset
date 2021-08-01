@@ -13,9 +13,21 @@ MonoBehaviour:
   m_Name: 4 - Seismic Smash
   m_EditorClassIdentifier: 
   abilityName: Seismic Smash
-  prefab: {fileID: 0}
+  shotAbility: 0
+  rayAbility: 0
+  windupAnimation: Smash_Windup
+  actionAnimation: Smash_001
+  animOrigin: 0
+  shootPrefab: {fileID: 0}
+  explosionEffectPrefab: {fileID: 1610468776334564, guid: 22e6b12eb86b1b0418f971cb2feb5c36,
+    type: 3}
+  channelPrefab: {fileID: 2492951927131106121, guid: b4636e09dfea7c54da55a7b0cb1e582f,
+    type: 3}
+  projectileSpeed: 0
+  animationDuration: 4
   type: 3
   buff: 0
+  ignoreCover: 0
   apCost: 4
   damageModifier: 1.25
   healingModifier: 0
@@ -34,5 +46,6 @@ MonoBehaviour:
   duration: 0
   durationCountdown: 0
   coolDown: 4
+  range: 0
   radius: 3
   description: Damages all nearby enemies with a 50% chance to inflict a -2AP penalty
