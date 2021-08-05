@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace EV
 {
@@ -9,12 +10,24 @@ namespace EV
         [SerializeField]
         SessionManager sessionManager;
         GridCharacter currentCharacter;
+        GridCharacter closestCharacter;
+        float closestCharacterDistance;
         List<GridCharacter> enemies;
         List<GridCharacter> players;
         bool moveCompleted;
         bool firstInit = true;
 
         public static List<Node> coverNodes;
+
+        private void Update()
+        {
+            if (MoveCharacterOnPath.moveComplete)
+            {
+                Debug.Log("Move Done");
+                Init();
+                MoveCharacterOnPath.moveComplete = false;
+            }
+        }
 
         public void Init()
         {
@@ -80,19 +93,32 @@ namespace EV
         void FindSafeCover(List<GridCharacter> players, StateManager states)
         {
             List<Node> safeNodes = new List<Node>();
-            int flankedBy = FlankedBy(currentCharacter, null, players);
-            sessionManager.HighlightAroundCharacter(currentCharacter, null, 0);
             Node closestCover = new Node();
+            int flankedBy = FlankedBy(currentCharacter, null, players);
+            int safestNode = players.Count;
+            sessionManager.HighlightAroundCharacter(currentCharacter, null, 0);
             float closestDistance = currentCharacter.ActionPoints;
-            
+            closestCharacterDistance = 100;
             foreach (Node node in coverNodes)
             {
-                if (ClearShot(node, players) == false)
+                int nodeSafety = ClearShot(node, players);
+                if (nodeSafety < safestNode)
+                    safestNode = nodeSafety;
+            }
+            // Debug.Log(currentCharacter.name + " is flanked by " + flankedBy + " enemies. " + "safest node has " + safestNode + " clear shots");
+            // Debug.Log("Closest Character is :" + closestCharacter.name + ", at distance " + closestCharacterDistance);
+            foreach (Node node in coverNodes)
+            {
+                if (ClearShot(node, players) == safestNode)
                 {
-                    safeNodes.Add(node);
+                    if (Vector3.Distance(closestCharacter.transform.position, node.worldPosition) < currentCharacter.character.rangedAttackRange)
+                    {
+                        safeNodes.Add(node);
+                    }
                 }
             }
-            if (safeNodes != null)
+
+            if (safeNodes.Count > 0)
             {
                 foreach (Node node in safeNodes)
                 {
@@ -105,24 +131,127 @@ namespace EV
                 }
                 StartCoroutine(MoveAICharacter(closestCover, players, states));
             }
+            // if no safe nodes are added, enemy is out of range
+            else 
+            {
+                Node closestNode = new Node();
+                closestCharacterDistance = 100;
+
+                Debug.Log("enemy will advance to closest square");
+                foreach(Node node in sessionManager.reachableNodesAI)
+                {
+                    float distance = Vector3.Distance(node.worldPosition, closestCharacter.transform.position);
+                    if (distance < closestCharacterDistance)
+                    {
+                        if (!closestCharacter.character.KO)
+                        {
+                            closestCharacterDistance = distance;
+                            closestNode = node;
+                        }
+                    }
+                }
+                StartCoroutine(MoveAICharacter(closestNode, players, states));
+            }
+        }
+
+        // This method returns the closest player to the current character. Characters that are KO'ed are not counted.
+        GridCharacter ClosestCharacterToPlayer(List<GridCharacter> players)
+        {
+            GridCharacter closestCharacterToPlayer = new GridCharacter();
+            float distance = 100f;
+
+            foreach (GridCharacter player in players)
+            {
+                if (!player.character.KO)
+                {
+                    float distanceBetweenChars = Vector3.Distance(player.transform.position, currentCharacter.transform.position);
+                    if (distanceBetweenChars < distance)
+                    {
+                        distance = distanceBetweenChars;
+                        closestCharacterToPlayer = player;
+                    }
+                }
+            }
+            return closestCharacterToPlayer;
+        }
+
+        // This method returns the closest player to the node being checked.
+        GridCharacter ClosestCharacterToNode(List <GridCharacter> players, Node node)
+        {
+            GridCharacter closestCharacterToNode = new GridCharacter();
+            float distance = 100f;
+            foreach (GridCharacter player in players)
+            {
+                if (!player.character.KO)
+                {
+                    float distanceBetweenPoints = Vector3.Distance(player.transform.position, node.worldPosition);
+                    if (distanceBetweenPoints < distance)
+                    {
+                        distance = distanceBetweenPoints;
+                        closestCharacterToNode = player;
+                    }
+                }
+            }
+            return closestCharacterToNode;
         }
 
         // checks if reachable cover node is not a flanked position (clear shot), returns true or false
-        bool ClearShot(Node node, List<GridCharacter> players)
+        int ClearShot(Node node, List<GridCharacter> players)
         {
-            bool clearShot = false;
+            Collider[] nearbyCover = Physics.OverlapSphere(node.worldPosition, 1);
+            Vector3 offset = Vector3.up;
+            bool nodeIsCovered = false;
+            int clearShots = 0;
             foreach (GridCharacter player in players)
             {
-                if (!Physics.Linecast(player.transform.position, node.worldPosition))
+                Vector3 attackerPosition = player.transform.position + offset;
+                Vector3 defenderPosition = node.worldPosition + offset;
+                RaycastHit[] coverHits;
+                coverHits = Physics.RaycastAll(defenderPosition, attackerPosition - defenderPosition, Vector3.Distance(defenderPosition, attackerPosition));
+                float distance = 100;
+                if (!player.character.KO)
+                    distance = Vector3.Distance(player.transform.position, node.worldPosition);
+                if (distance < closestCharacterDistance)
                 {
-                    clearShot = true;
+                    closestCharacterDistance = distance;
+                    closestCharacter = player;
                 }
+                if (coverHits.Length > 1)
+                {
+                    foreach (var hit in coverHits)
+                    {
+                        if (hit.transform.gameObject.tag == "Cover-High" || hit.transform.gameObject.tag == "Cover-Low")
+                        {
+                            // if this is triggered, then a 'cover' object was hit.
+                            // now we have to find out if the cover object is next to the cover node.
+                            Collider[] hitColliders = Physics.OverlapSphere(node.worldPosition, 1);
+                            if (hitColliders != null)
+                            {
+                                foreach (Collider neighbor in hitColliders)
+                                {
+                                    if (neighbor.name == hit.transform.gameObject.name)
+                                    {
+                                        // if the cover object that was hit is the same as the neighbor's cover, then the position has to be covered.
+                                        nodeIsCovered = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // if there's no cover between node and object, it's a clear shot
+                    nodeIsCovered = false;
+                }
+                if (!nodeIsCovered)
+                    clearShots++;
             }
-            if (!clearShot)
+            if (clearShots == 0)
             {
                 node.tileRenderer.material = sessionManager.reachableTileMaterial;
             }
-            return clearShot;
+            return clearShots;
         }
 
         // checks how many players are flanking the enemy's current position & returns the value.
@@ -145,6 +274,8 @@ namespace EV
         {
             int highThreatLevel = FindHighestThreatLevel(players);
             GridCharacter selectedTarget = FindTarget(players, highThreatLevel);
+            if (selectedTarget == null)
+                return;
             AttackAction.lastTarget = selectedTarget;
             Debug.Log("target selected: " + selectedTarget.name);
             if (currentCharacter.ActionPoints > 4)
@@ -154,6 +285,7 @@ namespace EV
             else
             {
                 Debug.Log(currentCharacter.character.name + " move completed");
+                currentCharacter.ActionPoints = 0;
                 currentCharacter.character.aiMoveComplete = true;
                 moveCompleted = true;
                 Init();
@@ -182,8 +314,16 @@ namespace EV
             foreach(GridCharacter target in players)
             {   
                 if (target.character.threatLevel == highestThreat && !target.character.KO)
-                    possibleTargets.Add(target);
+                {
+                    if (Vector3.Distance(target.transform.position, currentCharacter.transform.position) < currentCharacter.character.rangedAttackRange)
+                    {
+                        possibleTargets.Add(target);
+                    }
+                }
             }
+
+            if (possibleTargets.Count == 0)
+                return null;
 
             System.Random random = new System.Random();
             index = random.Next(possibleTargets.Count);
@@ -192,13 +332,14 @@ namespace EV
             return targetSelected;
         }
         #endregion
-
+        
         #region Move Co-Routines
         IEnumerator MoveAICharacter(Node node, List<GridCharacter> players, StateManager states)
         {
             yield return new WaitForSeconds(1);
             sessionManager.PathfinderCall(currentCharacter, node);
-            //node.tileRenderer.material = sessionManager.abilityTileMaterial; // highlight closest safe node
+            // node.tileRenderer.material = sessionManager.abilityTileMaterial; // highlight closest safe node
+            sessionManager.moveInProgress = true;
             yield return new WaitForSeconds(1);
             states.SetState("moveOnPath");
             AttackDecision(players);
@@ -218,7 +359,7 @@ namespace EV
             Debug.DrawRay(attackerPosition, (defenderPosition + Vector3.up) - attackerPosition);
             for (int i = 0; i < coverHits.Length; i++)
             {
-                Debug.Log(coverHits[i].transform.gameObject.name);
+                // Debug.Log(coverHits[i].transform.gameObject.name);
                 if (coverHits[i].transform.gameObject.name == target.name)
                 {
                     index = i;
@@ -227,7 +368,7 @@ namespace EV
             sessionManager.SetAction("AttackAction");
             sessionManager.DoAction(node, coverHits[index]);
             sessionManager.HighlightAroundCharacter(currentCharacter, null, 0);
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(2);
             Init();
         }
         #endregion

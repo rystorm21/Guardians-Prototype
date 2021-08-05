@@ -6,7 +6,7 @@ namespace EV
 {
     public class MoveCharacterOnPath : StateActions
     {
-
+        public static bool moveComplete;
         bool isInit;
         bool firstInit;
         float time;
@@ -22,6 +22,7 @@ namespace EV
 
         public override void Execute(StateManager states, SessionManager sessionManager, Turn turn)
         {
+            moveComplete = false;
             GridCharacter character = states.CurrentCharacter;
             sessionManager.moveInProgress = true;
 
@@ -46,11 +47,14 @@ namespace EV
 
                 character.ActionPoints -= moveCost; // decrement AP for every step, 2 if diagonal
                 index++;
-
-                if (index > character.currentPath.Count - 1)
+                if (character.currentPath != null)
                 {
-                    // we moved on to our path, so return to starting state & play idle animation
-                    MoveComplete(states, sessionManager, turn);
+                    if (index > character.currentPath.Count - 1)
+                    {
+                        // we moved on to our path, so return to starting state & play idle animation
+                        moveComplete = true;
+                        MoveComplete(states, sessionManager, turn);
+                    }
                 }
             }
 

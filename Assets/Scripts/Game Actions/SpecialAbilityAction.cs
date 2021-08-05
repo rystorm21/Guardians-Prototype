@@ -334,6 +334,7 @@ namespace EV
             {
                 float damageDealt = AttackAction.DamageDealt(sessionManager, 2, attacker, defender, abilitySelected);
                 defender.character.hitPoints -= Mathf.RoundToInt(damageDealt);
+                defender.healthBar.SetHealth(defender.character.hitPoints);
                 StatusAbility(defender);
                 defender.PlayAnimation("Death");
 

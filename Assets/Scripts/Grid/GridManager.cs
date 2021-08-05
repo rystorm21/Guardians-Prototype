@@ -172,6 +172,12 @@ namespace EV
                                     { 
                                         node.isWalkable = false; 
                                         node.obstacle = obj;
+                                        // Added 8/1/21 - Detecting which nodes are cover Nodes
+                                        if (obj.tag == "Cover-High" || obj.tag == "Cover-Low")
+                                        {
+                                            node.coverObject = obj.transform.gameObject;
+                                            // Debug.Log(node.coverObject.name + ": " + node.worldPosition);
+                                        }
                                     }
                                 }
                             }

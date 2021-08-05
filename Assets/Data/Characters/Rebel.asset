@@ -71,4 +71,4 @@ MonoBehaviour:
   debuffDmgRes: 0
   flankedBy: 4
   threatLevel: 0
-  aiMoveComplete: 1
+  aiMoveComplete: 0

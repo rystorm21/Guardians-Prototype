@@ -49,13 +49,13 @@ MonoBehaviour:
   damageResist: 0
   meleeAttackRange: 1
   weaponSelected: 0
-  abilitySelected: 7
+  abilitySelected: 0
   fightingStyle: 0
   personality: 0
   currentStance: 1
   teamLeader: 1
   braced: 0
-  covered: 1
+  covered: 0
   coveredBy: {fileID: 0}
   abilityInUse: {fileID: 0}
   KO: 0
@@ -72,5 +72,5 @@ MonoBehaviour:
   debuffRangeDmg: 0
   debuffDmgRes: 0
   flankedBy: 0
-  threatLevel: 0
+  threatLevel: 3
   aiMoveComplete: 0

@@ -220,6 +220,7 @@ namespace EV
             {
                 float damageDealt = DamageDealt(sessionManager, weaponType, lastAttacker, lastTarget, null);
                 lastTarget.character.hitPoints -= Mathf.RoundToInt(damageDealt);
+                lastTarget.healthBar.SetHealth(lastTarget.character.hitPoints);
             }
             if (lastTarget.character.hitPoints <=0)
             {

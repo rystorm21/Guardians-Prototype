@@ -12,6 +12,7 @@ namespace EV
 
         [System.NonSerialized]
         public GameObject highlighter;
+        public HealthBar healthBar;
         GameObject bladeR;
         GameObject bladeL;
         GameObject braceShield;
@@ -79,6 +80,8 @@ namespace EV
             teamName = owner.name;
             character.maxHitPoints = SetHitPoints(character.characterArchetype); // just for testing purposes
             character.hitPoints = character.maxHitPoints;
+            if (healthBar != null)
+                healthBar.SetMaxHealth(character.maxHitPoints);
             character.KO = false;
             character.teamLeader = false;
             if (owner.characters[0].gameObject == this.gameObject)

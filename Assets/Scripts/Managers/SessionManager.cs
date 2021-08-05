@@ -47,8 +47,8 @@ namespace EV
         public Material abilityTileMaterial;
         public Material buffAbilityTileMaterial;
         public Material testCoverMaterial;
+        public List<Node> reachableNodesAI;
         private List<Node> targetedNodes;
-        private List<Node> reachableNodesAI;
 
         public int TurnIndex
         {

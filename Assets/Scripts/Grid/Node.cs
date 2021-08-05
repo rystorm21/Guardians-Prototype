@@ -15,6 +15,7 @@ namespace EV
         public bool inactiveCharWasHere = false;
         public Vector3 worldPosition;
         public GridObject obstacle;
+        public GameObject coverObject;
         public GameObject tileViz;
         public Renderer tileRenderer;
         public GridCharacter character;
