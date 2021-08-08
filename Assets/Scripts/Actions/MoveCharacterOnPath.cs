@@ -28,7 +28,7 @@ namespace EV
 
             if (!isInit)
             {
-                if (character == null || character.currentPath == null || index > character.currentPath.Count -1)
+                if (character == null || character.currentPath == null || index > character.currentPath.Count - 1)
                 {
                     sessionManager.moveInProgress = false;
                     states.SetStartingState();
@@ -64,11 +64,11 @@ namespace EV
 
         private void CheckForInactive(GridCharacter character)
         {
-                if (!character.currentNode.inactiveCharWasHere) // prevents player from making a character unclickable when being replaced
-                    character.currentNode.character = null;
-                character.currentNode = targetNode;
-                if (!character.currentNode.inactiveCharWasHere) // ditto with the above, needed to be in order
-                    character.currentNode.character = character;
+            if (!character.currentNode.inactiveCharWasHere) // prevents player from making a character unclickable when being replaced
+                character.currentNode.character = null;
+            character.currentNode = targetNode;
+            if (!character.currentNode.inactiveCharWasHere) // ditto with the above, needed to be in order
+                character.currentNode.character = character;
         }
 
         private void MoveComplete(StateManager states, SessionManager sessionManager, Turn turn)
@@ -76,7 +76,7 @@ namespace EV
             GridCharacter character = states.CurrentCharacter;
             time = 1;
             index = 0;
-            
+
             character.character.covered = character.character.IsCovered(sessionManager, character);
             states.SetStartingState();
             character.PlayIdleAnimation();
@@ -118,17 +118,17 @@ namespace EV
             direction.y = 0; // optional -2d of course
             targetRotation = Quaternion.LookRotation(direction);
             startRotation = character.transform.rotation;
-            
+
             if (direction.x != 0 && direction.z != 0)
             {
                 moveCost = 2;
             }
-            else 
+            else
             {
                 moveCost = 1;
             }
 
-            if (!firstInit) 
+            if (!firstInit)
             {
                 character.currentNode.isWalkable = true;
                 sessionManager.ClearReachableTiles();

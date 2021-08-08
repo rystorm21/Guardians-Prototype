@@ -184,6 +184,7 @@ namespace EV
             target.character.hitPoints += Mathf.RoundToInt(target.character.maxHitPoints * abilitySelected.healingModifier);
             if (target.character.hitPoints >= target.character.maxHitPoints)
                 target.character.hitPoints = target.character.maxHitPoints;
+            target.healthBar.SetHealth(target.character.hitPoints);
             if (abilitySelected.duration == 0)
                 return;
             target.character.ApplyStatus(abilitySelected);

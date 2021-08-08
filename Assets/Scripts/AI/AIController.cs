@@ -5,56 +5,65 @@ using System.Linq;
 
 namespace EV
 {
+    public enum EnemyState
+    {
+        CharSelect = 0,
+        MoveDecision = 1,
+        Moving = 2,
+        AttackDecision = 3,
+        Attacking = 4
+    }
+    
     public class AIController : MonoBehaviour
     {
         [SerializeField]
         SessionManager sessionManager;
-        GridCharacter currentCharacter;
-        GridCharacter closestCharacter;
-        float closestCharacterDistance;
+        StateManager states;
+        public EnemyState enemyState;
         List<GridCharacter> enemies;
         List<GridCharacter> players;
-        bool moveCompleted;
-        bool firstInit = true;
+        GridCharacter currentCharacter;
+        GridCharacter closestCharacter;
+        GridCharacter selectedTarget;
+        float closestCharacterDistance;
+
+        Node moveTargetNode;
+        bool foundSafeCover;
+        bool outOfRange;
 
         public static List<Node> coverNodes;
 
-        private void Update()
+        public void Init()
         {
-            if (MoveCharacterOnPath.moveComplete)
+            enemies = sessionManager.turns[1].player.characters;
+            players = sessionManager.turns[0].player.characters;
+            states = sessionManager.turns[sessionManager.TurnIndex].player.stateManager;
+            enemyState = EnemyState.CharSelect;
+            StartCoroutine(EnemyFSM());
+        }
+
+        #region AI FSM
+        IEnumerator EnemyFSM()
+        {
+            while(true)
             {
-                Debug.Log("Move Done");
-                Init();
-                MoveCharacterOnPath.moveComplete = false;
+                yield return StartCoroutine(enemyState.ToString());
             }
         }
 
-        public void Init()
+        IEnumerator CharSelect()
         {
-            List<GridCharacter> enemies = sessionManager.turns[1].player.characters;
-            List<GridCharacter> players = sessionManager.turns[0].player.characters;
-            StateManager states = sessionManager.turns[sessionManager.TurnIndex].player.stateManager;
-            
-            if (firstInit)
-            {
-                foreach (var character in enemies)
-                {
-                    character.character.aiMoveComplete = false;
-                }
-            }
-
             bool allDone = true;
 
             foreach (var character in enemies)
             {
-                if (character.ActionPoints > 0 && !character.character.aiMoveComplete)
+                if (character.ActionPoints > 0)
                 {
                     allDone = false;
-                    firstInit = false;
                     sessionManager.turns[sessionManager.TurnIndex].player.stateManager.CurrentCharacter = character;
                     sessionManager.currentCharacter = character;
                     currentCharacter = character;
-                    MoveDecision(character, players, states);
+                    enemyState = EnemyState.MoveDecision;
                     break;
                 }
             }
@@ -62,36 +71,96 @@ namespace EV
             if (allDone)
             {
                 Debug.Log("enemy turn completed.");
-                firstInit = true;
-                sessionManager.moveInProgress = false;
+                StopAllCoroutines();
                 sessionManager.EndTurn();
             }
+            yield return null;
         }
-  
-        #region Move Decision Making
-        void MoveDecision(GridCharacter enemy, List<GridCharacter> players, StateManager states)
-        {
-            // enemy will analyze the battlefield and decide where to go. Enemy may decide to stay put. 
-            // enemy will first check if it's in a vulnerable position (flanked)
-            int flankedBy = FlankedBy(enemy, null, players);
-            enemy.character.flankedBy = flankedBy;
-            
 
-            if (flankedBy > 0)
+        IEnumerator MoveDecision()
+        {
+            FindSafeCover(players, states);
+            if (foundSafeCover)
+                enemyState = EnemyState.Moving;
+            if (moveTargetNode == null && !outOfRange)
+                enemyState = EnemyState.AttackDecision;
+            sessionManager.PathfinderCall(currentCharacter, moveTargetNode);
+            sessionManager.moveInProgress = true;
+            yield return new WaitForSeconds(.05f);
+        }
+
+        IEnumerator Moving()
+        {
+            states.SetState("moveOnPath");
+            if (!sessionManager.moveInProgress)
             {
-                // find a safer location to flee to
-                FindSafeCover(players, states);
+                enemyState = EnemyState.AttackDecision;
             }
+            yield return new WaitForSeconds(.5f);
+        }
+
+        IEnumerator AttackDecision()
+        {
+            int highThreatLevel = FindHighestThreatLevel(players);
+            selectedTarget = FindTarget(players, highThreatLevel);
+            if (selectedTarget == null)
+                enemyState = EnemyState.MoveDecision;
+            AttackAction.lastTarget = selectedTarget;
+            // Debug.Log("target selected: " + selectedTarget.name);
+            if (currentCharacter.ActionPoints >= 4)
+                enemyState = EnemyState.Attacking;
             else
             {
-                // take aggressive action
-                AttackDecision(players);
+                Debug.Log(currentCharacter.character.name + " move completed");
+                currentCharacter.ActionPoints = 0;
+                enemyState = EnemyState.CharSelect;
             }
+            yield return null;
         }
+
+        IEnumerator Attacking()
+        {
+            Vector3 attackerPosition = currentCharacter.transform.position;
+            Vector3 defenderPosition = AttackAction.lastTarget.transform.position;
+            GridCharacter target = AttackAction.lastTarget;
+            Node node = target.currentNode;
+
+            MoveAction.DisplayEnemyAcc(sessionManager);
+            AttackAction.attackAccuracy = AttackAction.GetAttackAccuracy(sessionManager.currentCharacter, target, false);
+            float distance = Vector3.Distance(attackerPosition, defenderPosition);
+            int index = 0;
+            RaycastHit[] coverHits;
+            coverHits = Physics.RaycastAll(attackerPosition, (defenderPosition + Vector3.up) - attackerPosition, distance + 1); // change this
+            Debug.DrawRay(attackerPosition, (defenderPosition + Vector3.up) - attackerPosition);
+            for (int i = 0; i < coverHits.Length; i++)
+            {
+                // Debug.Log(coverHits[i].transform.gameObject.name);
+                if (coverHits[i].transform.gameObject.name == target.name)
+                {
+                    index = i;
+                }
+            }
+            sessionManager.SetAction("AttackAction");
+            sessionManager.DoAction(node, coverHits[index]);
+            sessionManager.HighlightAroundCharacter(currentCharacter, null, 0);
+            yield return new WaitForSeconds(2f);
+            if (!AttackAction.attackInProgress)
+                enemyState = EnemyState.AttackDecision;
+        }
+        #endregion
+
+        #region Move Decision Making
 
         // Find a covered node that's in movement range
         void FindSafeCover(List<GridCharacter> players, StateManager states)
         {
+            int howManyFlankedBy = FlankedBy(currentCharacter, null, players);
+            moveTargetNode = null;
+            currentCharacter.character.flankedBy = howManyFlankedBy;
+
+            if (howManyFlankedBy == 0)
+                return;
+
             List<Node> safeNodes = new List<Node>();
             Node closestCover = new Node();
             int flankedBy = FlankedBy(currentCharacter, null, players);
@@ -117,7 +186,6 @@ namespace EV
                     }
                 }
             }
-
             if (safeNodes.Count > 0)
             {
                 foreach (Node node in safeNodes)
@@ -129,16 +197,19 @@ namespace EV
                         closestCover = node;
                     }
                 }
-                StartCoroutine(MoveAICharacter(closestCover, players, states));
+                moveTargetNode = closestCover;
+                outOfRange = false;
+                foundSafeCover = true;
             }
             // if no safe nodes are added, enemy is out of range
-            else 
+            else
             {
+                outOfRange = true;
                 Node closestNode = new Node();
                 closestCharacterDistance = 100;
 
                 Debug.Log("enemy will advance to closest square");
-                foreach(Node node in sessionManager.reachableNodesAI)
+                foreach (Node node in sessionManager.reachableNodesAI)
                 {
                     float distance = Vector3.Distance(node.worldPosition, closestCharacter.transform.position);
                     if (distance < closestCharacterDistance)
@@ -150,7 +221,8 @@ namespace EV
                         }
                     }
                 }
-                StartCoroutine(MoveAICharacter(closestNode, players, states));
+                moveTargetNode = closestNode;
+                foundSafeCover = true;
             }
         }
 
@@ -176,7 +248,7 @@ namespace EV
         }
 
         // This method returns the closest player to the node being checked.
-        GridCharacter ClosestCharacterToNode(List <GridCharacter> players, Node node)
+        GridCharacter ClosestCharacterToNode(List<GridCharacter> players, Node node)
         {
             GridCharacter closestCharacterToNode = new GridCharacter();
             float distance = 100f;
@@ -270,27 +342,6 @@ namespace EV
         #endregion
 
         #region Attack Decision Making
-        void AttackDecision(List<GridCharacter> players)
-        {
-            int highThreatLevel = FindHighestThreatLevel(players);
-            GridCharacter selectedTarget = FindTarget(players, highThreatLevel);
-            if (selectedTarget == null)
-                return;
-            AttackAction.lastTarget = selectedTarget;
-            Debug.Log("target selected: " + selectedTarget.name);
-            if (currentCharacter.ActionPoints > 4)
-            {
-                StartCoroutine(AttackAICharacter(sessionManager.currentCharacter.transform.position, selectedTarget.transform.position, selectedTarget, selectedTarget.currentNode));
-            }
-            else
-            {
-                Debug.Log(currentCharacter.character.name + " move completed");
-                currentCharacter.ActionPoints = 0;
-                currentCharacter.character.aiMoveComplete = true;
-                moveCompleted = true;
-                Init();
-            }
-        }
 
         int FindHighestThreatLevel(List<GridCharacter> players)
         {
@@ -311,8 +362,8 @@ namespace EV
             List<GridCharacter> possibleTargets = new List<GridCharacter>();
             int index = 0;
 
-            foreach(GridCharacter target in players)
-            {   
+            foreach (GridCharacter target in players)
+            {
                 if (target.character.threatLevel == highestThreat && !target.character.KO)
                 {
                     if (Vector3.Distance(target.transform.position, currentCharacter.transform.position) < currentCharacter.character.rangedAttackRange)
@@ -330,46 +381,6 @@ namespace EV
             targetSelected = possibleTargets[index];
 
             return targetSelected;
-        }
-        #endregion
-        
-        #region Move Co-Routines
-        IEnumerator MoveAICharacter(Node node, List<GridCharacter> players, StateManager states)
-        {
-            yield return new WaitForSeconds(1);
-            sessionManager.PathfinderCall(currentCharacter, node);
-            // node.tileRenderer.material = sessionManager.abilityTileMaterial; // highlight closest safe node
-            sessionManager.moveInProgress = true;
-            yield return new WaitForSeconds(1);
-            states.SetState("moveOnPath");
-            AttackDecision(players);
-        }
-        #endregion
-
-        #region Attack Co-Routines
-        IEnumerator AttackAICharacter(Vector3 attackerPosition, Vector3 defenderPosition, GridCharacter target, Node node)
-        {
-            MoveAction.DisplayEnemyAcc(sessionManager);
-            AttackAction.attackAccuracy = AttackAction.GetAttackAccuracy(sessionManager.currentCharacter, target, false);
-            float distance = Vector3.Distance(attackerPosition, defenderPosition);
-            int index = 0;
-            yield return new WaitForSeconds(2);
-            RaycastHit[] coverHits;
-            coverHits = Physics.RaycastAll(attackerPosition, (defenderPosition + Vector3.up) - attackerPosition, distance + 1); // change this
-            Debug.DrawRay(attackerPosition, (defenderPosition + Vector3.up) - attackerPosition);
-            for (int i = 0; i < coverHits.Length; i++)
-            {
-                // Debug.Log(coverHits[i].transform.gameObject.name);
-                if (coverHits[i].transform.gameObject.name == target.name)
-                {
-                    index = i;
-                }
-            }
-            sessionManager.SetAction("AttackAction");
-            sessionManager.DoAction(node, coverHits[index]);
-            sessionManager.HighlightAroundCharacter(currentCharacter, null, 0);
-            yield return new WaitForSeconds(2);
-            Init();
         }
         #endregion
     }

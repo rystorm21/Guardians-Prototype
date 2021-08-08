@@ -35,7 +35,7 @@ namespace EV
         [HideInInspector]
         public List<Node> currentPath;
 
-        Animator animator;
+        public Animator animator;
 
         public float GetSpeed()
         {

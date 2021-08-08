@@ -46,6 +46,7 @@ namespace EV
                 yield return new WaitForSeconds(.5f);
             }
             Destroy(this.gameObject);
+            AttackAction.attackInProgress = false;
         }
     }
 }
