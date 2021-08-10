@@ -2643,6 +2643,7 @@ MonoBehaviour:
   isSelected: 0
   isBraced: 0
   isRunning: 0
+  animator: {fileID: 0}
 --- !u!1 &447805522
 GameObject:
   m_ObjectHideFlags: 0
@@ -6439,6 +6440,7 @@ MonoBehaviour:
   isSelected: 0
   isBraced: 0
   isRunning: 0
+  animator: {fileID: 0}
 --- !u!1 &1212837009
 GameObject:
   m_ObjectHideFlags: 0
@@ -6662,6 +6664,7 @@ MonoBehaviour:
   isSelected: 0
   isBraced: 0
   isRunning: 0
+  animator: {fileID: 0}
 --- !u!1 &1264561437
 GameObject:
   m_ObjectHideFlags: 0
@@ -8284,6 +8287,7 @@ MonoBehaviour:
   isSelected: 0
   isBraced: 0
   isRunning: 0
+  animator: {fileID: 0}
 --- !u!1 &1568411480
 GameObject:
   m_ObjectHideFlags: 0
@@ -8414,6 +8418,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sessionManager: {fileID: 1222226768}
+  enemyState: 0
 --- !u!4 &1597417439
 Transform:
   m_ObjectHideFlags: 0
@@ -8800,7 +8805,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4204474577979000, guid: 33938ce237397e34e921bda724fb624b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 19.541
+      value: 11.34
       objectReference: {fileID: 0}
     - target: {fileID: 4204474577979000, guid: 33938ce237397e34e921bda724fb624b, type: 3}
       propertyPath: m_LocalPosition.y
@@ -8808,7 +8813,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4204474577979000, guid: 33938ce237397e34e921bda724fb624b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6.7583
+      value: 10.76
       objectReference: {fileID: 0}
     - target: {fileID: 4204474577979000, guid: 33938ce237397e34e921bda724fb624b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10536,6 +10541,7 @@ MonoBehaviour:
   isSelected: 0
   isBraced: 0
   isRunning: 0
+  animator: {fileID: 0}
 --- !u!1001 &1945618947
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11143,6 +11149,7 @@ MonoBehaviour:
   isSelected: 0
   isBraced: 0
   isRunning: 0
+  animator: {fileID: 0}
 --- !u!4 &2019717127 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: edcf17c862024204cb021357e673e857,
@@ -11357,6 +11364,7 @@ MonoBehaviour:
   isSelected: 0
   isBraced: 0
   isRunning: 0
+  animator: {fileID: 0}
 --- !u!4 &2116665786 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4388383215679704, guid: e377b882a13405d4b9d5c3e8e747595e,

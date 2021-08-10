@@ -24,13 +24,7 @@ namespace EV
         List<GridCharacter> players;
         GridCharacter currentCharacter;
         GridCharacter closestCharacter;
-        GridCharacter selectedTarget;
         float closestCharacterDistance;
-
-        Node moveTargetNode;
-        bool foundSafeCover;
-        bool outOfRange;
-
         public static List<Node> coverNodes;
 
         public void Init()
@@ -47,6 +41,7 @@ namespace EV
         {
             while(true)
             {
+                //Debug.Log(enemyState.ToString());
                 yield return StartCoroutine(enemyState.ToString());
             }
         }
@@ -71,6 +66,7 @@ namespace EV
             if (allDone)
             {
                 Debug.Log("enemy turn completed.");
+                sessionManager.moveInProgress = false;
                 StopAllCoroutines();
                 sessionManager.EndTurn();
             }
@@ -79,10 +75,13 @@ namespace EV
 
         IEnumerator MoveDecision()
         {
-            FindSafeCover(players, states);
-            if (foundSafeCover)
+            if (currentCharacter.ActionPoints == 0)
+                enemyState = EnemyState.CharSelect;
+
+            Node moveTargetNode = FindSafeCover(players, states);
+            if (moveTargetNode != null)
                 enemyState = EnemyState.Moving;
-            if (moveTargetNode == null && !outOfRange)
+            else
                 enemyState = EnemyState.AttackDecision;
             sessionManager.PathfinderCall(currentCharacter, moveTargetNode);
             sessionManager.moveInProgress = true;
@@ -102,11 +101,17 @@ namespace EV
         IEnumerator AttackDecision()
         {
             int highThreatLevel = FindHighestThreatLevel(players);
-            selectedTarget = FindTarget(players, highThreatLevel);
+            GridCharacter selectedTarget = FindTarget(players, highThreatLevel);
             if (selectedTarget == null)
+            {
                 enemyState = EnemyState.MoveDecision;
-            AttackAction.lastTarget = selectedTarget;
-            // Debug.Log("target selected: " + selectedTarget.name);
+            }
+            else 
+            {
+                AttackAction.lastTarget = selectedTarget;
+                Debug.Log("target selected: " + selectedTarget.name);
+            }
+
             if (currentCharacter.ActionPoints >= 4)
                 enemyState = EnemyState.Attacking;
             else
@@ -120,9 +125,14 @@ namespace EV
 
         IEnumerator Attacking()
         {
+            GridCharacter target = AttackAction.lastTarget;
+            if (target == null)
+            {
+                enemyState = EnemyState.MoveDecision;
+                yield break;
+            }
             Vector3 attackerPosition = currentCharacter.transform.position;
             Vector3 defenderPosition = AttackAction.lastTarget.transform.position;
-            GridCharacter target = AttackAction.lastTarget;
             Node node = target.currentNode;
 
             MoveAction.DisplayEnemyAcc(sessionManager);
@@ -152,22 +162,20 @@ namespace EV
         #region Move Decision Making
 
         // Find a covered node that's in movement range
-        void FindSafeCover(List<GridCharacter> players, StateManager states)
+        Node FindSafeCover(List<GridCharacter> players, StateManager states)
         {
-            int howManyFlankedBy = FlankedBy(currentCharacter, null, players);
-            moveTargetNode = null;
+            int howManyFlankedBy = FlankedByNumber(currentCharacter, null, players);
+            Node _moveTargetNode = null;
             currentCharacter.character.flankedBy = howManyFlankedBy;
 
             if (howManyFlankedBy == 0)
-                return;
+                return null;
 
             List<Node> safeNodes = new List<Node>();
-            Node closestCover = new Node();
-            int flankedBy = FlankedBy(currentCharacter, null, players);
+            List<Node> preferredNodes = new List<Node>();
             int safestNode = players.Count;
             sessionManager.HighlightAroundCharacter(currentCharacter, null, 0);
-            float closestDistance = currentCharacter.ActionPoints;
-            closestCharacterDistance = 100;
+            float closestCharacterToNodeDist;
             foreach (Node node in coverNodes)
             {
                 int nodeSafety = ClearShot(node, players);
@@ -180,83 +188,81 @@ namespace EV
             {
                 if (ClearShot(node, players) == safestNode)
                 {
-                    if (Vector3.Distance(closestCharacter.transform.position, node.worldPosition) < currentCharacter.character.rangedAttackRange)
+                    closestCharacterToNodeDist = Vector3.Distance(ClosestCharacterToPosition(players, node.worldPosition).transform.position, node.worldPosition);
+                    if (closestCharacterToNodeDist < currentCharacter.character.rangedAttackRange)
                     {
                         safeNodes.Add(node);
                     }
-                }
-            }
-            if (safeNodes.Count > 0)
-            {
-                foreach (Node node in safeNodes)
-                {
-                    float distanceToNode = Vector3.Distance(currentCharacter.transform.position, node.worldPosition);
-                    if (distanceToNode < closestDistance)
+                    if (closestCharacterToNodeDist < currentCharacter.character.rangeEffectiveRange)
                     {
-                        closestDistance = distanceToNode;
-                        closestCover = node;
+                        preferredNodes.Add(node);
                     }
                 }
-                moveTargetNode = closestCover;
-                outOfRange = false;
-                foundSafeCover = true;
+            }
+
+            if (safeNodes.Count > 0)
+            {
+                if (preferredNodes.Count > 0)
+                {
+                    _moveTargetNode = ClosestCoverNode(preferredNodes);
+                }
+                else
+                {
+                    _moveTargetNode = ClosestCoverNode(safeNodes);
+                }
             }
             // if no safe nodes are added, enemy is out of range
             else
             {
-                outOfRange = true;
-                Node closestNode = new Node();
+                Node _closestNode = null;
+                GridCharacter _closestCharacterToNode;
                 closestCharacterDistance = 100;
 
                 Debug.Log("enemy will advance to closest square");
                 foreach (Node node in sessionManager.reachableNodesAI)
                 {
-                    float distance = Vector3.Distance(node.worldPosition, closestCharacter.transform.position);
-                    if (distance < closestCharacterDistance)
+                    _closestCharacterToNode = ClosestCharacterToPosition(players, node.worldPosition);
+                    float _distance = Vector3.Distance(node.worldPosition, _closestCharacterToNode.transform.position);
+                    if (_distance < closestCharacterDistance)
                     {
-                        if (!closestCharacter.character.KO)
+                        if (!_closestCharacterToNode.character.KO)
                         {
-                            closestCharacterDistance = distance;
-                            closestNode = node;
+                            closestCharacterDistance = _distance;
+                            _closestNode = node;
                         }
                     }
                 }
-                moveTargetNode = closestNode;
-                foundSafeCover = true;
+                _moveTargetNode = _closestNode;
             }
+            return _moveTargetNode;
         }
-
-        // This method returns the closest player to the current character. Characters that are KO'ed are not counted.
-        GridCharacter ClosestCharacterToPlayer(List<GridCharacter> players)
+        Node ClosestCoverNode(List<Node> selectedNodes)
         {
-            GridCharacter closestCharacterToPlayer = new GridCharacter();
-            float distance = 100f;
+            Node closestCover = null;
+            float closestDistance = 100;
 
-            foreach (GridCharacter player in players)
+            foreach (Node node in selectedNodes)
             {
-                if (!player.character.KO)
+                float distanceToNode = Vector3.Distance(currentCharacter.transform.position, node.worldPosition);
+                if (distanceToNode < closestDistance)
                 {
-                    float distanceBetweenChars = Vector3.Distance(player.transform.position, currentCharacter.transform.position);
-                    if (distanceBetweenChars < distance)
-                    {
-                        distance = distanceBetweenChars;
-                        closestCharacterToPlayer = player;
-                    }
+                    closestDistance = distanceToNode;
+                    closestCover = node;
                 }
             }
-            return closestCharacterToPlayer;
+            return closestCover;
         }
 
         // This method returns the closest player to the node being checked.
-        GridCharacter ClosestCharacterToNode(List<GridCharacter> players, Node node)
+        GridCharacter ClosestCharacterToPosition(List<GridCharacter> players, Vector3 objectPosition)
         {
-            GridCharacter closestCharacterToNode = new GridCharacter();
+            GridCharacter closestCharacterToNode = null;
             float distance = 100f;
             foreach (GridCharacter player in players)
             {
                 if (!player.character.KO)
                 {
-                    float distanceBetweenPoints = Vector3.Distance(player.transform.position, node.worldPosition);
+                    float distanceBetweenPoints = Vector3.Distance(player.transform.position, objectPosition);
                     if (distanceBetweenPoints < distance)
                     {
                         distance = distanceBetweenPoints;
@@ -327,7 +333,7 @@ namespace EV
         }
 
         // checks how many players are flanking the enemy's current position & returns the value.
-        int FlankedBy(GridCharacter enemy, Node node, List<GridCharacter> players)
+        int FlankedByNumber(GridCharacter enemy, Node node, List<GridCharacter> players)
         {
             int flanked = 0;
             foreach (GridCharacter player in players)
@@ -358,7 +364,7 @@ namespace EV
 
         GridCharacter FindTarget(List<GridCharacter> players, int highestThreat)
         {
-            GridCharacter targetSelected = new GridCharacter();
+            GridCharacter targetSelected = null;
             List<GridCharacter> possibleTargets = new List<GridCharacter>();
             int index = 0;
 
@@ -374,7 +380,7 @@ namespace EV
             }
 
             if (possibleTargets.Count == 0)
-                return null;
+                return ClosestCharacterToPosition(players, currentCharacter.transform.position);
 
             System.Random random = new System.Random();
             index = random.Next(possibleTargets.Count);

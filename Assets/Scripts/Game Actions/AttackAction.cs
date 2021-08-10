@@ -51,7 +51,7 @@ namespace EV
                     }
                     else
                     {
-                        Debug.Log("Target out of range!");
+                        Debug.Log("Target out of range! " + attackDistance);
                     }
                 }
             }
