@@ -25,17 +25,19 @@ namespace EV
         
         int _turnIndex;
         public Turn[] turns;
+        public Level currentLevel;
         public AIController aIController;
         public GameObject aiBrain;
 
         public GridManager gridManager;
         public GridCharacter currentCharacter;
+        GameObject enemyGroup;
         
         public bool isInit;
         public float delta;
 
         public PopUpUI popUpUI;
-        public AbilityPanelUI abilityPanelUI;
+        public GameObject uiCanvas;
         public VariablesHolder gameVariables;
         public LineRenderer reachablePathViz;
         public LineRenderer unReachablePathViz;
@@ -63,6 +65,8 @@ namespace EV
         #region Init
         private void Start()
         {
+            uiCanvas = GameObject.Find("UI Canvas");
+            enemyGroup = GameObject.Find("Enemies");
             Application.targetFrameRate = 60;
             InitGameActions();
             gridManager.Init();     // initialize the grid
@@ -70,9 +74,10 @@ namespace EV
             InitStateManagers();    // Initialize State Managers
             isInit = true;          // start the Update
             SetAction("MoveAction");
-            currentGameState = GameState.Combat;
-            abilityPanelUI.Activate(this);
+            enemyGroup.SetActive(false);
+            currentGameState = currentLevel.startingMode;
             popUpUI.Deactivate(this);
+            uiCanvas.SetActive(false);
         }
 
         // Create an array of GridCharacters (all objects with the "GridCharacter script), ie Player Characters")
@@ -324,7 +329,7 @@ namespace EV
         public void HighlightAroundCharacter(GridCharacter character, Node target, int radius)
         {
             // We only want the highlighting to happen when in combat mode. 
-            if (currentGameState == GameState.Noncombat)
+            if (currentGameState == GameState.Noncombat || currentGameState == GameState.Dialog)
                 return;
 
             currentCharacter = character;
@@ -490,7 +495,7 @@ namespace EV
 
                 if (Input.GetKeyDown("t")) // just testing functionality here (re-entering combat mode)
                 {
-                    abilityPanelUI.Activate(this);
+                    uiCanvas.SetActive(true);
                     foreach (GridCharacter character in currentCharacter.owner.characters)
                     {
                         if (currentGameState == GameState.Noncombat)
@@ -503,6 +508,7 @@ namespace EV
                             character.currentNode.isWalkable = false;
                         }
                     }
+                    enemyGroup.SetActive(true);
                     currentGameState = GameState.Combat;
                     currentCharacter.isSelected = true;
                     HighlightAroundCharacter(currentCharacter, null, 0);
@@ -579,8 +585,8 @@ namespace EV
 
         public void NonCombatModeEnter()
         {
-            popUpUI.Deactivate(this);
-            abilityPanelUI.Deactivate(this);
+            currentGameState = GameState.Noncombat;
+            uiCanvas.SetActive(false);
             foreach (GridCharacter character in currentCharacter.owner.characters)
             {
                 if (character.character.teamLeader)

@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f17a02cf8234f564695c1a2513d23385, type: 3}
+  m_Name: Rebel4
+  m_EditorClassIdentifier: 
+  characterName: Rebel
+  characterPortrait: {fileID: 0}
+  characterArchetype: 3
+  projectile: {fileID: 7855271653542481463, guid: cd0441d067fec594e8e79e39c23d2f65,
+    type: 3}
+  inventory: {fileID: 0}
+  abilityPool:
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  appliedStatus: []
+  maxHitPoints: 1
+  hitPoints: 1
+  agility: 10
+  rangedAttackRange: 25
+  rangeEffectiveRange: 10
+  attackAccuracy: 75
+  attackDamage: 6
+  defense: 7
+  damageResist: 50
+  meleeAttackRange: 1
+  weaponSelected: 0
+  abilitySelected: 0
+  fightingStyle: 0
+  personality: 0
+  currentStance: 1
+  teamLeader: 1
+  braced: 0
+  covered: 0
+  coveredBy: {fileID: 0}
+  abilityInUse: {fileID: 0}
+  KO: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffMeleeDmg: 0
+  buffRangeDmg: 0
+  buffDmgRes: 0
+  debuffAcc: 0
+  debuffActionPoints: 0
+  debuffDefense: 0
+  debuffMeleeDmg: 0
+  debuffRangeDmg: 0
+  debuffDmgRes: 0
+  flankedBy: 4
+  threatLevel: 0
+  aiMoveComplete: 0

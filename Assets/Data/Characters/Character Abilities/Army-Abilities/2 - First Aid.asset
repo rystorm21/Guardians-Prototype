@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 861893e50cfdae846b053a36bee173d0, type: 3}
+  m_Name: 2 - First Aid
+  m_EditorClassIdentifier: 
+  abilityName: First Aid
+  shotAbility: 0
+  rayAbility: 0
+  windupAnimation: 
+  actionAnimation: 
+  animOrigin: 0
+  shootPrefab: {fileID: 0}
+  explosionEffectPrefab: {fileID: 0}
+  channelPrefab: {fileID: 0}
+  projectileSpeed: 0
+  animationDuration: 0
+  type: 0
+  buff: 0
+  ignoreCover: 0
+  apCost: 0
+  damageModifier: 0
+  healingModifier: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffMeleeDmg: 0
+  buffRangeDmg: 0
+  buffDmgRes: 0
+  debuffAcc: 0
+  debuffActionPoints: 0
+  debuffDefense: 0
+  debuffMeleeDmg: 0
+  debuffRangeDmg: 0
+  debuffDmgRes: 0
+  duration: 0
+  durationCountdown: 0
+  coolDown: 0
+  range: 0
+  radius: 0
+  description: 

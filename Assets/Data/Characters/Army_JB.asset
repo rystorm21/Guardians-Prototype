@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f17a02cf8234f564695c1a2513d23385, type: 3}
+  m_Name: Army_JB
+  m_EditorClassIdentifier: 
+  characterName: Jose
+  characterPortrait: {fileID: 0}
+  characterArchetype: 0
+  projectile: {fileID: 7855271653542481463, guid: 829c6d7fb073be04cbe41ce65e0e56ae,
+    type: 3}
+  inventory: {fileID: 0}
+  abilityPool:
+  - ability: {fileID: 11400000, guid: 647334deba0bacd41a776f4b4c2a5392, type: 2}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 11400000, guid: bdec5b8b3807a18449c0bd58c0988bd2, type: 2}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  - ability: {fileID: 0}
+    abilityIcon: {fileID: 0}
+  appliedStatus: []
+  maxHitPoints: 45
+  hitPoints: 45
+  agility: 10
+  rangedAttackRange: 20
+  rangeEffectiveRange: 15
+  attackAccuracy: 95
+  attackDamage: 3
+  defense: 0
+  damageResist: 0
+  meleeAttackRange: 1
+  weaponSelected: 0
+  abilitySelected: 0
+  fightingStyle: 0
+  personality: 0
+  currentStance: 1
+  teamLeader: 0
+  braced: 0
+  covered: 0
+  coveredBy: {fileID: 0}
+  abilityInUse: {fileID: 0}
+  KO: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffMeleeDmg: 0
+  buffRangeDmg: 0
+  buffDmgRes: 0
+  debuffAcc: 0
+  debuffActionPoints: 0
+  debuffDefense: 0
+  debuffMeleeDmg: 0
+  debuffRangeDmg: 0
+  debuffDmgRes: 0
+  flankedBy: 0
+  threatLevel: 0
+  aiMoveComplete: 0

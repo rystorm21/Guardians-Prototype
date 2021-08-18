@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9259a69919041ef4eb4b15f43058f579, type: 3}
+  m_Name: 1 - Full Auto
+  m_EditorClassIdentifier: 
+  abilityName: Full Auto
+  shotAbility: 1
+  rayAbility: 0
+  windupAnimation: 
+  actionAnimation: 
+  animOrigin: 0
+  shootPrefab: {fileID: 0}
+  explosionEffectPrefab: {fileID: 0}
+  channelPrefab: {fileID: 0}
+  projectileSpeed: 0
+  animationDuration: 0
+  type: 1
+  buff: 0
+  ignoreCover: 0
+  apCost: 6
+  damageModifier: 1
+  healingModifier: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffMeleeDmg: 0
+  buffRangeDmg: 0
+  buffDmgRes: 0
+  debuffAcc: 0
+  debuffActionPoints: 0
+  debuffDefense: 0
+  debuffMeleeDmg: 0
+  debuffRangeDmg: 0
+  debuffDmgRes: 0
+  duration: 0
+  durationCountdown: 0
+  coolDown: 4
+  range: 15
+  radius: 2
+  description: 

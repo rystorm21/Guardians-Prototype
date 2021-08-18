@@ -13,13 +13,15 @@ namespace EV
         Vector2 input;
 
         VariablesHolder varHolder;
-
+        private float maxX;
+        private float maxZ;
         private float cameraZoomSpeed = 20;
         private float cameraWASDSpeed = 20;
         private float cameraMouseSpeed = 40;
         private float cameraRotationSpeed = 100;
         private float camSpeed;
         private bool isOrthographicZoom;
+        GridPosition[] gridPosition;
 
         // Constructor
         public MoveCameraTransform(VariablesHolder holder) 
@@ -31,6 +33,22 @@ namespace EV
             cameraTransform = varHolder.cameraTransform;
             horizontal = varHolder.horizontalInput;
             vertical = varHolder.verticalInput;
+            gridPosition = GameObject.FindObjectsOfType<GridPosition>();
+            maxX = 0;
+            maxZ = 0;
+
+            for (int i = 0; i < gridPosition.Length; i++)
+            {
+                Transform t = gridPosition[i].transform;
+                if (t.position.x > maxX)
+                {
+                    maxX = t.position.x;
+                }
+                if (t.position.z > maxZ)
+                {
+                    maxZ = t.position.z;
+                }
+            }
         } 
 
         public override void Execute(StateManager states, SessionManager sessionManager, Turn turn)
@@ -47,8 +65,10 @@ namespace EV
 
         private void MoveCamera(StateManager states) 
         {
+            bool oob = false;
             Vector3 camF = cameraTransform.value.forward;
             Vector3 camR = cameraTransform.value.right;
+            float minPos = 0;
             camF.y = 0;
             camR.y = 0;
             camF = camF.normalized;
@@ -56,14 +76,41 @@ namespace EV
             input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             if (Input.GetMouseButton(2))
             {
-                input = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+                input = new Vector2(-Input.GetAxis("Mouse X"), -Input.GetAxis("Mouse Y"));
                 camSpeed = cameraMouseSpeed;
             }
             else {
                 camSpeed = cameraWASDSpeed;
             }
             input = Vector2.ClampMagnitude(input, 1);
-            cameraTransform.value.position += (camF * input.y + camR * input.x) * (cameraWASDSpeed * states.delta);            
+            
+            // Debug.Log(camF.normalized * input.y + ", " + camR.normalized * input.x);
+            // Debug.Log(cameraTransform.value.position.x + ", " + cameraTransform.value.position.z + ", maxXpos: " + maxX);
+
+            if (cameraTransform.value.position.z <= minPos && camF.normalized.z * input.y < 0)
+                oob = true;
+            if (cameraTransform.value.position.z <= minPos && camR.normalized.z * input.x < 0)
+                oob = true;
+
+            if (cameraTransform.value.position.x <= minPos && camF.normalized.x * input.y < 0)
+                oob = true;
+            if (cameraTransform.value.position.x <= minPos && camR.normalized.x * input.x < 0)
+                oob = true;
+            
+            if (cameraTransform.value.position.x >= maxX && camR.normalized.x * input.x > 0)
+                oob = true;
+            if (cameraTransform.value.position.x >= maxX && camF.normalized.x * input.y > 0)
+                oob = true;
+
+            if (cameraTransform.value.position.z >= maxZ && camF.normalized.z * input.y > 0)
+                  oob = true;
+            if (cameraTransform.value.position.z >= maxZ && camR.normalized.z * input.x > 0)
+                  oob = true;
+                
+            if (!oob)
+            {
+                cameraTransform.value.position += (camF * input.y + camR * input.x) * (cameraWASDSpeed * states.delta);
+            }
         }
 
         private void RotateCamera(StateManager states) 

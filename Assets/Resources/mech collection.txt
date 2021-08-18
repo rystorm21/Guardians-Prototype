@@ -1,0 +1,57 @@
+arc-2r	shd-2d
+arc-2s	shd-2h
+as7-d	sdr-5k
+asn-21	tdr-5se	tdr-5s
+aws-8t	tbt-7k
+bnc-3m 	um-r60
+bl6-knt	vl-2t
+bj-1	vl-5t	vnd-1aa
+bj-1db	whm-6d
+ctf-ox	whm-6r
+ctf-1x	wvr-6k
+cplt-c1	wvr-6r
+cplt-c4	zeu-6s
+cplt-k2
+cn9-a
+cn9-al
+cda-2a
+com-1b
+com-2d
+crb-20
+drg-1n
+enf-4r
+jvn-10f
+fs9-h
+fle-4
+ghr-5h
+grf-1n
+hct-3f
+hct-3x
+hbk-4g
+jm6-a
+jm6-s
+jvn-10a
+jvn-10n
+jr7-d
+kgc-0000
+kto-18
+lct-1m
+lct-1s
+lct-1v
+mad-3d
+mad-3r
+on1-k
+on1-v
+pnt-9r
+pxh-1
+pxh-1k
+qkd-4g
+qkd-5a
+rvn-1x
+rfl-3c
+rfl-3n
+rfl-4d
+
+
+
+
