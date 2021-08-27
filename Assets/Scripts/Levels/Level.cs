@@ -8,6 +8,10 @@ namespace EV
     {
         public string thisLevel;
         public GameState startingMode;
+        public GameState postPreDialogMode;
+        public bool hasPostDialogue;
+        public string postDialogueTitle;
+        public string nextScene;
     }
 }
 

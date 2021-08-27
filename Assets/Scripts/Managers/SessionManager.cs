@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using PixelCrushers.DialogueSystem;
 
 namespace EV
 {
@@ -19,6 +20,7 @@ namespace EV
     {
         public static GameState currentGameState;
         public static bool combatVictory;
+        public KeepAlive keepAlive;
         public bool moveInProgress;
         public bool enemyTurn;
         bool gameOverScreenLoaded;
@@ -74,7 +76,6 @@ namespace EV
             InitStateManagers();    // Initialize State Managers
             isInit = true;          // start the Update
             SetAction("MoveAction");
-            enemyGroup.SetActive(false);
             currentGameState = currentLevel.startingMode;
             popUpUI.Deactivate(this);
             uiCanvas.SetActive(false);
@@ -493,27 +494,6 @@ namespace EV
                     EndTurn();
                 }
 
-                if (Input.GetKeyDown("t")) // just testing functionality here (re-entering combat mode)
-                {
-                    uiCanvas.SetActive(true);
-                    foreach (GridCharacter character in currentCharacter.owner.characters)
-                    {
-                        if (currentGameState == GameState.Noncombat)
-                        {
-                            if (character == character.character.teamLeader)
-                                currentCharacter = character;
-                            character.ActionPoints = character.character.StartingAP;
-                            character.gameObject.SetActive(true);
-                            character.currentNode.inactiveCharWasHere = false;
-                            character.currentNode.isWalkable = false;
-                        }
-                    }
-                    enemyGroup.SetActive(true);
-                    currentGameState = GameState.Combat;
-                    currentCharacter.isSelected = true;
-                    HighlightAroundCharacter(currentCharacter, null, 0);
-                } // end re-enter combat test
-
                 delta = Time.deltaTime;
 
                 if (turns[_turnIndex].Execute(this))
@@ -578,15 +558,45 @@ namespace EV
             Debug.Log("All enemies defeated!");
             if (!currentCharacter.character.teamLeader)
                 currentCharacter.OnDeselect(currentCharacter.owner);
-
+            if (currentLevel.hasPostDialogue)
+                DialogueManager.StartConversation(currentLevel.postDialogueTitle, currentCharacter.transform, currentCharacter.transform);
             yield return new WaitForSeconds(2);
             NonCombatModeEnter();
+        }
+
+        public void StartingMode()
+        {
+            currentGameState = currentLevel.postPreDialogMode;
+            if (currentGameState == GameState.Combat)
+            {
+                InitiateCombatMode();
+            }
+        }
+
+        public void InitiateCombatMode()
+        {
+            uiCanvas.SetActive(true);
+            foreach (GridCharacter character in currentCharacter.owner.characters)
+            {
+                character.ActionPoints = character.character.agility;
+                if (character == character.character.teamLeader)
+                    currentCharacter = character;
+                character.ActionPoints = character.character.StartingAP;
+                character.gameObject.SetActive(true);
+                character.currentNode.inactiveCharWasHere = false;
+                character.currentNode.isWalkable = false;
+            }
+            currentCharacter.OnSelect(turns[0].player);
+            enemyGroup.SetActive(true);
+            currentGameState = GameState.Combat;
+            currentCharacter.isSelected = true;
+            HighlightAroundCharacter(currentCharacter, null, 0);
         }
 
         public void NonCombatModeEnter()
         {
             currentGameState = GameState.Noncombat;
-            uiCanvas.SetActive(false);
+            // uiCanvas.SetActive(false);
             foreach (GridCharacter character in currentCharacter.owner.characters)
             {
                 if (character.character.teamLeader)
@@ -603,9 +613,10 @@ namespace EV
                 }
                 else
                 {
-                    character.currentNode.isWalkable = true;
-                    character.currentNode.inactiveCharWasHere = true;
-                    character.gameObject.SetActive(false);
+                    // Takes other players off map
+                    // character.currentNode.isWalkable = true;
+                    // character.currentNode.inactiveCharWasHere = true;
+                    // character.gameObject.SetActive(false);
                 }
             }
         }
@@ -702,6 +713,8 @@ namespace EV
 
         void InitGameActions()
         {
+            if (isInit)
+                return;
             gameActions.Add("MoveAction", new MoveAction());
             gameActions.Add("AttackAction", new AttackAction());
             gameActions.Add("SpecialAbilityAction", new SpecialAbilityAction()); // added 5/30/21

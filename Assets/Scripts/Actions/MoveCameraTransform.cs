@@ -151,6 +151,10 @@ namespace EV
             }
             else
             {
+                if (camera.fieldOfView >= 50 && Input.GetAxis("Mouse ScrollWheel") < 0)
+                    return;
+                if (camera.fieldOfView <= 20 && Input.GetAxis("Mouse ScrollWheel") > 0)
+                    return;
                 camera.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") * cameraZoomSpeed;
             }
         }

@@ -24,6 +24,8 @@ namespace EV
         // This basically creates the list of players that we have in our party
         public void Init()
         {
+            // if (characters.Count > 0)
+            //     return;
             stateManagerObject = Instantiate(_stateManagerPrefab) as GameObject;
             stateManager = stateManagerObject.GetComponent<StateManager>();
             stateManager.playerHolder = this;
@@ -38,6 +40,7 @@ namespace EV
         {
             if(characters.Contains(character))
             {
+                Debug.Log("Unregistered Character " + character.name);
                 characters.Remove(character);
             }
         }
