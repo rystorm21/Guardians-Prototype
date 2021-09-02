@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b62b77798f49ad24299b3d3457986c75, type: 3}
   m_Name: A1S2
   m_EditorClassIdentifier: 
-  thisLevel: Act 1 Scene 2
-  startingMode: 1
+  thisLevel: Act 1 Scene 1
+  startingMode: 3
   postPreDialogMode: 1
   hasPostDialogue: 1
   postDialogueTitle: S1A1-PostBattle

@@ -20,7 +20,6 @@ namespace EV
     {
         public static GameState currentGameState;
         public static bool combatVictory;
-        public KeepAlive keepAlive;
         public bool moveInProgress;
         public bool enemyTurn;
         bool gameOverScreenLoaded;
@@ -40,6 +39,8 @@ namespace EV
 
         public PopUpUI popUpUI;
         public GameObject uiCanvas;
+        public GameObject uiAbilityBar;
+        public GameObject uiEnemyBar;
         public VariablesHolder gameVariables;
         public LineRenderer reachablePathViz;
         public LineRenderer unReachablePathViz;
@@ -68,6 +69,8 @@ namespace EV
         private void Start()
         {
             uiCanvas = GameObject.Find("UI Canvas");
+            uiAbilityBar = uiCanvas.transform.GetChild(0).gameObject;
+            uiEnemyBar = uiCanvas.transform.GetChild(1).gameObject;
             enemyGroup = GameObject.Find("Enemies");
             Application.targetFrameRate = 60;
             InitGameActions();
@@ -602,7 +605,6 @@ namespace EV
                 if (character.character.teamLeader)
                 {
                     gameVariables.UpdateCharacterPortrait(character.character.characterPortrait);
-                    gameVariables.UpdateAbilities(this);
                     character.OnSelect(currentCharacter.owner);
                     character.highlighter.SetActive(false);
                     currentCharacter = character;
@@ -634,7 +636,6 @@ namespace EV
         #region Events
         public SO.IntVariable stanceInt;
         public SO.IntVariable attackType;
-        public SO.IntVariable specialAbilitySelect;
         public SO.BoolVariable powerActivated;
 
         public void SetWeaponForCurrentPlayer()
@@ -686,14 +687,6 @@ namespace EV
                     }
                     break;
             }
-        }
-
-        public void SpecialAbility()
-        {
-            if (currentGameState != GameState.Combat || moveInProgress)
-                return;
-            currentCharacter.character.abilitySelected = specialAbilitySelect.value;
-            SetAction("SpecialAbilityAction");
         }
 
         public void PowerActivated()
@@ -762,6 +755,16 @@ namespace EV
             GameAction.OnActionTick(this, GetTurn, node, hit);
         }
 
+        #endregion
+
+        #region UIControl
+        public void ResetAbilityEnemyUI()
+        {
+            uiAbilityBar.SetActive(false);
+            uiAbilityBar.SetActive(true);
+            uiEnemyBar.SetActive(false);
+            uiEnemyBar.SetActive(true);
+        }
         #endregion
     }
 }

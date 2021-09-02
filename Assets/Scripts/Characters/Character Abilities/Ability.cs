@@ -15,6 +15,7 @@ namespace EV
 
     public class Ability : ScriptableObject
     {
+        public Sprite abilityIcon;
         public string abilityName;
         public bool shotAbility;
         public bool rayAbility;

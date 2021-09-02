@@ -36,15 +36,5 @@ namespace EV
             characterPortrait.value = characterSprite;
             updatePortrait.Raise();
         }
-
-        public void UpdateAbilities(SessionManager sessionManager)
-        {
-            GridCharacter currentCharacter = sessionManager.currentCharacter;
-            for (int i=0; i < abilityList.Count - 1; i++)
-            {
-                abilityList[i].value = currentCharacter.character.abilityPool[i].abilityIcon;
-            }
-            updateSpecialAbility.Raise();
-        }
     }
 }

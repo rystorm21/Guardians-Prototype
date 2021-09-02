@@ -9,6 +9,7 @@ namespace EV
     {
         public PlayerHolder owner;
         public Characters.Character character; // Character is in the EV.Characters namespace
+        public SessionManager sessionManager;
 
         [System.NonSerialized]
         public GameObject highlighter;
@@ -356,11 +357,13 @@ namespace EV
                     }
                 }
             }
+            sessionManager = GameObject.Find("Grid Manager").GetComponent<SessionManager>();
             yield return new WaitForSeconds(1.5f);
             owner.UnRegisterCharacter(this);
             this.currentNode.isWalkable = true;
             this.currentNode.character = null;
             this.gameObject.SetActive(false);
+            sessionManager.ResetAbilityEnemyUI();
         }
 
         IEnumerator DelayStart()

@@ -90,6 +90,8 @@ namespace EV
                 sessionManager.APCheck();
             }
             sessionManager.SetAction("MoveAction");
+            if (sessionManager.turns[sessionManager.TurnIndex].name == "PlayerTurn")
+                sessionManager.ResetAbilityEnemyUI();
         }
 
         private void RotateCharacter(GridCharacter character, StateManager states)

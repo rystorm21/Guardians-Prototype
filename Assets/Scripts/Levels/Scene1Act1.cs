@@ -26,10 +26,10 @@ namespace EV
             sessionManager = GameObject.Find("Grid Manager").GetComponent<SessionManager>();
             Turn[] turns = sessionManager.turns;
             List<GridCharacter> players = turns[0].player.characters;
-            Debug.Log(turns.Length);
-            for (int i = 0; i < turns.Length; i++)
+            Debug.Log(players.Count);
+            for (int i = players.Count-1; i >= 0; i--)
             {
-                turns[0].player.UnRegisterCharacter(players[0]);
+                turns[0].player.UnRegisterCharacter(players[i]);
             }
             DialogueManager.StopConversation();
             SceneManager.LoadScene(nextScene);

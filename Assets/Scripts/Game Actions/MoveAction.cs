@@ -25,7 +25,6 @@ namespace EV
                     previousCharacter.OnDeHighlight(states.playerHolder, false);
                 }
                 sessionManager.gameVariables.UpdateCharacterPortrait(sessionManager.currentCharacter.character.characterPortrait);
-                sessionManager.gameVariables.UpdateAbilities(sessionManager);
             }
 
             if (node != null)
@@ -40,7 +39,7 @@ namespace EV
                         PathDetection(states, sessionManager, node);
                 }
             }
-            DisplayEnemyAcc(sessionManager);
+            //DisplayEnemyAcc(sessionManager);
         }
 
         public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
@@ -78,7 +77,7 @@ namespace EV
                         sessionManager.ClearPath(states);
                         sessionManager.HighlightAroundCharacter(node.character, null, 0);
                         sessionManager.gameVariables.UpdateCharacterPortrait(sessionManager.currentCharacter.character.characterPortrait);
-                        sessionManager.gameVariables.UpdateAbilities(sessionManager);
+                        sessionManager.ResetAbilityEnemyUI();
                     }
                 }
                 else
@@ -161,6 +160,7 @@ namespace EV
             foreach(GridCharacter character in sessionManager.turns[opponentTeam].player.characters)
             {
                 AttackAction.GetAttackAccuracy(sessionManager.currentCharacter, character, false);
+                character.highlighter.SetActive(false);
             }
         }
     }

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 861893e50cfdae846b053a36bee173d0, type: 3}
   m_Name: 2 - First Aid
   m_EditorClassIdentifier: 
+  abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   abilityName: First Aid
   shotAbility: 0
   rayAbility: 0

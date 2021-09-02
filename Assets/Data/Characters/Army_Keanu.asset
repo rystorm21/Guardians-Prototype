@@ -23,18 +23,6 @@ MonoBehaviour:
     abilityIcon: {fileID: 0}
   - ability: {fileID: 11400000, guid: a8bb9b839d6a2674b9c7251de670318e, type: 2}
     abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
   appliedStatus: []
   maxHitPoints: 45
   hitPoints: 45
