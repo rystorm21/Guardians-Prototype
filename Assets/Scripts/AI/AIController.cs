@@ -26,6 +26,7 @@ namespace EV
         GridCharacter closestCharacter;
         float closestCharacterDistance;
         public static List<Node> coverNodes;
+        public static bool aiActive;
 
         public void Init()
         {
@@ -39,6 +40,7 @@ namespace EV
         #region AI FSM
         IEnumerator EnemyFSM()
         {
+            aiActive = true;
             while(true)
             {
                 //Debug.Log(enemyState.ToString());

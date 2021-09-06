@@ -26,7 +26,7 @@ MonoBehaviour:
   appliedStatus: []
   maxHitPoints: 45
   hitPoints: 45
-  agility: 10
+  agility: 16
   rangedAttackRange: 20
   rangeEffectiveRange: 15
   attackAccuracy: 95

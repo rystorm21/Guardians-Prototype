@@ -91,6 +91,8 @@ namespace EV
                     {
                         node.character.OnHighlight(states.playerHolder);
                         previousCharacter = node.character;
+                        if (AIController.aiActive)
+                            sessionManager.ClearPath(states);
                     }
 
                     else // you highlighted an enemy unit

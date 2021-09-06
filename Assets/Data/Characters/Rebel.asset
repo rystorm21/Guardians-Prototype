@@ -51,7 +51,7 @@ MonoBehaviour:
   fightingStyle: 0
   personality: 0
   currentStance: 1
-  teamLeader: 0
+  teamLeader: 1
   braced: 0
   covered: 0
   coveredBy: {fileID: 0}
@@ -69,6 +69,6 @@ MonoBehaviour:
   debuffMeleeDmg: 0
   debuffRangeDmg: 0
   debuffDmgRes: 0
-  flankedBy: 4
+  flankedBy: 3
   threatLevel: 0
   aiMoveComplete: 0

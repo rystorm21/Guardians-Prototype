@@ -220,9 +220,11 @@ namespace EV
                     unreachablePositions = newPos;
                 }
             }
-
-            reachablePathViz.positionCount = pathActual.Count + 1;
-            reachablePathViz.SetPositions(reachablePositions.ToArray());
+            if (!AIController.aiActive)
+            {
+                reachablePathViz.positionCount = pathActual.Count + 1;
+                reachablePathViz.SetPositions(reachablePositions.ToArray());
+            }
             // unReachablePathViz.positionCount = unreachablePositions.Count;
             // unReachablePathViz.SetPositions(unreachablePositions.ToArray());       
             ToggleReachablePathViz(currentGameState == GameState.Combat);   // We only want the path viz to be active during combat mode     
@@ -528,6 +530,7 @@ namespace EV
             if (currentGameState == GameState.Noncombat || moveInProgress)
                 return;
             
+            AIController.aiActive = false;
             popUpUI.Deactivate(this);
                         
             // deHighlight the current player when the turn ends
