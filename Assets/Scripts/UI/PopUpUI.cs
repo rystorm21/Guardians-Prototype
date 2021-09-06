@@ -34,6 +34,7 @@ namespace EV
         {
             sessionManager.powerActivated.value = false;
             sessionManager.popUpUI.gameObject.SetActive(true);
+            sessionManager.moveButton.SetActive(false);
         }
 
         public void PowerActivate(SessionManager sessionManager, bool activated)

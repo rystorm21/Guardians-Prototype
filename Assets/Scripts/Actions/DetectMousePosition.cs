@@ -33,13 +33,19 @@ namespace EV
                     if (!EventSystem.current.IsPointerOverGameObject()) // don't register the click if it's on a GUI object
                     {
                         if (SessionManager.currentGameState != GameState.Dialog)
+                        {
                             sessionManager.DoAction(node, hit);
+                        }
                     }
                 }
                 else
                 {
                     sessionManager.OnActionTick(node, hit);
                 }
+            }
+            else
+            {
+
             }
         }
     }

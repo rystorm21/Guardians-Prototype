@@ -27,7 +27,6 @@ namespace EV
         {
             GridCharacter currentCharacter = sessionManager.currentCharacter;
             int weaponType = currentCharacter.character.weaponSelected;
-
             if (currentCharacter.ActionPoints >= AttackCost(weaponType))
             {
                 IHittable iHit = hit.transform.GetComponentInParent<IHittable>();
@@ -54,6 +53,10 @@ namespace EV
                     {
                         Debug.Log("Target out of range! " + attackDistance);
                     }
+                }
+                else
+                {
+                    Debug.Log("sum ting wong");
                 }
             }
             else

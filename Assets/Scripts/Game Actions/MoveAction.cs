@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace EV
 {
@@ -33,11 +34,6 @@ namespace EV
                 {
                     sessionManager.OnHighlightCharacter(node);
                 }
-                if (states.CurrentCharacter != null)
-                {
-                    if (node.character == null) 
-                        PathDetection(states, sessionManager, node);
-                }
             }
             //DisplayEnemyAcc(sessionManager);
         }
@@ -45,19 +41,15 @@ namespace EV
         public override void OnDoAction(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
         {
             StateManager states = turn.player.stateManager;
-
-            // Moves Character
-            if (states.CurrentCharacter != null)
+            // Detects path
+            if (!EventSystem.current.IsPointerOverGameObject())
             {
-                if (states.CurrentCharacter.currentPath != null)
+                if (states.CurrentCharacter != null)
                 {
-                    if (states.CurrentCharacter.currentPath.Count > 0)
+                    if (!AttackAction.attackInProgress)
                     {
-                        if (!AttackAction.attackInProgress)
-                        {
-                            states.SetState("moveOnPath");
-                            return;
-                        }
+                        sessionManager.moveButton.SetActive(true);
+                        PathDetection(states, sessionManager, node);
                     }
                 }
             }
@@ -68,6 +60,7 @@ namespace EV
             // Selects Character
             if (node.character != null)
             {
+                sessionManager.moveButton.SetActive(false);
                 if (node.character.owner == states.playerHolder)
                 {
                     if (node.character != sessionManager.currentCharacter && !node.inactiveCharWasHere)
@@ -98,7 +91,6 @@ namespace EV
                     {
                         node.character.OnHighlight(states.playerHolder);
                         previousCharacter = node.character;
-                        sessionManager.ClearPath(states);
                     }
 
                     else // you highlighted an enemy unit

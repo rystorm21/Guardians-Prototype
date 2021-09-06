@@ -25,7 +25,7 @@ namespace EV
             moveComplete = false;
             GridCharacter character = states.CurrentCharacter;
             sessionManager.moveInProgress = true;
-
+            sessionManager.moveButton.SetActive(false);
             if (!isInit)
             {
                 if (character == null || character.currentPath == null || index > character.currentPath.Count - 1)

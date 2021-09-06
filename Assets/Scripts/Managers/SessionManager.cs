@@ -33,6 +33,7 @@ namespace EV
         public GridManager gridManager;
         public GridCharacter currentCharacter;
         GameObject enemyGroup;
+        public GameObject moveButton;
         
         public bool isInit;
         public float delta;
@@ -69,6 +70,7 @@ namespace EV
         private void Start()
         {
             uiCanvas = GameObject.Find("UI Canvas");
+            moveButton = GameObject.Find("Button-Move");
             uiAbilityBar = uiCanvas.transform.GetChild(0).gameObject;
             uiEnemyBar = uiCanvas.transform.GetChild(1).gameObject;
             enemyGroup = GameObject.Find("Enemies");
@@ -81,6 +83,7 @@ namespace EV
             SetAction("MoveAction");
             currentGameState = currentLevel.startingMode;
             popUpUI.Deactivate(this);
+            moveButton.SetActive(false);
             uiCanvas.SetActive(false);
         }
 
@@ -220,8 +223,8 @@ namespace EV
 
             reachablePathViz.positionCount = pathActual.Count + 1;
             reachablePathViz.SetPositions(reachablePositions.ToArray());
-            unReachablePathViz.positionCount = unreachablePositions.Count;
-            unReachablePathViz.SetPositions(unreachablePositions.ToArray());       
+            // unReachablePathViz.positionCount = unreachablePositions.Count;
+            // unReachablePathViz.SetPositions(unreachablePositions.ToArray());       
             ToggleReachablePathViz(currentGameState == GameState.Combat);   // We only want the path viz to be active during combat mode     
             // Ditto with the AP viz text
             if (currentGameState == GameState.Combat)
@@ -672,6 +675,7 @@ namespace EV
                     SetAction("MoveAction");
                     if (currentCharacter.ActionPoints >= 2)
                     {
+                        moveButton.SetActive(false);
                         currentCharacter.SetBrace();
                         currentCharacter.ActionPoints = 0;
                         ClearReachableTiles();
@@ -711,6 +715,7 @@ namespace EV
             gameActions.Add("MoveAction", new MoveAction());
             gameActions.Add("AttackAction", new AttackAction());
             gameActions.Add("SpecialAbilityAction", new SpecialAbilityAction()); // added 5/30/21
+            gameActions.Add("PlayerAttackAction", new PlayerAttackAction()); // added 9/2/21
         }
 
         public void SetAction(string targetAction)
@@ -764,6 +769,12 @@ namespace EV
             uiAbilityBar.SetActive(true);
             uiEnemyBar.SetActive(false);
             uiEnemyBar.SetActive(true);
+        }
+
+        public void MoveButtonPressed()
+        {
+            StateManager states = turns[0].player.stateManager;
+            states.SetState("moveOnPath");
         }
         #endregion
     }
