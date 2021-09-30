@@ -9,11 +9,26 @@ namespace EV
     {
         public TMP_Text skillName;
         public TMP_Text skillDescription;
+        public TMP_Text displayAcc;
+        public TMP_Text displayDmg;
+        public TMP_Text displayTgt;
 
         public void DisplaySkill(SessionManager sessionManager, string skill, string description)
         {
             skillName.text = skill;
             skillDescription.text = description;
+            displayAcc.text = "";
+            displayDmg.text = "";
+            displayTgt.text = "";
+        }
+
+        public void DisplaySkill(SessionManager sessionManager, string skill, string description, int accuracy, int damage, string target)
+        {
+            skillName.text = skill;
+            skillDescription.text = description;
+            displayAcc.text = "Accuracy: " + accuracy.ToString();
+            displayDmg.text = "Damage: " + damage.ToString();
+            displayTgt.text = "Target: " + target;
         }
 
         public void Deactivate(SessionManager sessionManager)

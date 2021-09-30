@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f8b009f49b5731478a3b58115a79522, type: 3}
   m_Name: 2 - Focus Fire
   m_EditorClassIdentifier: 
+  abilityIcon: {fileID: 0}
   abilityName: Focus Fire
   shotAbility: 0
   rayAbility: 0
   windupAnimation: Heal_Self
   actionAnimation: 
   animOrigin: 1.5
+  statusColor: {r: 1, g: 0.8365737, b: 0, a: 1}
   shootPrefab: {fileID: 0}
   explosionEffectPrefab: {fileID: 1365538819899408, guid: 556f3d66b1d3f2a4b902f09364e5e94f,
     type: 3}

@@ -20,6 +20,8 @@ namespace EV
         int selection;
         bool targetingMode;
         bool abilityFinished;
+        bool iphoneTargeting;
+        public static bool timeToVerify;
         Vector3 yOffset = new Vector3(0, 1f, 0);
 
         #region Base Methods
@@ -40,7 +42,7 @@ namespace EV
             {
                 // if trying to use an ability without enough AP
                 Debug.Log("Not enough AP to use this ability.");
-                ExitMode();
+                sessionManager.PopupUIExit();
                 return;
             }
             sessionManager.currentCharacter.currentNode.tileRenderer.material = sessionManager.defaultTileMaterial;
@@ -57,8 +59,10 @@ namespace EV
                     sessionManager.HighlightAroundCharacter(currentCharacter, currentCharacter.currentNode, abilitySelected.radius);
                     break;
                 case "Ranged":
+                    iphoneTargeting = true;
                     break;
                 case "RangedAoe":
+                    iphoneTargeting = true;
                     break;
             }
             sessionManager.gameVariables.UpdateMouseText("");
@@ -106,14 +110,35 @@ namespace EV
             {
                 if (explosion == null)
                 {
-                    ExitMode(); //
+                    sessionManager.PopupUIExit(); //
                 }
+            }
+
+            // implemented 9/7/21
+            if (iphoneTargeting && !abilityInProgress && !timeToVerify)
+            {
+                if (!abilityFinished)
+                    if (abilitySelected.type.ToString() == "RangedAoe" || abilitySelected.type.ToString() == "Ranged")
+                        AbilityType(sessionManager);
             }
 
             if (sessionManager.powerActivated.value && !abilityInProgress)
             {
                 if (!abilityFinished)
-                    AbilityType(sessionManager);
+                {
+                    Debug.Log(abilitySelected.type.ToString());
+                    if (abilitySelected.type.ToString() == "RangedAoe" || abilitySelected.type.ToString() == "Ranged")
+                    {
+                        string abilityTypeInUse;
+                        abilityTypeInUse = abilitySelected.type.ToString();
+                        BlastRadius(sm, currentCharacter.owner.name, lastNode, false);
+                        sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
+                    }
+                    else
+                    {
+                        AbilityType(sessionManager);
+                    }
+                }
                 if (targetingMode)
                     sessionManager.popUpUI.Deactivate(sessionManager, targetingMode);
                 else
@@ -121,7 +146,7 @@ namespace EV
             }
             if (Input.GetMouseButtonDown(1))
             {
-                ExitMode();
+                sessionManager.PopupUIExit();
             }
         }
 
@@ -129,6 +154,7 @@ namespace EV
         {
         }
 
+        // activated on mouseclick(0)
         public override void OnDoAction(SessionManager sm, Turn turn, Node node, RaycastHit hit)
         {
             if (node != null && !abilityInProgress)
@@ -141,10 +167,12 @@ namespace EV
                 }
                 if (targetingMode && !abilityInProgress)
                 {
-                    string abilityTypeInUse;
-                    abilityTypeInUse = abilitySelected.type.ToString();
-                    BlastRadius(sm, currentCharacter.owner.name, node, false);
-                    sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
+                    timeToVerify = true;
+                    TargetingMode(abilitySelected.radius);
+                    // string abilityTypeInUse;
+                    // abilityTypeInUse = abilitySelected.type.ToString();
+                    // BlastRadius(sm, currentCharacter.owner.name, node, false);
+                    // sessionManager.currentCharacter.ActionPoints -= abilitySelected.apCost;
                 }
             }
         }
@@ -333,8 +361,9 @@ namespace EV
             GridCharacter defender = node.character;
             if (!buffAbilitySelected)
             {
-                float damageDealt = AttackAction.DamageDealt(sessionManager, 2, attacker, defender, abilitySelected);
-                defender.character.hitPoints -= Mathf.RoundToInt(damageDealt);
+                int damageDealt = Mathf.RoundToInt(AttackAction.DamageDealt(sessionManager, 2, attacker, defender, abilitySelected));
+                defender.character.hitPoints -= damageDealt;
+                defender.TakeDamage(damageDealt.ToString(), abilitySelected.popupText);
                 defender.healthBar.SetHealth(defender.character.hitPoints);
                 StatusAbility(defender);
                 defender.PlayAnimation("Death");
@@ -358,10 +387,5 @@ namespace EV
                 lastNode.tileRenderer.material = sessionManager.defaultTileMaterial;
         }
 
-        public void ExitMode()
-        {
-            sessionManager.currentCharacter.character.abilitySelected = 0;
-            sessionManager.popUpUI.Deactivate(sessionManager);
-        }
     }
 }

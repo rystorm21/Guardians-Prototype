@@ -1,13 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace EV
 {
     public class MoveAction : GameAction
     {
-
         GridCharacter previousCharacter;
 
         public override void OnActionTick(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)
@@ -42,7 +40,7 @@ namespace EV
         {
             StateManager states = turn.player.stateManager;
             // Detects path
-            if (!EventSystem.current.IsPointerOverGameObject())
+            if (!HandleMouseInteractions.IsPointerOverGameObject())
             {
                 if (states.CurrentCharacter != null)
                 {

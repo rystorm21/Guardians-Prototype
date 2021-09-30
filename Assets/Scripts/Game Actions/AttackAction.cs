@@ -46,7 +46,7 @@ namespace EV
                             if (diceRoll >= 0)
                                 AttackSuccessful(sessionManager, weaponType);
                             else
-                                Debug.Log("attack missed!");
+                                lastTarget.TakeDamage("Miss", "");
                         }
                     }
                     else
@@ -222,9 +222,10 @@ namespace EV
         {
             if (lastTarget != null)
             {
-                float damageDealt = DamageDealt(sessionManager, weaponType, lastAttacker, lastTarget, null);
-                lastTarget.character.hitPoints -= Mathf.RoundToInt(damageDealt);
+                int damageDealt = Mathf.RoundToInt(DamageDealt(sessionManager, weaponType, lastAttacker, lastTarget, null));
+                lastTarget.character.hitPoints -= damageDealt;
                 lastTarget.healthBar.SetHealth(lastTarget.character.hitPoints);
+                lastTarget.TakeDamage(damageDealt.ToString(), "");
             }
             if (lastTarget.character.hitPoints <=0)
             {
@@ -256,7 +257,6 @@ namespace EV
             else
                 damageDealt = damageDealt + (damageDealt * ((1f - defender.character.damageResist + defender.character.debuffDmgRes) * .01f));
 
-            //Debug.Log(damageDealt);
             return damageDealt;
         }
 
@@ -293,7 +293,9 @@ namespace EV
 
                 default:
                     currentCharacter.PlayAnimation("AttackRanged");
-                    GameObject.Instantiate(currentCharacter.character.projectile, shootOrigin, Quaternion.identity);
+                    GameObject shot = GameObject.Instantiate(currentCharacter.character.projectile, shootOrigin, currentCharacter.transform.rotation);
+                    if (currentCharacter.character.rangedAttackType == 1)
+                        GameObject.Destroy(shot, 1f);    
                     attackInProgress = true;
                     break;
             }

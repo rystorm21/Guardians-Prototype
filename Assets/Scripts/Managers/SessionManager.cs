@@ -19,6 +19,7 @@ namespace EV
     public class SessionManager : MonoBehaviour
     {
         public static GameState currentGameState;
+        public static int pathCount;
         public static bool combatVictory;
         public bool moveInProgress;
         public bool enemyTurn;
@@ -44,7 +45,6 @@ namespace EV
         public GameObject uiEnemyBar;
         public VariablesHolder gameVariables;
         public LineRenderer reachablePathViz;
-        public LineRenderer unReachablePathViz;
         bool isPathfinding;
 
         public Material defaultTileMaterial;
@@ -53,6 +53,8 @@ namespace EV
         public Material abilityTileMaterial;
         public Material buffAbilityTileMaterial;
         public Material testCoverMaterial;
+        public Material lowCoverMaterial;
+        public Material highCoverMaterial;
         public List<Node> reachableNodesAI;
         private List<Node> targetedNodes;
 
@@ -155,7 +157,6 @@ namespace EV
 
             List<Node> pathActual = new List<Node>();
             List<Vector3> reachablePositions = new List<Vector3>();
-            List<Vector3> unreachablePositions = new List<Vector3>();
             Vector3 offset = Vector3.up * .1f;
 
             int actionPoints = character.ActionPoints;
@@ -164,18 +165,6 @@ namespace EV
             if (actionPoints > 0)
             {
                 reachablePositions.Add(character.currentNode.worldPosition + offset);
-            }
-
-            if (path.Count - 1 > actionPoints)
-            {
-                if (actionPoints <= 0)
-                {
-                    unreachablePositions.Add(character.currentNode.worldPosition + offset);
-                } 
-                else 
-                {
-                    unreachablePositions.Add(path[character.ActionPoints - 1].worldPosition + offset);
-                }
             }
 
             for (int i = 0; i < path.Count; i++)
@@ -204,48 +193,60 @@ namespace EV
                     pathActual.Add(path[i]);
                     reachablePositions.Add(path[i].worldPosition + offset);
                 }
-                else 
-                {
-                    unreachablePositions.Add(path[i].worldPosition + offset);
-                }
             }
 
-            if (pathActual.Count > 0)
-            {
-                if (unreachablePositions.Count > 0) 
-                {
-                    List<Vector3> newPos = new List<Vector3>();
-                    newPos.Add(pathActual[pathActual.Count - 1].worldPosition + offset);
-                    newPos.AddRange(unreachablePositions);
-                    unreachablePositions = newPos;
-                }
-            }
             if (!AIController.aiActive)
             {
                 reachablePathViz.positionCount = pathActual.Count + 1;
                 reachablePathViz.SetPositions(reachablePositions.ToArray());
             }
-            // unReachablePathViz.positionCount = unreachablePositions.Count;
-            // unReachablePathViz.SetPositions(unreachablePositions.ToArray());       
+   
             ToggleReachablePathViz(currentGameState == GameState.Combat);   // We only want the path viz to be active during combat mode     
             // Ditto with the AP viz text
+            
             if (currentGameState == GameState.Combat)
-                gameVariables.UpdateMouseText(actionPointsViz.ToString());
+            {
+                if (actionPointsViz <= currentCharacter.ActionPoints)
+                    gameVariables.UpdateMouseText(actionPointsViz.ToString());
+                else
+                    gameVariables.UpdateMouseText(currentCharacter.ActionPoints.ToString());
+            }
             else
                 gameVariables.UpdateMouseText("");
+
+            if (pathActual.Count != 0)
+            {
+                ShowCoverIcon(pathActual[pathActual.Count-1]);            
+            }
             character.LoadPath(pathActual);
+        }
+
+        void ShowCoverIcon(Node currentNode)
+        {
+            int coverDetect = currentCharacter.character.NodeCovered(this, currentNode);
+            ClearReachableTiles();
+            HighlightAroundCharacter(this.currentCharacter, null, 0);
+            if (coverDetect != 0)
+            {
+                if (coverDetect == 1 && currentNode.tileRenderer != null)
+                {
+                    currentNode.tileRenderer.material = lowCoverMaterial;
+                }
+                if (coverDetect == 2 && currentNode.tileRenderer != null)
+                {
+                    currentNode.tileRenderer.material = highCoverMaterial;
+                }
+            }
         }
 
         public void ToggleReachablePathViz(bool toggle)
         {
             reachablePathViz.gameObject.SetActive(toggle);
-            unReachablePathViz.gameObject.SetActive(toggle);
         }
 
         public void ClearPath(StateManager states)
         {
             reachablePathViz.positionCount = 0;
-            unReachablePathViz.positionCount = 0;
             if (states.CurrentCharacter != null)
             {
                 states.CurrentCharacter.currentPath = null;
@@ -340,10 +341,9 @@ namespace EV
             // We only want the highlighting to happen when in combat mode. 
             if (currentGameState == GameState.Noncombat || currentGameState == GameState.Dialog)
                 return;
-
+            
             currentCharacter = character;
             Node centerNode = character.currentNode;
-
             List<Node> reachableNodes = new List<Node>();
             List<Node> openSet = new List<Node>();
             HashSet<Node> closedSet = new HashSet<Node>();
@@ -406,6 +406,10 @@ namespace EV
                 }
                 openSet.Remove(currentNode);
                 closedSet.Add(currentNode);
+            }
+            if (target != null)
+            {
+                ShowAccuracySpecialAbility(reachableNodes);
             }
             reachableNodesAI = reachableNodes;
             UpdateListToReachableMaterial(reachableNodes, target);
@@ -473,6 +477,24 @@ namespace EV
                 }
             }
             AIController.coverNodes = coverNodes;
+        }
+
+        // Shows accuracy if Area of effect ability is hovered over an enemy
+        void ShowAccuracySpecialAbility(List<Node> reachableNodes)
+        {
+            foreach (Node node in reachableNodes)
+            {
+                if (node.character)
+                {
+                    if (currentCharacter.teamName != node.character.teamName)
+                    {
+                        if (currentCharacter.character.abilityInUse.ignoreCover)
+                            AttackAction.GetAttackAccuracy(currentCharacter, node.character, true);
+                        else
+                            AttackAction.GetAttackAccuracy(currentCharacter, node.character, false);
+                    }
+                }
+            }
         }
 
         #endregion
@@ -564,11 +586,13 @@ namespace EV
         IEnumerator CombatVictory()
         {
             combatVictory = false;
-            Debug.Log("All enemies defeated!");
+            Debug.Log(currentLevel);
             if (!currentCharacter.character.teamLeader)
                 currentCharacter.OnDeselect(currentCharacter.owner);
             if (currentLevel.hasPostDialogue)
+            {
                 DialogueManager.StartConversation(currentLevel.postDialogueTitle, currentCharacter.transform, currentCharacter.transform);
+            }
             yield return new WaitForSeconds(2);
             NonCombatModeEnter();
         }
@@ -772,12 +796,27 @@ namespace EV
             uiAbilityBar.SetActive(true);
             uiEnemyBar.SetActive(false);
             uiEnemyBar.SetActive(true);
+            GridCharacter[] units = GameObject.FindObjectsOfType<GridCharacter>();
+            foreach (GridCharacter unit in units)
+            {
+                unit.uiStatusBar.SetActive(false);
+                unit.uiStatusBar.SetActive(true);
+            }
         }
 
         public void MoveButtonPressed()
         {
             StateManager states = turns[0].player.stateManager;
+            gameVariables.UpdateMouseText("");
             states.SetState("moveOnPath");
+        }
+
+        public void PopupUIExit()
+        {
+            SpecialAbilityAction.timeToVerify = false;
+            currentCharacter.character.abilitySelected = 0;
+            popUpUI.Deactivate(this);
+            ResetAbilityEnemyUI();
         }
         #endregion
     }

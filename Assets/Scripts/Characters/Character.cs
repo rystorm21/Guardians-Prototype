@@ -8,7 +8,10 @@ namespace EV.Characters
     {
         Defender,
         Blaster,
-        Tanker
+        Tanker,
+        Minion,
+        Lieutennant,
+        Boss
     }
 
     [CreateAssetMenu(menuName = "Characters/Character")]
@@ -19,6 +22,7 @@ namespace EV.Characters
         public string characterName;
         public Sprite characterPortrait;
         public int characterArchetype;
+        public int rangedAttackType;
         public GameObject projectile;
         public Inventory inventory;
         public List<AbilitySlot> abilityPool;
@@ -176,6 +180,27 @@ namespace EV.Characters
                     if (Physics.Raycast(character.transform.position, node.worldPosition - character.transform.position, out hit, 1f))
                         coveredBy = hit.transform.gameObject;
                }
+            }
+            return isCovered;
+        }
+
+        public int NodeCovered(SessionManager sessionManager, Node moveNode)
+        {
+            int isCovered = 0;
+
+            List<Node> test = sessionManager.GetNeighborsManhattan(moveNode, moveNode);
+            foreach (Node node in test)
+            {
+                if (!node.isWalkable && !node.character)
+                {
+                    if (node.coverObject != null)
+                    {
+                        if (node.coverObject.tag == "Cover-Low")
+                            isCovered = 1;
+                        if (node.coverObject.tag == "Cover-High")
+                            isCovered = 2;
+                    }
+                }
             }
             return isCovered;
         }

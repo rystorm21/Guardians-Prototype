@@ -16,9 +16,7 @@ namespace EV
         List<GridCharacter> enemies;
         SessionManager sessionManager;
         GridCharacter character;
-        GridCharacter enemyTarget;
         GameObject button;
-        bool enemyClicked;
 
         [Serializable]
         public struct Game

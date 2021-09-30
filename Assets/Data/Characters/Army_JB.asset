@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Army_JB
   m_EditorClassIdentifier: 
   characterName: Jose
-  characterPortrait: {fileID: 0}
+  characterPortrait: {fileID: 21300000, guid: 68d37398418752743b9e5b3e3bdd14d5, type: 3}
   characterArchetype: 0
-  projectile: {fileID: 7855271653542481463, guid: 829c6d7fb073be04cbe41ce65e0e56ae,
-    type: 3}
+  rangedAttackType: 1
+  projectile: {fileID: 1416843826977054, guid: 20f6e929a1aba9a4691c344f454ab272, type: 3}
   inventory: {fileID: 0}
   abilityPool:
   - ability: {fileID: 11400000, guid: 647334deba0bacd41a776f4b4c2a5392, type: 2}
@@ -41,7 +41,7 @@ MonoBehaviour:
   currentStance: 1
   teamLeader: 0
   braced: 0
-  covered: 0
+  covered: 1
   coveredBy: {fileID: 0}
   abilityInUse: {fileID: 0}
   KO: 0

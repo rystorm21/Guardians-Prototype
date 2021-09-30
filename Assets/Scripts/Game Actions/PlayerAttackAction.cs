@@ -18,9 +18,13 @@ namespace EV
             selectedTarget = EnemyBar.selectedTarget;
             sessionManager.gameVariables.UpdateMouseText("");
             sessionManager.popUpUI.Activate(sessionManager);
-            sessionManager.popUpUI.DisplaySkill(sessionManager, "Attack", "Click activate to confirm attack");
+            sessionManager.popUpUI.DisplaySkill(sessionManager, "Attack", "Click activate to confirm attack", 
+                AttackAction.GetAttackAccuracy(sessionManager.currentCharacter, selectedTarget, false),
+                sessionManager.currentCharacter.character.attackDamage,
+                selectedTarget.character.characterName);
             MoveAction.DisplayEnemyAcc(sessionManager);
             selectedTarget.highlighter.SetActive(true);
+            
         }
 
         public override void OnActionTick(SessionManager sessionManager, Turn turn, Node node, RaycastHit hit)

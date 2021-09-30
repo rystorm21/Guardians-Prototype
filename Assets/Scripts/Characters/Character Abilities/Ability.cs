@@ -22,6 +22,7 @@ namespace EV
         public string windupAnimation;
         public string actionAnimation;
         public float animOrigin;
+        public Color statusColor;
         public GameObject shootPrefab;
         public GameObject explosionEffectPrefab;
         public GameObject channelPrefab;
@@ -52,6 +53,7 @@ namespace EV
         public int radius;
         [TextArea(15, 20)]
         public string description;
+        public string popupText;
     }
 }
 

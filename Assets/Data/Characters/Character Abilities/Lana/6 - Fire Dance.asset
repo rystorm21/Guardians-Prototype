@@ -12,11 +12,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8ed5555c96195041a84c7ab132956f5, type: 3}
   m_Name: 6 - Fire Dance
   m_EditorClassIdentifier: 
+  abilityIcon: {fileID: 0}
   abilityName: Fire Dance
-  prefab: {fileID: 0}
+  shotAbility: 0
+  rayAbility: 0
+  windupAnimation: Smash_Windup
+  actionAnimation: Smash_001
+  animOrigin: 0
+  shootPrefab: {fileID: 0}
+  explosionEffectPrefab: {fileID: 1610468776334564, guid: 22e6b12eb86b1b0418f971cb2feb5c36,
+    type: 3}
+  channelPrefab: {fileID: 2492951927131106121, guid: b4636e09dfea7c54da55a7b0cb1e582f,
+    type: 3}
+  projectileSpeed: 0
+  animationDuration: 0
   type: 3
+  buff: 0
+  ignoreCover: 0
   apCost: 4
+  damageModifier: 0
+  healingModifier: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffMeleeDmg: 0
+  buffRangeDmg: 0
+  buffDmgRes: 0
+  debuffAcc: 0
+  debuffActionPoints: 0
+  debuffDefense: 0
+  debuffMeleeDmg: 0
+  debuffRangeDmg: 0
+  debuffDmgRes: 0
   duration: 0
+  durationCountdown: 0
   coolDown: 4
+  range: 0
   radius: 4
   description: Lana conjures flames and damages all nearby enemies.

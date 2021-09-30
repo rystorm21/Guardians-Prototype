@@ -60,6 +60,8 @@ namespace EV
             {
                 sessionManager.aiBrain.SetActive(false);
             }
+            if (turn.name == "PlayerTurn")
+                sessionManager.ResetAbilityEnemyUI();
         }
 
         private void AutoSetPlayer(SessionManager sessionManager, Turn turn) 

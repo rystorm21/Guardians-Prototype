@@ -5,7 +5,7 @@ using UnityEngine;
 namespace EV
 {
     public class Level : ScriptableObject
-    {
+    {        
         public string thisLevel;
         public GameState startingMode;
         public GameState postPreDialogMode;

@@ -13,6 +13,9 @@ namespace EV
 
         [System.NonSerialized]
         public GameObject highlighter;
+        public GameObject uiStatusPanel;
+        public GameObject uiStatusBar;
+        public DmgStatusText dmgStatusText;
         public HealthBar healthBar;
         GameObject bladeR;
         GameObject bladeL;
@@ -68,6 +71,8 @@ namespace EV
             accuracyText = this.transform.GetChild(0).gameObject.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>(); // playerhighlight must be first child
             highlighter = this.transform.GetChild(0).gameObject;
             braceShield = this.transform.GetChild(1).gameObject;
+            uiStatusPanel = this.transform.GetChild(2).gameObject;
+            uiStatusBar = uiStatusPanel.transform.GetChild(1).gameObject;
             bladeL = GameObject.Find(character.characterName + "/Blade.L");
             bladeR = GameObject.Find(character.characterName + "/Blade.R");
             owner.RegisterCharacter(this);
@@ -180,6 +185,12 @@ namespace EV
         #endregion
 
         #region Game State Events
+        public void TakeDamage(string damage, string status)
+        {
+            dmgStatusText.UpdateText(damage, status);
+            accuracyText.gameObject.SetActive(false);
+        }
+
         public void Death()
         {
             character.KO = true;

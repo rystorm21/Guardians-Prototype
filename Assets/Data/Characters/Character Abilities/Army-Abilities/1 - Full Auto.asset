@@ -19,10 +19,14 @@ MonoBehaviour:
   windupAnimation: 
   actionAnimation: 
   animOrigin: 0
-  shootPrefab: {fileID: 0}
-  explosionEffectPrefab: {fileID: 0}
-  channelPrefab: {fileID: 0}
-  projectileSpeed: 0
+  statusColor: {r: 0, g: 0, b: 0, a: 0}
+  shootPrefab: {fileID: 1082066010221984, guid: 9611df09c312972469be124a7e439716,
+    type: 3}
+  explosionEffectPrefab: {fileID: 7212228849706574254, guid: 47b71f9407c94ef4a8786467e152d9d0,
+    type: 3}
+  channelPrefab: {fileID: 2492951927131106121, guid: d022e2e6f4170c94cb8ee8e716c21dc8,
+    type: 3}
+  projectileSpeed: 25
   animationDuration: 0
   type: 1
   buff: 0
@@ -45,6 +49,7 @@ MonoBehaviour:
   duration: 0
   durationCountdown: 0
   coolDown: 4
-  range: 15
+  range: 30
   radius: 2
   description: 
+  popupText: +burn
