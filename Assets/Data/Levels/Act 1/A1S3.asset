@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 440cd5d64a55f1e4daf7f0d29ea1fc6e, type: 3}
-  m_Name: A1S2
+  m_Name: A1S3
   m_EditorClassIdentifier: 
-  thisLevel: Act 1 Scene 2
+  thisLevel: Act1_S3
   startingMode: 3
   postPreDialogMode: 1
   hasPostDialogue: 1
-  postDialogueTitle: S2A1-PostBattle-1
-  nextScene: Act1_S3
+  postDialogueTitle: Dummy
+  nextScene: Act1_S4

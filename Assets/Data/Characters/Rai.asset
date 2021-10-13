@@ -15,6 +15,7 @@ MonoBehaviour:
   characterName: Rai
   characterPortrait: {fileID: 21300000, guid: afb14023e35effd4c9a9c9ffc717fc61, type: 3}
   characterArchetype: 0
+  characterLevel: 2
   rangedAttackType: 0
   projectile: {fileID: 7855271653542481463, guid: cd0441d067fec594e8e79e39c23d2f65,
     type: 3}
@@ -52,9 +53,9 @@ MonoBehaviour:
   fightingStyle: 0
   personality: 0
   currentStance: 1
-  teamLeader: 0
+  teamLeader: 1
   braced: 0
-  covered: 0
+  covered: 1
   coveredBy: {fileID: 0}
   abilityInUse: {fileID: 0}
   KO: 0

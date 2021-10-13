@@ -38,7 +38,7 @@ namespace EV
             if (sessionManager != null && sessionManager.currentCharacter != null)
             {
                 character = sessionManager.currentCharacter.character;
-                for (int i = 0; i < character.abilityPool.Count; i++)
+                for (int i = 0; i < character.characterLevel; i++)
                 {
                     button = Instantiate(buttonTemplate, transform);
                     button.transform.GetChild(1).GetComponent<Text>().text = "SA" + i;

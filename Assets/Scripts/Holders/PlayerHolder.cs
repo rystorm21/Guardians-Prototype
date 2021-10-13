@@ -27,20 +27,23 @@ namespace EV
             // if (characters.Count > 0)
             //     return;
             stateManagerObject = Instantiate(_stateManagerPrefab) as GameObject;
+            stateManagerObject.tag = "StateManager";
             stateManager = stateManagerObject.GetComponent<StateManager>();
             stateManager.playerHolder = this;
         }
 
         public void RegisterCharacter(GridCharacter character)
         {
+            if (!characters.Contains(character))
+            {
                 characters.Add(character);
+            }
         }
 
         public void UnRegisterCharacter(GridCharacter character)
         {
             if(characters.Contains(character))
             {
-                Debug.Log("Unregistered Character " + character.name);
                 characters.Remove(character);
             }
         }

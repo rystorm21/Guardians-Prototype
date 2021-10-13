@@ -69,6 +69,15 @@ namespace EV
         }
 
         #region Init
+        private void Awake()
+        {
+
+            if (currentLevel.previousLevel != "")
+            {
+                Debug.Log("prev: " + currentLevel.previousLevel);
+                //SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevel.thisLevel));
+            }
+        }
         private void Start()
         {
             uiCanvas = GameObject.Find("UI Canvas");
@@ -77,6 +86,7 @@ namespace EV
             uiEnemyBar = uiCanvas.transform.GetChild(1).gameObject;
             enemyGroup = GameObject.Find("Enemies");
             Application.targetFrameRate = 60;
+
             InitGameActions();
             gridManager.Init();     // initialize the grid
             PlaceUnits();           // snap units to grid
@@ -93,9 +103,10 @@ namespace EV
         // Initialize each unit (register character to PlayerHolder)
         //   Get the node from the unit's current coordinates
         //      set the unit's position to the node's position, node's character attribute is set to this unit, unit's current node is this node.
-        void PlaceUnits()
+        public void PlaceUnits()
         {
             GridCharacter[] units = GameObject.FindObjectsOfType<GridCharacter>();
+            Debug.Log("PlaceUnits: " + units.Length);
             foreach (GridCharacter unit in units)
             {
                 unit.OnInit();
@@ -113,7 +124,7 @@ namespace EV
         }
 
         // Add all characters to our party (PlayerHolder)
-        void InitStateManagers()
+        public void InitStateManagers()
         {
             foreach (Turn turn in turns)
             {
@@ -524,6 +535,19 @@ namespace EV
                     EndTurn();
                 }
 
+                if (Input.GetKeyDown(KeyCode.T))
+                {
+                    Turn[] turns = this.turns;
+                    List<GridCharacter> players = turns[0].player.characters;
+                    Debug.Log(players.Count);
+                    for (int i = players.Count - 1; i >= 0; i--)
+                    {
+                        turns[0].player.UnRegisterCharacter(players[i]);
+                    }
+                    DialogueManager.StopConversation();
+                    SceneManager.LoadSceneAsync(currentLevel.nextScene, LoadSceneMode.Additive);
+                }
+
                 delta = Time.deltaTime;
 
                 if (turns[_turnIndex].Execute(this))
@@ -593,8 +617,25 @@ namespace EV
             {
                 DialogueManager.StartConversation(currentLevel.postDialogueTitle, currentCharacter.transform, currentCharacter.transform);
             }
+            else
+            {   
+                StartCoroutine(NextLevel());
+            }
             yield return new WaitForSeconds(2);
             NonCombatModeEnter();
+        }
+
+        IEnumerator NextLevel()
+        {
+            yield return new WaitForSeconds(1);
+            Turn[] turns = this.turns;
+            List<GridCharacter> players = turns[0].player.characters;
+            Debug.Log(players.Count);
+            for (int i = players.Count - 1; i >= 0; i--)
+            {
+                turns[0].player.UnRegisterCharacter(players[i]);
+            }
+            SceneManager.LoadScene(currentLevel.nextScene, LoadSceneMode.Single);
         }
 
         public void StartingMode()
@@ -790,6 +831,25 @@ namespace EV
         #endregion
 
         #region UIControl
+        public void TogglePanels(bool toggle)
+        {
+            GridCharacter[] units = GameObject.FindObjectsOfType<GridCharacter>();
+            foreach (GridCharacter unit in units)
+            {
+                unit.uiStatusPanel.SetActive(toggle);
+                if (!toggle)
+                    unit.highlighter.SetActive(toggle);
+                else
+                    if (unit == currentCharacter)
+                        unit.highlighter.SetActive(toggle);
+            }
+        }
+
+        public void EnablePanels()
+        {
+
+        }
+
         public void ResetAbilityEnemyUI()
         {
             uiAbilityBar.SetActive(false);

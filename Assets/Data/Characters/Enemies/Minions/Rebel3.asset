@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f17a02cf8234f564695c1a2513d23385, type: 3}
-  m_Name: Rebel4
+  m_Name: Rebel3
   m_EditorClassIdentifier: 
   characterName: Rebel
   characterPortrait: {fileID: 0}
@@ -36,22 +36,22 @@ MonoBehaviour:
   - ability: {fileID: 0}
     abilityIcon: {fileID: 0}
   appliedStatus: []
-  maxHitPoints: 1
-  hitPoints: 1
+  maxHitPoints: 10
+  hitPoints: 10
   agility: 10
   rangedAttackRange: 25
   rangeEffectiveRange: 10
   attackAccuracy: 75
   attackDamage: 6
   defense: 7
-  damageResist: 50
+  damageResist: 0
   meleeAttackRange: 1
   weaponSelected: 0
   abilitySelected: 0
   fightingStyle: 0
   personality: 0
   currentStance: 1
-  teamLeader: 1
+  teamLeader: 0
   braced: 0
   covered: 0
   coveredBy: {fileID: 0}

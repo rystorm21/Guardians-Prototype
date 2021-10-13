@@ -6,6 +6,7 @@ namespace EV
 {
     public class Level : ScriptableObject
     {        
+        public string previousLevel;
         public string thisLevel;
         public GameState startingMode;
         public GameState postPreDialogMode;

@@ -100,9 +100,9 @@ namespace EV
             int blaster = 40;
             int defender = 45;
             int tanker = 60;
-            int minion = 1;
+            int minion = 10;
             int lieutenant = 40;
-            int boss = 100;
+            int boss = 60;
 
             switch (archetype)
             {
@@ -155,11 +155,14 @@ namespace EV
                 if (character.hitPoints > 0)
                 {
                     if (AttackAction.diceRoll < 0) // preventing the idle animation from interrupting the hit animation
+                    {
                         PlayIdleAnimation();
+                    }
                     else
                     {
                         AttackAction.attackInProgress = true;
-                        StartCoroutine("DelayStart");
+                        //if (SessionManager.currentGameState == GameState.Combat) // prevented player from making move in the first turn
+                            StartCoroutine("DelayStart");
                     }
                 }
             }

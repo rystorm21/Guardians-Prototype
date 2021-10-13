@@ -10,29 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f17a02cf8234f564695c1a2513d23385, type: 3}
-  m_Name: Army_Keanu
+  m_Name: Commander
   m_EditorClassIdentifier: 
-  characterName: Eldar
-  characterPortrait: {fileID: 21300000, guid: 16d8a68f1ccd15f4ca073a23d0797586, type: 3}
-  characterArchetype: 0
-  characterLevel: 1
+  characterName: Commander
+  characterPortrait: {fileID: 0}
+  characterArchetype: 5
   rangedAttackType: 1
-  projectile: {fileID: 1416843826977054, guid: 20f6e929a1aba9a4691c344f454ab272, type: 3}
+  projectile: {fileID: 1174029534445386, guid: 1d637701e2c3c514ca904aaddb4cc7f8, type: 3}
   inventory: {fileID: 0}
-  abilityPool:
-  - ability: {fileID: 11400000, guid: 647334deba0bacd41a776f4b4c2a5392, type: 2}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 11400000, guid: a8bb9b839d6a2674b9c7251de670318e, type: 2}
-    abilityIcon: {fileID: 0}
+  abilityPool: []
   appliedStatus: []
-  maxHitPoints: 45
-  hitPoints: 45
-  agility: 16
-  rangedAttackRange: 20
-  rangeEffectiveRange: 15
+  maxHitPoints: 100
+  hitPoints: 100
+  agility: 10
+  rangedAttackRange: 25
+  rangeEffectiveRange: 20
   attackAccuracy: 95
-  attackDamage: 5
-  defense: 0
+  attackDamage: 10
+  defense: 15
   damageResist: 0
   meleeAttackRange: 1
   weaponSelected: 0
@@ -40,7 +35,7 @@ MonoBehaviour:
   fightingStyle: 0
   personality: 0
   currentStance: 1
-  teamLeader: 0
+  teamLeader: 1
   braced: 0
   covered: 0
   coveredBy: {fileID: 0}
@@ -58,6 +53,6 @@ MonoBehaviour:
   debuffMeleeDmg: 0
   debuffRangeDmg: 0
   debuffDmgRes: 0
-  flankedBy: 0
+  flankedBy: 1
   threatLevel: 0
   aiMoveComplete: 0

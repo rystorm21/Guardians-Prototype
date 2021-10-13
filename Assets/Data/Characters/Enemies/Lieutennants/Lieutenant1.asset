@@ -10,53 +10,37 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f17a02cf8234f564695c1a2513d23385, type: 3}
-  m_Name: Rebel3
+  m_Name: Lieutenant1
   m_EditorClassIdentifier: 
-  characterName: Rebel
+  characterName: Lieutenant
   characterPortrait: {fileID: 0}
-  characterArchetype: 3
+  characterArchetype: 4
   rangedAttackType: 1
-  projectile: {fileID: 1416843826977054, guid: 20f6e929a1aba9a4691c344f454ab272, type: 3}
+  projectile: {fileID: 1174029534445386, guid: 1d637701e2c3c514ca904aaddb4cc7f8, type: 3}
   inventory: {fileID: 0}
-  abilityPool:
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
-  - ability: {fileID: 0}
-    abilityIcon: {fileID: 0}
+  abilityPool: []
   appliedStatus: []
-  maxHitPoints: 1
-  hitPoints: -1
+  maxHitPoints: 100
+  hitPoints: 100
   agility: 10
   rangedAttackRange: 25
-  rangeEffectiveRange: 10
-  attackAccuracy: 75
-  attackDamage: 6
-  defense: 7
-  damageResist: 50
+  rangeEffectiveRange: 20
+  attackAccuracy: 95
+  attackDamage: 10
+  defense: 15
+  damageResist: 0
   meleeAttackRange: 1
   weaponSelected: 0
   abilitySelected: 0
   fightingStyle: 0
   personality: 0
   currentStance: 1
-  teamLeader: 0
+  teamLeader: 1
   braced: 0
   covered: 0
   coveredBy: {fileID: 0}
   abilityInUse: {fileID: 0}
-  KO: 1
+  KO: 0
   buffAcc: 0
   buffActionPoints: 0
   buffDefense: 0
@@ -69,6 +53,6 @@ MonoBehaviour:
   debuffMeleeDmg: 0
   debuffRangeDmg: 0
   debuffDmgRes: 0
-  flankedBy: 4
+  flankedBy: 1
   threatLevel: 0
   aiMoveComplete: 0

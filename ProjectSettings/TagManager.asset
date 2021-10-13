@@ -11,6 +11,7 @@ TagManager:
   - Projectile
   - Cover-Low
   - Cover-High
+  - StateManager
   layers:
   - Default
   - TransparentFX

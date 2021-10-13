@@ -22,6 +22,7 @@ namespace EV.Characters
         public string characterName;
         public Sprite characterPortrait;
         public int characterArchetype;
+        public int characterLevel;
         public int rangedAttackType;
         public GameObject projectile;
         public Inventory inventory;

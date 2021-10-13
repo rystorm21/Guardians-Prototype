@@ -16,5 +16,11 @@ MonoBehaviour:
   startingMode: 3
   postPreDialogMode: 1
   hasPostDialogue: 1
+  hasMidAddition: 0
+  teammatesToAdd: []
+  teammateLocations:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  enemiesToAdd: []
   postDialogueTitle: S1A1-PostBattle
   nextScene: Act1_S2

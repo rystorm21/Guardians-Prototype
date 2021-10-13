@@ -6653,6 +6653,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 22f123e60fe2dfa438686cffd19d8e2e,
         type: 2}
+    - target: {fileID: 11426072, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
+      propertyPath: displaySettings.dialogueUI
+      value: 
+      objectReference: {fileID: 147116, guid: 4b372d6b3e80ce04e99683e81c7de9ca, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
 --- !u!4 &771623298 stripped
@@ -15551,7 +15555,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 164, y: 29.199982}
+  m_AnchoredPosition: {x: 164, y: 29.199951}
   m_SizeDelta: {x: 80, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1874939453
