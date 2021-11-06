@@ -11,8 +11,10 @@ namespace EV
         public GameState startingMode;
         public GameState postPreDialogMode;
         public bool hasPostDialogue;
+        public bool loadingScreenDo;
         public string postDialogueTitle;
         public string nextScene;
+        public Level nextLevel;
     }
 }
 

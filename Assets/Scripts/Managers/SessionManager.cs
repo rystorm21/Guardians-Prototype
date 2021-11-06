@@ -56,6 +56,7 @@ namespace EV
         public Material lowCoverMaterial;
         public Material highCoverMaterial;
         public List<Node> reachableNodesAI;
+        public GameObject sceneHolder;
         private List<Node> targetedNodes;
 
         public int TurnIndex
@@ -71,15 +72,14 @@ namespace EV
         #region Init
         private void Awake()
         {
-
-            if (currentLevel.previousLevel != "")
-            {
-                Debug.Log("prev: " + currentLevel.previousLevel);
-                //SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevel.thisLevel));
-            }
+            sceneHolder = GameObject.Find("CurrentSceneHolder");
+            currentLevel = sceneHolder.GetComponent<SceneHolder>().currentLevel;
+            DontDestroyOnLoad (sceneHolder.transform.gameObject);
         }
         private void Start()
         {
+            popUpUI = GameObject.Find("PopUpUI").GetComponent<PopUpUI>();
+
             uiCanvas = GameObject.Find("UI Canvas");
             moveButton = GameObject.Find("Button-Move");
             uiAbilityBar = uiCanvas.transform.GetChild(0).gameObject;
@@ -545,6 +545,7 @@ namespace EV
                         turns[0].player.UnRegisterCharacter(players[i]);
                     }
                     DialogueManager.StopConversation();
+                    SceneManager.UnloadSceneAsync(currentLevel.thisLevel);
                     SceneManager.LoadSceneAsync(currentLevel.nextScene, LoadSceneMode.Additive);
                 }
 
@@ -610,11 +611,11 @@ namespace EV
         IEnumerator CombatVictory()
         {
             combatVictory = false;
-            Debug.Log(currentLevel);
             if (!currentCharacter.character.teamLeader)
                 currentCharacter.OnDeselect(currentCharacter.owner);
             if (currentLevel.hasPostDialogue)
             {
+                uiCanvas.SetActive(false);
                 DialogueManager.StartConversation(currentLevel.postDialogueTitle, currentCharacter.transform, currentCharacter.transform);
             }
             else
@@ -708,6 +709,15 @@ namespace EV
         public SO.IntVariable stanceInt;
         public SO.IntVariable attackType;
         public SO.BoolVariable powerActivated;
+        public SO.BoolVariable moveButtonClicked;
+
+        public void MoveButtonClicked()
+        {
+            Debug.Log("move pressed");
+            StateManager states = turns[0].player.stateManager;
+            gameVariables.UpdateMouseText("");
+            states.SetState("moveOnPath");
+        }
 
         public void SetWeaponForCurrentPlayer()
         {
@@ -845,11 +855,6 @@ namespace EV
             }
         }
 
-        public void EnablePanels()
-        {
-
-        }
-
         public void ResetAbilityEnemyUI()
         {
             uiAbilityBar.SetActive(false);
@@ -864,12 +869,12 @@ namespace EV
             }
         }
 
-        public void MoveButtonPressed()
-        {
-            StateManager states = turns[0].player.stateManager;
-            gameVariables.UpdateMouseText("");
-            states.SetState("moveOnPath");
-        }
+        // public void MoveButtonPressed()
+        // {
+        //     StateManager states = turns[0].player.stateManager;
+        //     gameVariables.UpdateMouseText("");
+        //     states.SetState("moveOnPath");
+        // }
 
         public void PopupUIExit()
         {

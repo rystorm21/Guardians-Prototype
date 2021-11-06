@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 440cd5d64a55f1e4daf7f0d29ea1fc6e, type: 3}
+  m_Name: Act1_S3
+  m_EditorClassIdentifier: 
+  previousLevel: 
+  thisLevel: Act1_S3
+  startingMode: 3
+  postPreDialogMode: 1
+  hasPostDialogue: 1
+  loadingScreenDo: 0
+  postDialogueTitle: Dummy
+  nextScene: Act1_S4
+  nextLevel: {fileID: 11400000, guid: f14d95a1ca12612428b2047669fcc972, type: 2}

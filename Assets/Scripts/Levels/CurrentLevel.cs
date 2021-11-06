@@ -13,7 +13,7 @@ namespace EV
         GameObject mainCamera;
         GameObject playerParent;
 
-        private void Awake()
+        private void Start()
         {
             sessionManager = GameObject.Find("Grid Manager").GetComponent<SessionManager>();
             startingMode = GameState.Dialog;
@@ -23,6 +23,7 @@ namespace EV
         public void SceneFinished()
         {
             sessionManager = GameObject.Find("Grid Manager").GetComponent<SessionManager>();
+            SceneHolder sceneHolder = sessionManager.sceneHolder.GetComponent<SceneHolder>();
             Turn[] turns = sessionManager.turns;
             List<GridCharacter> players = turns[0].player.characters;
             Debug.Log(players.Count);
@@ -31,7 +32,15 @@ namespace EV
                 turns[0].player.UnRegisterCharacter(players[i]);
             }
             DialogueManager.StopConversation();
-            SceneManager.LoadScene(nextScene);
+            if (loadingScreenDo)
+            {
+                SceneManager.LoadSceneAsync("Loading");
+            }
+            else 
+            {
+                sceneHolder.NextLevel();
+                SceneManager.LoadSceneAsync(nextScene, LoadSceneMode.Single);
+            }
         }
 
         // public void AddTeammates()

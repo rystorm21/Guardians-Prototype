@@ -383,7 +383,10 @@ namespace EV
         IEnumerator DelayStart()
         {
             yield return new WaitForSeconds(2);
-            PlayIdleAnimation();
+            if (SessionManager.currentGameState != GameState.Dialog)
+            {
+                PlayIdleAnimation();
+            }
             AttackAction.attackInProgress = false;
         }
 
