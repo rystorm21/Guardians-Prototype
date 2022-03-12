@@ -12,11 +12,13 @@ namespace EV
         [Header("Game Events")]
         public SO.GameEvent updateAP;
         public SO.GameEvent updatePortrait;
+        public SO.GameEvent updateCharacterName;
         public SO.GameEvent updateSpecialAbility;
 
         [Header("Scriptable Variables")]
         #region Scriptables
         public SO.StringVariable actionPointsText;
+        public SO.StringVariable characterName;
         public SO.SpriteVariable characterPortrait;
         public List<SO.SpriteVariable> abilityList;
 
@@ -35,6 +37,12 @@ namespace EV
         {
             characterPortrait.value = characterSprite;
             updatePortrait.Raise();
+        }
+
+        public void UpdateCharacterName(string inputName)
+        {
+            characterName.value = inputName;
+            updateCharacterName.Raise();
         }
     }
 }

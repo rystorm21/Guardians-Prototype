@@ -51,6 +51,11 @@ namespace EV.Characters
         public Ability abilityInUse;
         public bool KO = false;
 
+        // use for EnemyInfoPanel UI
+        public GridCharacter attackedBy;
+        public int accuracyToBeHit;
+        public int incomingDamage;
+
         // change these to private later maybe
         public float buffAcc;
         public float buffActionPoints;

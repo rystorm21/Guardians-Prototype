@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Loading.unity
     guid: 9252caf52ab525e41a2ddba6c434300e
+  - enabled: 1
+    path: Assets/Scenes/Persistent Scene.unity
+    guid: ee4533c4a54c81e48b127ace6931337e
   m_configObjects: {}

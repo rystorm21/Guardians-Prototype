@@ -24,6 +24,7 @@ namespace EV
                     previousCharacter.OnDeHighlight(states.playerHolder, false);
                 }
                 sessionManager.gameVariables.UpdateCharacterPortrait(sessionManager.currentCharacter.character.characterPortrait);
+                sessionManager.gameVariables.UpdateCharacterName(sessionManager.currentCharacter.character.characterName);
             }
 
             if (node != null)
@@ -46,8 +47,15 @@ namespace EV
                 {
                     if (!AttackAction.attackInProgress)
                     {
-                        sessionManager.moveButton.SetActive(true);
                         PathDetection(states, sessionManager, node);
+                        if (SessionManager.currentGameState == GameState.Noncombat)
+                        {
+                            states.SetState("moveOnPath");
+                        }
+                        else 
+                        {
+                            sessionManager.moveButton.SetActive(true);
+                        }
                     }
                 }
             }
@@ -68,6 +76,7 @@ namespace EV
                         sessionManager.ClearPath(states);
                         sessionManager.HighlightAroundCharacter(node.character, null, 0);
                         sessionManager.gameVariables.UpdateCharacterPortrait(sessionManager.currentCharacter.character.characterPortrait);
+                        sessionManager.gameVariables.UpdateCharacterName(sessionManager.currentCharacter.character.characterName);
                         sessionManager.ResetAbilityEnemyUI();
                     }
                 }

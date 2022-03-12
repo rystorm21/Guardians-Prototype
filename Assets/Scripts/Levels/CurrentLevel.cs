@@ -23,7 +23,7 @@ namespace EV
         public void SceneFinished()
         {
             sessionManager = GameObject.Find("Grid Manager").GetComponent<SessionManager>();
-            SceneHolder sceneHolder = sessionManager.sceneHolder.GetComponent<SceneHolder>();
+            //SceneHolder sceneHolder = sessionManager.sceneHolder.GetComponent<SceneHolder>();
             Turn[] turns = sessionManager.turns;
             List<GridCharacter> players = turns[0].player.characters;
             Debug.Log(players.Count);
@@ -34,11 +34,14 @@ namespace EV
             DialogueManager.StopConversation();
             if (loadingScreenDo)
             {
-                SceneManager.LoadSceneAsync("Loading");
+                SceneManager.UnloadSceneAsync(GameManager.instance.currentLevel.thisLevel);
+                SceneManager.UnloadSceneAsync("UI");
+                SceneManager.LoadSceneAsync("Loading", LoadSceneMode.Additive);
+                //Debug.Log(SceneManager.GetActiveScene);
             }
             else 
             {
-                sceneHolder.NextLevel();
+                //sceneHolder.NextLevel();
                 SceneManager.LoadSceneAsync(nextScene, LoadSceneMode.Single);
             }
         }

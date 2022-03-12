@@ -41,7 +41,7 @@ namespace EV
             if (currentCharacter.ActionPoints < abilitySelected.apCost)
             {
                 // if trying to use an ability without enough AP
-                Debug.Log("Not enough AP to use this ability.");
+                currentCharacter.TakeDamage("Not enough AP to use this ability!", "");
                 sessionManager.PopupUIExit();
                 return;
             }
@@ -79,6 +79,10 @@ namespace EV
             currentCharacter.character.abilityInUse = null;
             targetingMode = false;
             sessionManager.APCheck();
+            if (timeToVerify)
+            {
+                sessionManager.PopupUIExit();
+            }
         }
 
         public override void OnActionTick(SessionManager sm, Turn turn, Node node, RaycastHit hit)
@@ -161,7 +165,7 @@ namespace EV
             {
                 if (Vector3.Distance(currentCharacter.currentNode.worldPosition, node.worldPosition) > abilitySelected.range)
                 {
-                    Debug.Log("target out of range.");
+                    currentCharacter.TakeDamage("Target out of range", "");
                     Debug.Log("Distance: " + Vector3.Distance(currentCharacter.currentNode.worldPosition, node.worldPosition));
                     return;
                 }
@@ -315,7 +319,7 @@ namespace EV
                         else
                         {
                             // indicate that player missed
-                            Debug.Log(abilitySelected.abilityName + " missed " + node.character.name);
+                            node.character.TakeDamage("Miss", "");
                         }
                     }
                 }

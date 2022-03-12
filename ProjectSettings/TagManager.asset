@@ -12,6 +12,7 @@ TagManager:
   - Cover-Low
   - Cover-High
   - StateManager
+  - TargetingCam
   layers:
   - Default
   - TransparentFX

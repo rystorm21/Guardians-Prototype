@@ -7,6 +7,7 @@ public class DmgStatusText : MonoBehaviour
 {
     public Text damageText;
     public Text statusText;
+    private Coroutine updateText;
 
     private void Awake() 
     {
@@ -19,32 +20,36 @@ public class DmgStatusText : MonoBehaviour
     {
         damageText.text = "";
         statusText.text = "";
-        damageText.CrossFadeAlpha(1.0f, .05f, false);
-        statusText.CrossFadeAlpha(1.0f, .05f, false);
     }
 
     private void FadeText()
     {
-        damageText.CrossFadeAlpha(0, .5f, false);
-        statusText.CrossFadeAlpha(0, .5f, false);
+        damageText.CrossFadeAlpha(1.0f, .05f, false);
+        statusText.CrossFadeAlpha(1.0f, .05f, false);
+        damageText.text = "";
+        statusText.text = "";
     }
 
     public void UpdateText(string _damageText, string _statusText)
     {
-        StartCoroutine(TextFlash(_damageText, _statusText));
+        if (damageText.text != "")
+        {
+            StopCoroutine(updateText);
+        }
+
+       updateText = StartCoroutine(TextFlash(_damageText, _statusText));
     }
 
     IEnumerator TextFlash(string _damageText, string _statusText)
     {
-        if (_damageText == "Miss")
+        bool isNumber = int.TryParse(_damageText, out int result);
+        if (!isNumber)
             damageText.color = Color.white;
         else
             damageText.color = Color.red;
         damageText.text = _damageText;
         statusText.text = _statusText;
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         FadeText();
-        yield return new WaitForSeconds(1);
-        ZeroText();
     }
 }

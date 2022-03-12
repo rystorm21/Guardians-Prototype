@@ -18,6 +18,16 @@ namespace EV
             
             // just to show which turn it is - debugging purposes
             Debug.Log(turn.name); 
+            if (turn.name == "PlayerTurn")
+            {
+                Turn.playerTurn = true;
+                sessionManager.enemyTurnIndicator.SetActive(false);
+            }
+            else
+            {
+                Turn.playerTurn = false;
+                sessionManager.enemyTurnIndicator.SetActive(true);
+            }
             
             foreach (GridCharacter character in turn.player.characters)
             {

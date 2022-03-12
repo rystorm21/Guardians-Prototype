@@ -15,9 +15,12 @@ MonoBehaviour:
   cameraMoveSpeed: 15
   updateAP: {fileID: 11400000, guid: ef69ce051a8a22442ade01927f06a2ee, type: 2}
   updatePortrait: {fileID: 11400000, guid: c5fe77c1ae6a7a745a5aec51ef5f4a74, type: 2}
+  updateCharacterName: {fileID: 11400000, guid: cc42c09fa7d5c294ea49eed9e85c06c4,
+    type: 2}
   updateSpecialAbility: {fileID: 11400000, guid: 0967e6e262ca8404fbbbe6980964cb6a,
     type: 2}
   actionPointsText: {fileID: 11400000, guid: 267a9d3c6677cd548936c2dbf82b75a4, type: 2}
+  characterName: {fileID: 11400000, guid: c9475f7bc1fbc0d41b755e6b12c41e9e, type: 2}
   characterPortrait: {fileID: 11400000, guid: f50597843c987714fb8f7c8cfdd0b0f2, type: 2}
   abilityList:
   - {fileID: 11400000, guid: 448ed6415f5ad4543a25e28e99297201, type: 2}

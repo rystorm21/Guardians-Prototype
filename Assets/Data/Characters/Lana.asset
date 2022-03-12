@@ -15,7 +15,7 @@ MonoBehaviour:
   characterName: Lana
   characterPortrait: {fileID: 21300000, guid: 7c3a0d6c88850074da9c153a3b94ad14, type: 3}
   characterArchetype: 1
-  characterLevel: 2
+  characterLevel: 8
   rangedAttackType: 0
   projectile: {fileID: 7855271653542481463, guid: 829c6d7fb073be04cbe41ce65e0e56ae,
     type: 3}
@@ -37,7 +37,8 @@ MonoBehaviour:
     abilityIcon: {fileID: 0}
   - ability: {fileID: 11400000, guid: 056772048ef6f2d418427a53f49e2806, type: 2}
     abilityIcon: {fileID: 0}
-  appliedStatus: []
+  appliedStatus:
+  - {fileID: 11400000, guid: 50ee0d47626c43d479d9a51926676c58, type: 2}
   maxHitPoints: 40
   hitPoints: 40
   agility: 16
@@ -53,17 +54,17 @@ MonoBehaviour:
   fightingStyle: 0
   personality: 0
   currentStance: 1
-  teamLeader: 0
+  teamLeader: 1
   braced: 0
   covered: 0
   coveredBy: {fileID: 0}
   abilityInUse: {fileID: 0}
   KO: 0
-  buffAcc: 0
+  buffAcc: 50
   buffActionPoints: 0
   buffDefense: 0
-  buffMeleeDmg: 0
-  buffRangeDmg: 0
+  buffMeleeDmg: 0.25
+  buffRangeDmg: 0.25
   buffDmgRes: 0
   debuffAcc: 0
   debuffActionPoints: 0

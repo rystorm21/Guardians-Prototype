@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 861893e50cfdae846b053a36bee173d0, type: 3}
   m_Name: 2 - First Aid
   m_EditorClassIdentifier: 
-  abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  abilityIcon: {fileID: 21300000, guid: 6d0db4233e03c2f43a5024ba4b423cf2, type: 3}
   abilityName: First Aid
   shotAbility: 0
   rayAbility: 0
   windupAnimation: 
   actionAnimation: 
   animOrigin: 0
+  statusColor: {r: 0, g: 0, b: 0, a: 0}
   shootPrefab: {fileID: 0}
   explosionEffectPrefab: {fileID: 0}
   channelPrefab: {fileID: 0}
@@ -45,6 +46,7 @@ MonoBehaviour:
   duration: 0
   durationCountdown: 0
   coolDown: 0
-  range: 0
+  range: 5
   radius: 0
-  description: 
+  description: Heal 25% health to an adjacent ally.
+  popupText: 

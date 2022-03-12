@@ -41,7 +41,7 @@ namespace EV
                 for (int i = 0; i < character.characterLevel; i++)
                 {
                     button = Instantiate(buttonTemplate, transform);
-                    button.transform.GetChild(1).GetComponent<Text>().text = "SA" + i;
+                    button.transform.GetChild(1).GetComponent<Text>().text = "";
                     button.transform.GetChild(0).GetComponent<Image>().sprite = character.abilityPool[i].ability.abilityIcon;
                     buttonList.Add(button);
                     button.GetComponent<Button>().AddEventListener(i, ItemClicked);

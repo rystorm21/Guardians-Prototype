@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f8b009f49b5731478a3b58115a79522, type: 3}
   m_Name: 2 - Focus Fire
   m_EditorClassIdentifier: 
-  abilityIcon: {fileID: 0}
+  abilityIcon: {fileID: 21300000, guid: 0d852c47786517d4180d9d1ddb9a2b88, type: 3}
   abilityName: Focus Fire
   shotAbility: 0
   rayAbility: 0
@@ -46,9 +46,10 @@ MonoBehaviour:
   debuffRangeDmg: 0
   debuffDmgRes: 0
   duration: 3
-  durationCountdown: 0
+  durationCountdown: 1
   coolDown: 5
   range: 0
   radius: 0
   description: Lana channels her power and receives a bonus to accuracy and damage
     to all attacks and abilities for the next 2 rounds.
+  popupText: 

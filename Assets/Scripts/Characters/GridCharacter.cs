@@ -17,11 +17,11 @@ namespace EV
         public GameObject uiStatusBar;
         public DmgStatusText dmgStatusText;
         public HealthBar healthBar;
+        public GameObject cameraMarker;
         GameObject bladeR;
         GameObject bladeL;
         GameObject braceShield;
         public string teamName;
-        public Text accuracyText;
 
         private int _actionPoints;
         public float walkSpeed = 1.5f;
@@ -68,7 +68,6 @@ namespace EV
             isFirstTurn = true;
             character.ClearAllStatus();
             character.NonCombatAPCap = 100;
-            accuracyText = this.transform.GetChild(0).gameObject.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>(); // playerhighlight must be first child
             highlighter = this.transform.GetChild(0).gameObject;
             braceShield = this.transform.GetChild(1).gameObject;
             uiStatusPanel = this.transform.GetChild(2).gameObject;
@@ -92,6 +91,8 @@ namespace EV
             character.teamLeader = false;
             if (owner.characters[0].gameObject == this.gameObject)
                 character.teamLeader = true;
+            if (teamName == "Player1")
+                cameraMarker = this.transform.GetChild(4).gameObject;
         }
 
         public int SetHitPoints(int archetype)
@@ -148,7 +149,6 @@ namespace EV
             if (!character.KO)
             {
                 _actionPoints = character.StartingAP;
-                accuracyText.gameObject.SetActive(false);
                 this.highlighter.SetActive(false);
                 this.character.abilityInUse = null;
                 SetRun();
@@ -190,8 +190,26 @@ namespace EV
         #region Game State Events
         public void TakeDamage(string damage, string status)
         {
+            GameObject targetingCam = GameObject.FindGameObjectWithTag("TargetingCam");
+            Transform textFlip = dmgStatusText.transform;
+            if (targetingCam != null)
+            {
+                if (textFlip.localScale.x > 0)
+                    FlipDamageDisplay();
+            }
+            else
+            {
+                if (textFlip.localScale.x < 0)
+                {
+                    FlipDamageDisplay();
+                }
+            }
             dmgStatusText.UpdateText(damage, status);
-            accuracyText.gameObject.SetActive(false);
+        }
+
+        public void FlipDamageDisplay()
+        {
+            dmgStatusText.transform.localScale = Vector3.Scale(dmgStatusText.transform.localScale, new Vector3(-1, 1, 1));
         }
 
         public void Death()
@@ -379,6 +397,20 @@ namespace EV
             this.gameObject.SetActive(false);
             sessionManager.ResetAbilityEnemyUI();
         }
+        public void PathfindDelay(StateManager states, SessionManager sessionManager, GridCharacter character)
+        {
+            StartCoroutine(DoPathfindDelay(states, sessionManager, character));
+        }
+        public IEnumerator DoPathfindDelay(StateManager states, SessionManager sessionManager, GridCharacter character)
+        {
+            yield return new WaitForSeconds(.1f);
+            if (character.currentPath == null)
+            {
+                // most likely clicked on invalid node
+            }
+            else
+                states.SetState("moveOnPath");
+        }
 
         IEnumerator DelayStart()
         {
@@ -408,7 +440,6 @@ namespace EV
         public void OnSelect(PlayerHolder player)
         {
             highlighter.SetActive(true);
-            accuracyText.gameObject.SetActive(false);
             isRunning = true; // set default movement to running
             isSelected = true;
             player.stateManager.CurrentCharacter = this;

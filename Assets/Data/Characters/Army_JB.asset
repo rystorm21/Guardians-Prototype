@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f17a02cf8234f564695c1a2513d23385, type: 3}
   m_Name: Army_JB
   m_EditorClassIdentifier: 
-  characterName: Jose
+  characterName: JB
   characterPortrait: {fileID: 21300000, guid: 68d37398418752743b9e5b3e3bdd14d5, type: 3}
   characterArchetype: 0
-  characterLevel: 1
+  characterLevel: 2
   rangedAttackType: 1
   projectile: {fileID: 1416843826977054, guid: 20f6e929a1aba9a4691c344f454ab272, type: 3}
   inventory: {fileID: 0}
@@ -27,11 +27,11 @@ MonoBehaviour:
   appliedStatus: []
   maxHitPoints: 45
   hitPoints: 45
-  agility: 50
-  rangedAttackRange: 100
-  rangeEffectiveRange: 100
-  attackAccuracy: 1000
-  attackDamage: 50
+  agility: 16
+  rangedAttackRange: 30
+  rangeEffectiveRange: 15
+  attackAccuracy: 195
+  attackDamage: 60
   defense: 0
   damageResist: 0
   meleeAttackRange: 1
@@ -46,6 +46,9 @@ MonoBehaviour:
   coveredBy: {fileID: 0}
   abilityInUse: {fileID: 0}
   KO: 0
+  attackedBy: {fileID: 0}
+  accuracyToBeHit: 50
+  incomingDamage: 6
   buffAcc: 0
   buffActionPoints: 0
   buffDefense: 0

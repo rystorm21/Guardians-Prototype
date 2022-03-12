@@ -5541,6 +5541,10 @@ MonoBehaviour:
         value: 
         type: 0
         typeString: CustomFieldType_Text
+      - title: EventGuid
+        value: 8d9784ab-2a8e-402b-81ee-dfc913f6d785
+        type: 0
+        typeString: 
       conversationID: 9
       isRoot: 0
       isGroup: 0
@@ -5553,23 +5557,11 @@ MonoBehaviour:
       userScript: 
       onExecute:
         m_PersistentCalls:
-          m_Calls:
-          - m_Target: {fileID: 11400000, guid: f14d95a1ca12612428b2047669fcc972, type: 2}
-            m_TargetAssemblyTypeName: EV.CurrentLevel, Assembly-CSharp
-            m_MethodName: SceneFinished
-            m_Mode: 1
-            m_Arguments:
-              m_ObjectArgument: {fileID: 0}
-              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-              m_IntArgument: 0
-              m_FloatArgument: 0
-              m_StringArgument: 
-              m_BoolArgument: 0
-            m_CallState: 2
+          m_Calls: []
       canvasRect:
         serializedVersion: 2
         x: 210.14958
-        y: 1491.4285
+        y: 1490.1626
         width: 160
         height: 30
     - id: 33
@@ -6255,6 +6247,10 @@ MonoBehaviour:
         value: 
         type: 0
         typeString: CustomFieldType_Text
+      - title: EventGuid
+        value: 5f9c6a94-7320-41e0-9681-914fbe9b94b0
+        type: 0
+        typeString: 
       conversationID: 10
       isRoot: 0
       isGroup: 0
@@ -6268,13 +6264,13 @@ MonoBehaviour:
       onExecute:
         m_PersistentCalls:
           m_Calls:
-          - m_Target: {fileID: 11400000, guid: f457f0b8fc9969c459dc0cb7df1c8be7, type: 2}
-            m_TargetAssemblyTypeName: EV.CurrentLevel, Assembly-CSharp
-            m_MethodName: SceneFinished
+          - m_Target: {fileID: 0}
+            m_TargetAssemblyTypeName: 
+            m_MethodName: 
             m_Mode: 1
             m_Arguments:
               m_ObjectArgument: {fileID: 0}
-              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_ObjectArgumentAssemblyTypeName: 
               m_IntArgument: 0
               m_FloatArgument: 0
               m_StringArgument: 

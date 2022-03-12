@@ -12,13 +12,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8ed5555c96195041a84c7ab132956f5, type: 3}
   m_Name: 8 - Supernova
   m_EditorClassIdentifier: 
+  abilityIcon: {fileID: 21300000, guid: 8f061cad42d405f4e816f29bc29c5eba, type: 3}
   abilityName: Supernova
-  prefab: {fileID: 0}
+  shotAbility: 0
+  rayAbility: 0
+  windupAnimation: 
+  actionAnimation: 
+  animOrigin: 0
+  statusColor: {r: 0, g: 0, b: 0, a: 0}
+  shootPrefab: {fileID: 0}
+  explosionEffectPrefab: {fileID: 0}
+  channelPrefab: {fileID: 0}
+  projectileSpeed: 0
+  animationDuration: 0
   type: 3
+  buff: 0
+  ignoreCover: 0
   apCost: 4
+  damageModifier: 0
+  healingModifier: 0
+  buffAcc: 0
+  buffActionPoints: 0
+  buffDefense: 0
+  buffMeleeDmg: 0
+  buffRangeDmg: 0
+  buffDmgRes: 0
+  debuffAcc: 0
+  debuffActionPoints: 0
+  debuffDefense: 0
+  debuffMeleeDmg: 0
+  debuffRangeDmg: 0
+  debuffDmgRes: 0
   duration: 0
+  durationCountdown: 0
   coolDown: 8
+  range: 0
   radius: 5
   description: The ultimate fire guardian power. Unleashes a massive explosion, causing
     great damage all nearby enemies. This power leaves the guardian temporarily drained
     however, unable to use any other special abilities for 2 turns.
+  popupText: 

@@ -21,8 +21,9 @@ namespace EV
         public static GameState currentGameState;
         public static int pathCount;
         public static bool combatVictory;
+        public static Transform cameraOriginal;
+        public Camera cameraPrefab;
         public bool moveInProgress;
-        public bool enemyTurn;
         bool gameOverScreenLoaded;
         
         int _turnIndex;
@@ -43,6 +44,7 @@ namespace EV
         public GameObject uiCanvas;
         public GameObject uiAbilityBar;
         public GameObject uiEnemyBar;
+        public GameObject enemyTurnIndicator;
         public VariablesHolder gameVariables;
         public LineRenderer reachablePathViz;
         bool isPathfinding;
@@ -56,7 +58,7 @@ namespace EV
         public Material lowCoverMaterial;
         public Material highCoverMaterial;
         public List<Node> reachableNodesAI;
-        public GameObject sceneHolder;
+        public GameObject gameManager;
         private List<Node> targetedNodes;
 
         public int TurnIndex
@@ -72,16 +74,25 @@ namespace EV
         #region Init
         private void Awake()
         {
-            sceneHolder = GameObject.Find("CurrentSceneHolder");
-            currentLevel = sceneHolder.GetComponent<SceneHolder>().currentLevel;
-            DontDestroyOnLoad (sceneHolder.transform.gameObject);
+            SceneManager.LoadSceneAsync("UI", LoadSceneMode.Additive);
         }
+
         private void Start()
         {
-            popUpUI = GameObject.Find("PopUpUI").GetComponent<PopUpUI>();
+            GameManager.instance.Init();
+            currentLevel = GameManager.instance.currentLevel;
+            // set active scene
+            Init();
+        }
 
+        private void Init()
+        {
+            cameraOriginal = Camera.main.transform;
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevel.thisLevel));
+            popUpUI = GameObject.Find("PopUpUI").GetComponent<PopUpUI>();
             uiCanvas = GameObject.Find("UI Canvas");
             moveButton = GameObject.Find("Button-Move");
+            enemyTurnIndicator = GameObject.Find("Text-EnemyTurnIndicator");
             uiAbilityBar = uiCanvas.transform.GetChild(0).gameObject;
             uiEnemyBar = uiCanvas.transform.GetChild(1).gameObject;
             enemyGroup = GameObject.Find("Enemies");
@@ -107,6 +118,7 @@ namespace EV
         {
             GridCharacter[] units = GameObject.FindObjectsOfType<GridCharacter>();
             Debug.Log("PlaceUnits: " + units.Length);
+            this.enemyTurnIndicator.SetActive(false);
             foreach (GridCharacter unit in units)
             {
                 unit.OnInit();
@@ -227,7 +239,8 @@ namespace EV
 
             if (pathActual.Count != 0)
             {
-                ShowCoverIcon(pathActual[pathActual.Count-1]);            
+                if (SessionManager.currentGameState == GameState.Combat)
+                    ShowCoverIcon(pathActual[pathActual.Count-1]);            
             }
             character.LoadPath(pathActual);
         }
@@ -570,6 +583,7 @@ namespace EV
 
                 }
             }
+            // Debug.Log(currentGameState.ToString());
         }
 
         public void EndTurn()
@@ -612,7 +626,9 @@ namespace EV
         {
             combatVictory = false;
             if (!currentCharacter.character.teamLeader)
+            {
                 currentCharacter.OnDeselect(currentCharacter.owner);
+            }
             if (currentLevel.hasPostDialogue)
             {
                 uiCanvas.SetActive(false);
@@ -620,24 +636,24 @@ namespace EV
             }
             else
             {   
-                StartCoroutine(NextLevel());
+                //StartCoroutine(NextLevel());
             }
             yield return new WaitForSeconds(2);
-            NonCombatModeEnter();
+            // NonCombatModeEnter();
         }
 
-        IEnumerator NextLevel()
-        {
-            yield return new WaitForSeconds(1);
-            Turn[] turns = this.turns;
-            List<GridCharacter> players = turns[0].player.characters;
-            Debug.Log(players.Count);
-            for (int i = players.Count - 1; i >= 0; i--)
-            {
-                turns[0].player.UnRegisterCharacter(players[i]);
-            }
-            SceneManager.LoadScene(currentLevel.nextScene, LoadSceneMode.Single);
-        }
+        // IEnumerator NextLevel()
+        // {
+        //     yield return new WaitForSeconds(1);
+        //     Turn[] turns = this.turns;
+        //     List<GridCharacter> players = turns[0].player.characters;
+        //     Debug.Log(players.Count);
+        //     for (int i = players.Count - 1; i >= 0; i--)
+        //     {
+        //         turns[0].player.UnRegisterCharacter(players[i]);
+        //     }
+        //     SceneManager.LoadScene(currentLevel.nextScene, LoadSceneMode.Single);
+        // }
 
         public void StartingMode()
         {
@@ -677,6 +693,7 @@ namespace EV
                 if (character.character.teamLeader)
                 {
                     gameVariables.UpdateCharacterPortrait(character.character.characterPortrait);
+                    gameVariables.UpdateCharacterName(character.character.characterName);
                     character.OnSelect(currentCharacter.owner);
                     character.highlighter.SetActive(false);
                     currentCharacter = character;
@@ -688,9 +705,9 @@ namespace EV
                 else
                 {
                     // Takes other players off map
-                    // character.currentNode.isWalkable = true;
-                    // character.currentNode.inactiveCharWasHere = true;
-                    // character.gameObject.SetActive(false);
+                    character.currentNode.isWalkable = true;
+                    character.currentNode.inactiveCharWasHere = true;
+                    character.gameObject.SetActive(false);
                 }
             }
         }
@@ -708,12 +725,12 @@ namespace EV
         #region Events
         public SO.IntVariable stanceInt;
         public SO.IntVariable attackType;
+        public SO.IntVariable cancelActivated;
         public SO.BoolVariable powerActivated;
         public SO.BoolVariable moveButtonClicked;
 
         public void MoveButtonClicked()
         {
-            Debug.Log("move pressed");
             StateManager states = turns[0].player.stateManager;
             gameVariables.UpdateMouseText("");
             states.SetState("moveOnPath");
@@ -769,6 +786,11 @@ namespace EV
                     }
                     break;
             }
+        }
+
+        public void CancelActivated()
+        {
+            popUpUI.PowerActivate(this, powerActivated.value);
         }
 
         public void PowerActivated()

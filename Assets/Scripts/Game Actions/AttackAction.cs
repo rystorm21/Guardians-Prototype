@@ -51,7 +51,7 @@ namespace EV
                     }
                     else
                     {
-                        Debug.Log("Target out of range! " + attackDistance);
+                        currentCharacter.TakeDamage("Target out of range!", "");
                     }
                 }
                 else
@@ -61,7 +61,7 @@ namespace EV
             }
             else
             {
-                Debug.Log("Not enough action points!");
+                currentCharacter.TakeDamage("Not enough AP!", "");
             }
         }
 
@@ -136,7 +136,11 @@ namespace EV
                 accuracy = 100;
             if (accuracy < 0)
                 accuracy = 0;
-            defender.accuracyText.text = accuracy + "%";
+
+            defender.character.attackedBy = attacker;
+            defender.character.accuracyToBeHit = accuracy;
+            defender.character.incomingDamage = attacker.character.attackDamage;
+            
             if (SpecialAbilityAction.buffAbilitySelected)
             {
                 ToggleHighlighterText(defender, false);
@@ -302,8 +306,12 @@ namespace EV
 
         public static void ToggleHighlighterText(GridCharacter character, bool toggle)
         {
-            character.accuracyText.gameObject.SetActive(toggle); // chance to hit this character - accuracy
-            character.highlighter.SetActive(toggle); // highlight enemy info
+            if (character.teamName != "Player1")
+            {
+                character.highlighter.SetActive(toggle); // highlight enemy info
+                if (Turn.playerTurn && character.highlighter.transform.GetChild(0) != null)
+                    character.highlighter.transform.GetChild(0).gameObject.SetActive(toggle);
+            }
         }
 
         void RaycastToTarget(GridCharacter character, RaycastHit mouseHit)

@@ -15,7 +15,16 @@ namespace EV
 
         private void LateUpdate() 
         {
-            transform.LookAt(transform.position + cam.forward);
+            if (cam == null)
+                Awake();
+            if (GameObject.FindGameObjectWithTag("TargetingCam"))
+            {
+                transform.LookAt(GameObject.FindGameObjectWithTag("TargetingCam").transform.position);
+            }
+            else
+            {
+                transform.LookAt(transform.position + cam.forward);
+            }
         }
     }
 }

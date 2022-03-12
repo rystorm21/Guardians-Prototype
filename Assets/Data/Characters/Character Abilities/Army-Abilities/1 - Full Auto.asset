@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9259a69919041ef4eb4b15f43058f579, type: 3}
   m_Name: 1 - Full Auto
   m_EditorClassIdentifier: 
-  abilityIcon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  abilityIcon: {fileID: 21300000, guid: b15d4f61b0a392d419116e547e3c4708, type: 3}
   abilityName: Full Auto
   shotAbility: 1
   rayAbility: 0
@@ -51,5 +51,6 @@ MonoBehaviour:
   coolDown: 4
   range: 30
   radius: 2
-  description: 
+  description: Unload an entire clip of ammo, hitting all targets within the area
+    of effect.
   popupText: +burn

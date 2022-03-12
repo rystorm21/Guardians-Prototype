@@ -6,9 +6,10 @@ namespace EV
     [CreateAssetMenu(menuName = "Game/Turn")]
     public class Turn : ScriptableObject
     {
+        public static bool playerTurn;
         public PlayerHolder player;
         [System.NonSerialized]
-        int _index = 0;
+        int index = 0;
         public Phase[] phases;
 
         // run phases[0].OnStartPhase, passing sessionmanager and this class
@@ -17,23 +18,23 @@ namespace EV
 
         public int Index 
         {
-            get { return _index;}
+            get { return index;}
         }
 
         public bool Execute(SessionManager sessionManager) 
         {
             bool result = false;
             
-            phases[_index].OnStartPhase(sessionManager, this);   // doesn't do anything 3/24/21
+            phases[index].OnStartPhase(sessionManager, this);   // doesn't do anything 3/24/21
             
-            if (phases[_index].IsComplete(sessionManager, this)) // automatically returns false so below bracket isn't run
+            if (phases[index].IsComplete(sessionManager, this)) // automatically returns false so below bracket isn't run
             {
-                phases[_index].OnEndPhase(sessionManager, this);
-                _index++;
+                phases[index].OnEndPhase(sessionManager, this);
+                index++;
             }
-            if (_index > phases.Length -1)                       // if index is greater than the amount of phases, reset it to 0, return result to true, otherwise false
+            if (index > phases.Length -1)                       // if index is greater than the amount of phases, reset it to 0, return result to true, otherwise false
             {
-                _index = 0;
+                index = 0;
                 result = true;                                      
             }
             return result;
@@ -41,7 +42,7 @@ namespace EV
         
         public void EndCurrentPhase()
         {
-            phases[_index].forceExit = true;
+            phases[index].forceExit = true;
         }
     }
 }

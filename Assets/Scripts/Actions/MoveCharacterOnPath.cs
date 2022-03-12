@@ -26,8 +26,13 @@ namespace EV
             GridCharacter character = states.CurrentCharacter;
             sessionManager.moveInProgress = true;
             sessionManager.moveButton.SetActive(false);
+            //Debug.Log(character + " " + character.currentPath.Count + " " + index);
             if (!isInit)
             {
+                if (character.currentPath == null)
+                {
+                    character.PathfindDelay(states, sessionManager, character);
+                }
                 if (character == null || character.currentPath == null || index > character.currentPath.Count - 1)
                 {
                     sessionManager.moveInProgress = false;

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f8b009f49b5731478a3b58115a79522, type: 3}
   m_Name: 5 - Infernal Rage
   m_EditorClassIdentifier: 
-  abilityIcon: {fileID: 0}
+  abilityIcon: {fileID: 21300000, guid: 26f4a25c7ffb7654bbc60bc4fcaa6ea8, type: 3}
   abilityName: Infernal Rage
   shotAbility: 0
   rayAbility: 0
@@ -53,3 +53,4 @@ MonoBehaviour:
   description: Lana's fire mastery allows her to channel pure rage into her attacks.
     For 2 turns, she deals double damage with all attacks and abilities. This bonus
     stacks with Focus Fire.
+  popupText: 

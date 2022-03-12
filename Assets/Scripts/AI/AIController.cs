@@ -51,11 +51,12 @@ namespace EV
         IEnumerator CharSelect()
         {
             bool allDone = true;
-
             foreach (var character in enemies)
             {
                 if (character.ActionPoints > 0)
                 {
+                    GameObject enemyInfoPanelCanvas = character.transform.GetChild(0).GetChild(0).gameObject;
+                    enemyInfoPanelCanvas.SetActive(false);
                     allDone = false;
                     sessionManager.turns[sessionManager.TurnIndex].player.stateManager.CurrentCharacter = character;
                     sessionManager.currentCharacter = character;
@@ -87,7 +88,7 @@ namespace EV
                 enemyState = EnemyState.AttackDecision;
             sessionManager.PathfinderCall(currentCharacter, moveTargetNode);
             sessionManager.moveInProgress = true;
-            yield return new WaitForSeconds(.05f);
+            yield return new WaitForSeconds(.5f);
         }
 
         IEnumerator Moving()
@@ -115,7 +116,9 @@ namespace EV
             }
 
             if (currentCharacter.ActionPoints >= 4)
+            {
                 enemyState = EnemyState.Attacking;
+            }
             else
             {
                 Debug.Log(currentCharacter.character.name + " move completed");
@@ -170,8 +173,8 @@ namespace EV
             Node _moveTargetNode = null;
             currentCharacter.character.flankedBy = howManyFlankedBy;
 
-            if (howManyFlankedBy == 0)
-                return null;
+            // if (howManyFlankedBy == 0)
+            //     return null;
 
             List<Node> safeNodes = new List<Node>();
             List<Node> preferredNodes = new List<Node>();
@@ -201,7 +204,8 @@ namespace EV
                     }
                 }
             }
-
+            // Debug.Log("safe nodes" + safeNodes.Count);
+            // Debug.Log("preferred nodes" + preferredNodes.Count);
             if (safeNodes.Count > 0)
             {
                 if (preferredNodes.Count > 0)
@@ -382,12 +386,13 @@ namespace EV
             }
 
             if (possibleTargets.Count == 0)
-                return ClosestCharacterToPosition(players, currentCharacter.transform.position);
+                return null; //ClosestCharacterToPosition(players, currentCharacter.transform.position);
 
             System.Random random = new System.Random();
             index = random.Next(possibleTargets.Count);
             targetSelected = possibleTargets[index];
 
+            //Debug.Log(currentCharacter + "Turn, Possible Targets: " + (possibleTargets.Count) + ", " + targetSelected.name);
             return targetSelected;
         }
         #endregion

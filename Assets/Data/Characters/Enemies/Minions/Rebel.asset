@@ -15,6 +15,7 @@ MonoBehaviour:
   characterName: Rebel
   characterPortrait: {fileID: 0}
   characterArchetype: 3
+  characterLevel: 0
   rangedAttackType: 1
   projectile: {fileID: 1416843826977054, guid: 20f6e929a1aba9a4691c344f454ab272, type: 3}
   inventory: {fileID: 0}
@@ -36,11 +37,11 @@ MonoBehaviour:
   - ability: {fileID: 0}
     abilityIcon: {fileID: 0}
   appliedStatus: []
-  maxHitPoints: 1
-  hitPoints: -2
+  maxHitPoints: 10
+  hitPoints: 10
   agility: 10
-  rangedAttackRange: 25
-  rangeEffectiveRange: 10
+  rangedAttackRange: 10
+  rangeEffectiveRange: 5
   attackAccuracy: 75
   attackDamage: 6
   defense: 5
@@ -51,12 +52,15 @@ MonoBehaviour:
   fightingStyle: 0
   personality: 0
   currentStance: 1
-  teamLeader: 0
+  teamLeader: 1
   braced: 0
-  covered: 0
+  covered: 1
   coveredBy: {fileID: 0}
   abilityInUse: {fileID: 0}
-  KO: 1
+  KO: 0
+  attackedBy: {fileID: 0}
+  accuracyToBeHit: 55
+  incomingDamage: 5
   buffAcc: 0
   buffActionPoints: 0
   buffDefense: 0
@@ -69,6 +73,6 @@ MonoBehaviour:
   debuffMeleeDmg: 0
   debuffRangeDmg: 0
   debuffDmgRes: 0
-  flankedBy: 3
+  flankedBy: 0
   threatLevel: 0
   aiMoveComplete: 0

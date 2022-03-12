@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9259a69919041ef4eb4b15f43058f579, type: 3}
   m_Name: 2 - Grenade
   m_EditorClassIdentifier: 
-  abilityIcon: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+  abilityIcon: {fileID: 21300000, guid: aef9639436b1c2f44bfee92f6bdec35b, type: 3}
   abilityName: Frag Grenade
   shotAbility: 0
   rayAbility: 0
@@ -50,3 +50,4 @@ MonoBehaviour:
   radius: 3
   description: Throws a frag grenade up to 10 tiles, inflicting 3 damage to targets
     hit in the area of effect.
+  popupText: 

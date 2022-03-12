@@ -11,6 +11,7 @@ public class MainMenu : MonoBehaviour
 
     private void OnEnable() {
         
+        SceneManager.LoadSceneAsync("Persistent Scene", LoadSceneMode.Additive);
         _gameOptionsMenu = GameObject.Find("GameOptionsMenu");
         _gameOptionsMenu.SetActive(false);
     }
@@ -27,6 +28,7 @@ public class MainMenu : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("Act1_S1");
+        SceneManager.LoadScene("Act1_S1", LoadSceneMode.Additive);
+        SceneManager.UnloadSceneAsync("MainMenu");
     }
 }

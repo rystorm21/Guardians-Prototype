@@ -17,7 +17,7 @@ MonoBehaviour:
   startingMode: 3
   postPreDialogMode: 1
   hasPostDialogue: 1
-  loadingScreenDo: 0
+  loadingScreenDo: 1
   postDialogueTitle: S2A1-PostBattle-1
   nextScene: Act1_S3
   nextLevel: {fileID: 11400000, guid: f457f0b8fc9969c459dc0cb7df1c8be7, type: 2}

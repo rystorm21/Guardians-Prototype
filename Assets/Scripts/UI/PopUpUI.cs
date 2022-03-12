@@ -12,6 +12,7 @@ namespace EV
         public TMP_Text displayAcc;
         public TMP_Text displayDmg;
         public TMP_Text displayTgt;
+        GameObject targetCam;
 
         public void DisplaySkill(SessionManager sessionManager, string skill, string description)
         {
@@ -54,14 +55,23 @@ namespace EV
 
         public void PowerActivate(SessionManager sessionManager, bool activated)
         {
+            targetCam = GameObject.FindGameObjectWithTag("TargetingCam");
             if (!activated)
             {
                 Deactivate(sessionManager);
+                DestroyTargetCam(targetCam, 0);
             }
             if (activated)
             {
                 // logic for doing action
+                DestroyTargetCam(targetCam, 3);
             }
+        }
+
+        private void DestroyTargetCam(GameObject targetCam, int time)
+        {
+            if (targetCam != null)
+                Destroy(targetCam.gameObject, time);
         }
     }
 }

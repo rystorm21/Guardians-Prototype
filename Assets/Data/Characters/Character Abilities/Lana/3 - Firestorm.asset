@@ -12,8 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9259a69919041ef4eb4b15f43058f579, type: 3}
   m_Name: 3 - Firestorm
   m_EditorClassIdentifier: 
+  abilityIcon: {fileID: 21300000, guid: 5e2fe173caa578f4bb4fe89e14274b7f, type: 3}
   abilityName: Firestorm
-  prefab: {fileID: 0}
+  shotAbility: 0
+  rayAbility: 0
+  windupAnimation: 
+  actionAnimation: 
+  animOrigin: 0
+  statusColor: {r: 0, g: 0, b: 0, a: 0}
+  shootPrefab: {fileID: 0}
+  explosionEffectPrefab: {fileID: 0}
+  channelPrefab: {fileID: 0}
+  projectileSpeed: 0
+  animationDuration: 0
   type: 1
   buff: 0
   ignoreCover: 1
@@ -35,6 +46,8 @@ MonoBehaviour:
   duration: 3
   durationCountdown: 1
   coolDown: 5
+  range: 0
   radius: 5
   description: 'Shoots an explosive blast that damages all enemies in its area of
     effect. Has a larger radius than fireball and ignores cover. '
+  popupText: 

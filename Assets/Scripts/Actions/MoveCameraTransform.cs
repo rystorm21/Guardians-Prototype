@@ -28,7 +28,6 @@ namespace EV
         {
             camera = Camera.main;
             isOrthographicZoom = camera.orthographic;
-
             varHolder = holder;
             cameraTransform = varHolder.cameraTransform;
             horizontal = varHolder.horizontalInput;
@@ -53,14 +52,20 @@ namespace EV
 
         public override void Execute(StateManager states, SessionManager sessionManager, Turn turn)
         {
-            if (vertical.value != 0 || horizontal.value != 0 || Input.GetMouseButton(2)) 
-                MoveCamera(states);
-            
-            if (Input.GetAxisRaw("Mouse ScrollWheel") != 0) 
-                ZoomCamera();
+            if (SessionManager.currentGameState.ToString() != "Dialog")
+            {
+                if (!GameObject.FindGameObjectWithTag("TargetingCam"))
+                {
+                    if (vertical.value != 0 || horizontal.value != 0 || Input.GetMouseButton(2))
+                        MoveCamera(states);
 
-            if (Input.GetMouseButton(1) || Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.E))
-                RotateCamera(states);
+                    if (Input.GetAxisRaw("Mouse ScrollWheel") != 0)
+                        ZoomCamera();
+
+                    if (Input.GetMouseButton(1) || Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.E))
+                        RotateCamera(states);
+                }
+            }
         }
 
         private void MoveCamera(StateManager states) 

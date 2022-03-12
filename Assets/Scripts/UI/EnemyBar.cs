@@ -60,8 +60,23 @@ namespace EV
 
         void ItemClicked(int itemIndex)
         {
-            selectedTarget = enemies[itemIndex];
-            sessionManager.SetAction("PlayerAttackAction");
+            GridCharacter currentCharacter = sessionManager.currentCharacter;
+            int actionPoints = currentCharacter.ActionPoints;
+            int attackType = currentCharacter.character.weaponSelected;
+            int apCost = 4;
+
+            if (attackType == 1)
+                apCost--;
+            
+            if (currentCharacter.ActionPoints >= apCost)
+            {
+                selectedTarget = enemies[itemIndex];
+                sessionManager.SetAction("PlayerAttackAction");
+            }
+            else
+            {
+                currentCharacter.TakeDamage("Not enough AP!","");
+            }
         }
     }
 }
